@@ -1,0 +1,78 @@
+/* style.css — Merrick Trade City unified styles (dark glassy theme) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root{
+  --bg: #0C0F1F;
+  --panel: #0a1025;
+  --glass: rgba(255,255,255,0.04);
+  --accent-a: #7c5cff;
+  --accent-b: #ff6b6b;
+  --muted: #9aa0b6;
+  --white: #fff;
+  --radius: 14px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:Inter,system-ui,Arial; background:var(--bg); color:var(--white);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Landing */
+.center-box{display:flex;align-items:center;justify-content:center;min-height:100vh}
+.card-landing{background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.55));padding:32px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.6);text-align:center}
+.logo{width:110px;border-radius:12px;margin-bottom:12px}
+.btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer}
+.btn-primary{background: linear-gradient(90deg,var(--accent-a),var(--accent-b));color:#fff;font-weight:700}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+/* Input */
+.input{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:#fff}
+
+/* Login layout */
+.login-layout{display:flex;min-height:100vh}
+.left-panel{width:50%;background:center/cover no-repeat;position:relative}
+.left-overlay{position:absolute;inset:0;background:linear-gradient(180deg, rgba(11,17,32,0.55), rgba(11,17,32,0.65))}
+.right-panel{width:50%;display:flex;align-items:center;justify-content:center;padding:48px}
+.login-card{width:420px;border-radius:16px;padding:36px;box-shadow:0 20px 60px rgba(2,6,12,0.6)}
+
+/* Layouts */
+.layout{display:flex}
+.sidebar{width:220px;background:linear-gradient(180deg,var(--accent-a),#0f0c29);padding:18px;min-height:100vh}
+.main{flex:1;padding:20px}
+
+/* User sidebar */
+.user-sidebar{width:250px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.9));padding:25px 20px;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.06)}
+.profile-card{display:flex;align-items:center;gap:15px;background:rgba(255,255,255,0.04);padding:18px;border-radius:12px;backdrop-filter: blur(8px);box-shadow:0 0 12px rgba(124,92,255,0.18);margin-bottom:18px}
+.profile-card img{width:64px;height:64px;border-radius:50%;border:2px solid var(--accent-a);cursor:pointer}
+
+/* Cards */
+.card{background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:12px;}
+
+/* Bots grid */
+.bots-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.bot-card{background:rgba(255,255,255,0.04);padding:18px;border-radius:12px;text-align:center;position:relative;overflow:hidden;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.06)}
+.bot-card .tag{display:inline-block;padding:4px 8px;border-radius:8px;background:linear-gradient(90deg, rgba(124,92,255,0.12), rgba(255,107,107,0.06));color:#d8ccff;font-size:0.78rem;margin-bottom:8px}
+
+/* Trade panel small */
+.canvas-wrap{background:rgba(0,0,0,0.35);padding:10px;border-radius:12px}
+
+/* Modal */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+.modal-content{background:rgba(15,15,35,0.95);padding:22px;border-radius:12px;box-shadow:0 0 20px rgba(124,92,255,0.28);text-align:center;width:92%;max-width:420px}
+.modal-content input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.04);color:white;margin-bottom:12px}
+
+/* Footer */
+footer{margin-top:30px;text-align:center;background:rgba(255,255,255,0.03);padding:12px;border-radius:10px}
+footer .icons{display:flex;justify-content:center;gap:12px;margin-bottom:6px}
+footer i{font-size:1.2rem;cursor:pointer;transition:0.25s}
+footer i:hover{color:var(--accent-a);transform:scale(1.2)}
+
+/* Responsive */
+@media (max-width:900px){
+  .login-layout{flex-direction:column}
+  .left-panel,.right-panel{width:100%}
+  .layout{flex-direction:column}
+  .user-sidebar{width:100%;flex-direction:row;justify-content:space-around;padding:10px}
+}
