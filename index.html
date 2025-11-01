@@ -1,24 +1,26 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Merrick Trade City — Login</title>
+  <!-- ✅ Favicon -->
   <link rel="icon" type="image/png" href="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg">
   <style>
     body {
       margin: 0;
-      font-family: Inter, Arial, sans-serif;
-      color: #fff;
+      font-family: 'Inter', Arial, sans-serif;
+      color: white;
       display: flex;
       min-height: 100vh;
       background: #0a1025;
     }
+
+    /* Left Section */
     .left {
       flex: 1;
       background: linear-gradient(to bottom, rgba(10,16,37,0.7), rgba(10,16,37,0.8)),
-        url('https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1470&q=80')
-        center/cover no-repeat;
+                  url('https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1470&q=80') center/cover no-repeat;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -28,152 +30,140 @@
       padding: 20px;
       animation: glow 2s ease-in-out infinite alternate;
     }
+
     @keyframes glow {
       from { text-shadow: 0 0 10px #7c5cff, 0 0 20px #7c5cff, 0 0 30px #7c5cff; }
       to { text-shadow: 0 0 20px #9b6cff, 0 0 40px #9b6cff, 0 0 60px #9b6cff; }
     }
+
     .right {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
     }
+
     .form-container {
       background: rgba(255,255,255,0.05);
-      padding: 28px;
+      padding: 40px;
       border-radius: 12px;
       width: 340px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
       text-align: center;
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(10px);
     }
+
     input {
       width: 100%;
       padding: 10px;
       border-radius: 6px;
       border: none;
       outline: none;
-      background: rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.1);
       color: #fff;
     }
-    .btn {
-      padding: 10px 14px;
-      border-radius: 8px;
+
+    button {
+      background: linear-gradient(90deg,#7c5cff,#9b6cff);
+      color: white;
       border: none;
+      padding: 12px;
+      border-radius: 8px;
       cursor: pointer;
-      font-weight: 700;
+      font-weight: bold;
+      transition: 0.3s;
     }
-    .btn-primary {
-      background: linear-gradient(90deg, #7c5cff, #9b6cff);
-      color: #fff;
+
+    button:hover {
+      opacity: 0.9;
+      box-shadow: 0 0 10px #7c5cff;
     }
-    .btn-ghost {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.06);
-      color: #ddd;
+
+    .small {
+      font-size: 13px;
+      color: #bbb;
+      margin-top: 10px;
     }
-    .small { font-size: 13px; color: #bbb; }
+
     footer {
       position: fixed;
-      bottom: 8px;
+      bottom: 10px;
       width: 100%;
       text-align: center;
-      color: #9aa;
+      font-size: 12px;
+      color: #aaa;
     }
-    .logo-line {
-      font-weight: 800;
-      letter-spacing: 1px;
-      background: linear-gradient(90deg, #7c5cff, #9b6cff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .left { font-size: 1.5rem; padding: 40px 10px; }
+      .right { width: 100%; padding: 20px; }
     }
   </style>
 </head>
 <body>
   <div class="left">
-    <div class="logo-line">Merrick Trade City</div>
-    <div style="font-size:1.15rem;margin-top:8px">Trade Smarter, Not Harder</div>
+    <div>Merrick Trade City</div>
+    <div style="font-size:1.2rem; margin-top:10px;">Trade Smarter, Not Harder</div>
   </div>
 
   <div class="right">
-    <div class="form-container" aria-live="polite">
-      <h2 style="margin:0">Login</h2>
-      <p class="small">Users: Login with Deriv</p>
+    <div class="form-container">
+      <h2>Login</h2>
+      <p class="small">Admins use email & password. Users click “Login with Deriv”.</p>
 
-      <input id="adminEmail" type="email" placeholder="Email" autocomplete="email">
-      <input id="adminPassword" type="password" placeholder="Password" autocomplete="current-password">
+      <input type="email" id="email" placeholder="Email" autocomplete="email" />
+      <input type="password" id="password" placeholder="Password" autocomplete="current-password" />
 
-      <div style="display:flex;gap:10px">
-        <button id="adminLoginBtn" class="btn btn-primary" style="flex:1">Login as Admin</button>
-        <button id="derivLoginBtn" class="btn btn-ghost" style="flex:1">Login with Deriv</button>
-      </div>
+      <button id="adminLogin">Login as Admin</button>
+      <button id="derivLogin">Login with Deriv</button>
 
-      <div id="msg" class="small" style="margin-top:6px;color:#f9d"></div>
+      <p id="msg" class="small" style="color:#ff8;">&nbsp;</p>
     </div>
   </div>
 
-  <footer>© 2025 Merrick Trade City</footer>
+  <footer>© 2025 Merrick Trade City — All Rights Reserved.</footer>
 
-<script>
-/* ---- CONFIG ---- */
-const ADMIN_EMAIL = "saintmerrick66@gmail.com";
-const ADMIN_PW = "Levis8254#";
-const DERIV_APP_ID = "109286";
-const DERIV_REDIRECT = location.origin + "/user.html";
+  <script>
+    const ADMIN_EMAIL = "saintmerrick66@gmail.com";
+    const ADMIN_PASSWORD = "Levis8254#";
+    const DERIV_APP_ID = "109286";
+    const DERIV_REDIRECT_URI = window.location.origin + "/Merrick-Trade-City/user.html";
 
-/* ---- ELEMENTS ---- */
-const adminEmail = document.getElementById('adminEmail');
-const adminPassword = document.getElementById('adminPassword');
-const adminLoginBtn = document.getElementById('adminLoginBtn');
-const derivLoginBtn = document.getElementById('derivLoginBtn');
-const msg = document.getElementById('msg');
+    const adminBtn = document.getElementById("adminLogin");
+    const derivBtn = document.getElementById("derivLogin");
+    const msg = document.getElementById("msg");
 
-/* ---- ADMIN LOGIN ---- */
-adminLoginBtn.addEventListener('click', () => {
-  const email = adminEmail.value.trim();
-  const pw = adminPassword.value.trim();
-  if (!email || !pw) {
-    msg.textContent = "Please enter email and password.";
-    return;
-  }
+    // Admin Login
+    adminBtn.addEventListener("click", () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-  if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && pw === ADMIN_PW) {
-    // Store a strong persistent session token
-    localStorage.setItem("merrick_admin_session", JSON.stringify({
-      email: ADMIN_EMAIL,
-      time: Date.now()
-    }));
-    msg.textContent = "Login successful! Redirecting...";
-    setTimeout(() => window.location.href = "admin.html", 600);
-  } else {
-    msg.textContent = "Invalid credentials.";
-  }
-});
+      if (!email || !password) {
+        msg.textContent = "Please enter both email and password.";
+        return;
+      }
 
-/* ---- DERIV LOGIN ---- */
-derivLoginBtn.addEventListener('click', () => {
-  const oauthUrl = 'https://oauth.deriv.com/oauth2/authorize?app_id=' + encodeURIComponent(DERIV_APP_ID)
-    + '&redirect_uri=' + encodeURIComponent(DERIV_REDIRECT)
-    + '&response_type=token';
-  window.location.href = oauthUrl;
-});
+      if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASSWORD) {
+        localStorage.setItem("merrick_admin", "true");
+        window.location.href = "admin.html";
+      } else {
+        msg.textContent = "Invalid admin credentials.";
+      }
+    });
 
-/* ---- AUTO REDIRECT if already logged in ---- */
-const session = localStorage.getItem("merrick_admin_session");
-if (session) {
-  try {
-    const data = JSON.parse(session);
-    if (data.email === ADMIN_EMAIL) {
-      window.location.href = "admin.html";
-    }
-  } catch (e) {
-    console.warn("Invalid session, clearing.");
-    localStorage.removeItem("merrick_admin_session");
-  }
-}
-</script>
+    // Deriv Login
+    derivBtn.addEventListener("click", () => {
+      const oauthUrl =
+        "https://oauth.deriv.com/oauth2/authorize?app_id=" +
+        encodeURIComponent(DERIV_APP_ID) +
+        "&redirect_uri=" +
+        encodeURIComponent(DERIV_REDIRECT_URI) +
+        "&response_type=token";
+      window.location.href = oauthUrl;
+    });
+  </script>
 </body>
 </html>
