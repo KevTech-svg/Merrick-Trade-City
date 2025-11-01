@@ -32,11 +32,11 @@
       <h2 style="margin:0">Login</h2>
       <p class="small">Admin: email + password (local). Users: Login with Deriv.</p>
 
-      <input id="adminEmail" type="email" placeholder="Admin email" autocomplete="email">
-      <input id="adminPassword" type="password" placeholder="Admin password" autocomplete="current-password">
+      <input id="Email" type="email" placeholder="email" autocomplete="email">
+      <input id="Password" type="password" placeholder="password" autocomplete="current-password">
 
       <div style="display:flex;gap:10px">
-        <button id="adminLoginBtn" class="btn btn-primary" style="flex:1">Login as Admin</button>
+        <button id="adminLoginBtn" class="btn btn-primary" style="flex:1">Login</button>
         <button id="derivLoginBtn" class="btn btn-ghost" style="flex:1">Login with Deriv</button>
       </div>
 
@@ -44,7 +44,7 @@
     </div>
   </div>
 
-  <footer>© 2025 Merrick Trade City — kevtech-svg</footer>
+  <footer>© 2025 Merrick Trade City</footer>
 
 <script>
 /*
@@ -88,7 +88,6 @@ derivLoginBtn.addEventListener('click', () => {
   location.href = oauthUrl;
 });
 
-/* Quick-access: double click 'Trade' to open admin modal (alternate) */
 const quickAdmin = document.getElementById('quickAdmin');
 let dblCount=0, dblTimer=null;
 quickAdmin.addEventListener('dblclick', ()=>{
