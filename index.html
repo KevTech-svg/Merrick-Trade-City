@@ -15,7 +15,6 @@
     .btn-primary{background:linear-gradient(90deg,#7c5cff,#9b6cff);color:#fff}
     .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#ddd}
     .small{font-size:13px;color:#bbb}
-    .hidden{display:none}
     footer{position:fixed;bottom:8px;width:100%;text-align:center;color:#9aa}
     .logo-line{font-weight:800;letter-spacing:1px;background:linear-gradient(90deg,#7c5cff,#9b6cff);-webkit-background-clip:text;background-clip:text;color:transparent}
   </style>
@@ -35,7 +34,7 @@
       <input id="Password" type="password" placeholder="password" autocomplete="current-password">
 
       <div style="display:flex;gap:10px">
-        <button id="adminLoginBtn" class="btn btn-primary" style="flex:1">Login</button>
+        <button id="adminLoginBtn" class="btn btn-primary" style="flex:1">Login as Admin</button>
         <button id="derivLoginBtn" class="btn btn-ghost" style="flex:1">Login with Deriv</button>
       </div>
 
@@ -48,7 +47,6 @@
 <script>
 /*
   Local admin credentials (hardcoded as requested).
-  Keep these exactly as you confirmed:
 */
 const ADMIN_EMAIL = "saintmerrick66@gmail.com";
 const ADMIN_PW    = "Levis8254#";
@@ -85,20 +83,6 @@ derivLoginBtn.addEventListener('click', () => {
   const oauthUrl = 'https://oauth.deriv.com/oauth2/authorize?app_id=' + encodeURIComponent(DERIV_APP_ID) +
                    '&redirect_uri=' + encodeURIComponent(DERIV_REDIRECT) + '&response_type=token';
   location.href = oauthUrl;
-});
-
-const quickAdmin = document.getElementById('quickAdmin');
-let dblCount=0, dblTimer=null;
-quickAdmin.addEventListener('dblclick', ()=>{
-  // prompt for admin credentials quickly
-  const email = prompt("Admin email:");
-  const pw = prompt("Admin password:");
-  if(email && pw && email.toLowerCase()===ADMIN_EMAIL.toLowerCase() && pw===ADMIN_PW){
-    localStorage.setItem('merrick_admin', JSON.stringify({ email: ADMIN_EMAIL, ts: Date.now() }));
-    location.href = "admin.html";
-  } else {
-    alert("Invalid admin quick credentials.");
-  }
 });
 </script>
 </body>
