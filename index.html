@@ -1,89 +1,129 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Merrick Trade City — Login</title>
   <style>
-    body{margin:0;font-family:Inter,Arial,sans-serif;color:#fff;display:flex;min-height:100vh;background:#0a1025}
-    .left{flex:1;background:linear-gradient(to bottom,rgba(10,16,37,0.7),rgba(10,16,37,0.8)),url('https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1470&q=80') center/cover no-repeat;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;font-size:2rem;padding:20px;animation:glow 2s ease-in-out infinite alternate}
-    @keyframes glow{from{text-shadow:0 0 10px #7c5cff,0 0 20px #7c5cff,0 0 30px #7c5cff}to{text-shadow:0 0 20px #9b6cff,0 0 40px #9b6cff,0 0 60px #9b6cff}}
-    .right{flex:1;display:flex;align-items:center;justify-content:center}
-    .form-container{background:rgba(255,255,255,0.05);padding:28px;border-radius:12px;width:340px;display:flex;flex-direction:column;gap:12px;text-align:center;backdrop-filter:blur(8px)}
-    input{width:100%;padding:10px;border-radius:6px;border:none;outline:none;background:rgba(255,255,255,0.06);color:#fff}
-    .btn{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-    .btn-primary{background:linear-gradient(90deg,#7c5cff,#9b6cff);color:#fff}
-    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#ddd}
-    .small{font-size:13px;color:#bbb}
-    footer{position:fixed;bottom:8px;width:100%;text-align:center;color:#9aa}
-    .logo-line{font-weight:800;letter-spacing:1px;background:linear-gradient(90deg,#7c5cff,#9b6cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      color: white;
+      display: flex;
+      min-height: 100vh;
+      background: #0a1025;
+    }
+    .left {
+      flex: 1;
+      background: linear-gradient(to bottom, rgba(10,16,37,0.7), rgba(10,16,37,0.8)),
+                  url('https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1470&q=80') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      font-size: 2rem;
+      padding: 20px;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #7c5cff, 0 0 20px #7c5cff, 0 0 30px #7c5cff; }
+      to { text-shadow: 0 0 20px #9b6cff, 0 0 40px #9b6cff, 0 0 60px #9b6cff; }
+    }
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .form-container {
+      background: rgba(255,255,255,0.05);
+      padding: 40px;
+      border-radius: 12px;
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    button {
+      background: linear-gradient(90deg,#7c5cff,#9b6cff);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    button:hover {
+      opacity: 0.9;
+      box-shadow: 0 0 10px #7c5cff;
+    }
+    .small {
+      font-size: 13px;
+      color: #bbb;
+      margin-top: 10px;
+    }
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .left { font-size: 1.5rem; padding: 40px 10px; }
+      .right { width: 100%; padding: 20px; }
+    }
   </style>
 </head>
 <body>
   <div class="left">
-    <div class="logo-line">Merrick Trade City</div>
-    <div style="font-size:1.15rem;margin-top:8px">Trade Smarter, Not Harder</div>
+    <div>Merrick Trade City</div>
+    <div style="font-size:1.2rem; margin-top:10px;">Trade Smarter, Not Harder</div>
   </div>
 
   <div class="right">
-    <div class="form-container" aria-live="polite">
-      <h2 style="margin:0">Login</h2>
-      <p class="small">Admin: email + password (local). Users: Login with Deriv.</p>
-
-      <input id="adminEmail" type="email" placeholder="Admin email" autocomplete="email">
-      <input id="adminPassword" type="password" placeholder="Admin password" autocomplete="current-password">
-
-      <div style="display:flex;gap:10px">
-        <button id="adminLoginBtn" class="btn btn-primary" style="flex:1">Login</button>
-        <button id="derivLoginBtn" class="btn btn-ghost" style="flex:1">Login with Deriv</button>
-      </div>
-
-      <div id="msg" class="small" style="margin-top:6px;color:#f9d"></div>
+    <div class="form-container">
+      <h2>Login</h2>
+      <p class="small">Access your account to start trading.</p>
+      <input type="email" id="emailInput" placeholder="Email" autocomplete="email">
+      <input type="password" id="passwordInput" placeholder="Password" autocomplete="current-password">
+      <button id="loginBtn">Login</button>
+      <button id="derivBtn">Login with Deriv</button>
     </div>
   </div>
 
-  <footer>© 2025 Merrick Trade City</footer>
+  <script>
+    const app_id = 109286; // Your Deriv App ID
+    const redirect_uri = "https://kevtech-svg.github.io/Merrick-Trade-City/user.html";
 
-<script>
-/*
-  Local admin credentials (hardcoded as requested).
-*/
-const ADMIN_EMAIL = "saintmerrick66@gmail.com";
-const ADMIN_PW    = "Levis8254#";
+    const derivBtn = document.getElementById("derivBtn");
+    derivBtn.addEventListener("click", () => {
+      const loginUrl = `https://oauth.deriv.com/oauth2/authorize?app_id=${app_id}&redirect_uri=${encodeURIComponent(redirect_uri)}&response_type=token`;
+      window.location.href = loginUrl;
+    });
 
-/* Deriv OAuth settings */
-const DERIV_APP_ID = "109286";
-const DERIV_REDIRECT = location.origin + "/user.html";
+    const loginBtn = document.getElementById("loginBtn");
+    loginBtn.addEventListener("click", () => {
+      const email = document.getElementById("emailInput").value.trim();
+      const password = document.getElementById("passwordInput").value.trim();
 
-/* Elements */
-const adminEmail = document.getElementById('adminEmail');
-const adminPassword = document.getElementById('adminPassword');
-const adminLoginBtn = document.getElementById('adminLoginBtn');
-const derivLoginBtn = document.getElementById('derivLoginBtn');
-const msg = document.getElementById('msg');
+      if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
+      }
 
-/* Admin login handler */
-adminLoginBtn.addEventListener('click', (e) => {
-  const email = (adminEmail.value || "").trim();
-  const pw = adminPassword.value || "";
-  if(!email || !pw) { msg.textContent = "Enter admin email and password."; return; }
-
-  if(email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && pw === ADMIN_PW){
-    // create a simple session token (localStorage)
-    localStorage.setItem('merrick_admin', JSON.stringify({ email: ADMIN_EMAIL, ts: Date.now() }));
-    // navigate to admin page
-    location.href = "admin.html";
-  } else {
-    msg.textContent = "Invalid admin credentials.";
-  }
-});
-
-/* Deriv login - redirect to OAuth only when user clicks */
-derivLoginBtn.addEventListener('click', () => {
-  const oauthUrl = 'https://oauth.deriv.com/oauth2/authorize?app_id=' + encodeURIComponent(DERIV_APP_ID) +
-                   '&redirect_uri=' + encodeURIComponent(DERIV_REDIRECT) + '&response_type=token';
-  location.href = oauthUrl;
-});
-</script>
+      // Simple local login (no Firebase, no validation)
+      localStorage.setItem("user_email", email);
+      alert("Login successful ✅");
+      window.location.href = "user.html";
+    });
+  </script>
 </body>
 </html>
