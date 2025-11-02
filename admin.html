@@ -60,11 +60,10 @@ input,textarea{padding:8px;border-radius:6px;border:none;background:rgba(255,255
       <input type="file" id="botFile" accept=".xml" />
       <input type="text" id="botCategory" placeholder="Category (e.g. Forex)" />
       <input type="number" id="botPrice" placeholder="Price (Ksh)" />
-      <label><input type="checkbox" id="botShared" /> Share with users</label>
       <button class="btn btn-primary" id="addBotBtn">Add Bot</button>
       <h4 style="margin-top:12px">Stored Bots</h4>
       <table class="table" id="botTable">
-        <thead><tr><th>File</th><th>Category</th><th>Price</th><th>Shared</th><th>Action</th></tr></thead>
+        <thead><tr><th>File</th><th>Category</th><th>Price</th><th>Action</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -100,15 +99,18 @@ const sections = {
   settings: document.getElementById('settingsSection')
 };
 
+// Simple admin login check
 if(!localStorage.getItem('merrick_admin')){
   alert('Admin not logged in.');
   location.href = 'index.html';
 }
 
+// Nav handling
 document.querySelectorAll('.sidebar button[data-section]').forEach(btn=>{
   btn.onclick=()=>{Object.values(sections).forEach(s=>s.style.display='none');sections[btn.dataset.section].style.display='block';};
 });
 
+// Logout
 document.getElementById('logoutBtn').onclick=()=>{
   localStorage.removeItem('merrick_admin');
   location.href='index.html';
@@ -131,59 +133,41 @@ function renderUsers(){
 }
 renderUsers();
 
-/* -------- BOTS MANAGER WITH SHARE -------- */
+/* -------- BOTS MANAGER -------- */
 const botTable=document.querySelector('#botTable tbody');
-let bots=JSON.parse(localStorage.getItem('adminBots')||'[]');
+const bots=JSON.parse(localStorage.getItem('adminBots')||'[]');
 
 function renderBots(){
   botTable.innerHTML='';
   bots.forEach((b,i)=>{
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${b.file}</td><td>${b.category}</td><td>Ksh ${b.price}</td><td>${b.shared?'Yes':'No'}</td>
-                    <td><button class='btn-ghost' onclick='removeBot(${i})'>Remove</button></td>`;
+    tr.innerHTML=<td>${b.file}</td><td>${b.category}</td><td>Ksh ${b.price}</td><td><button class='btn-ghost' onclick='removeBot(${i})'>Remove</button></td>;
     botTable.appendChild(tr);
   });
   document.getElementById('totalBots').textContent=bots.length;
-  saveSharedBots(); // update shared bots for user.html
 }
-
 function removeBot(i){
   bots.splice(i,1);
   localStorage.setItem('adminBots',JSON.stringify(bots));
   renderBots();
 }
-
 document.getElementById('addBotBtn').onclick=()=>{
   const f=document.getElementById('botFile').files[0];
   const cat=document.getElementById('botCategory').value.trim();
   const price=document.getElementById('botPrice').value.trim();
-  const shared=document.getElementById('botShared').checked;
   if(!f)return alert('Select a .xml file.');
-  const bot={file:f.name,category:cat||'General',price:price||0,shared,xmlContent:''};
-
-  const reader = new FileReader();
-  reader.onload = (e)=>{
-    bot.xmlContent = e.target.result;
-    bots.push(bot);
-    localStorage.setItem('adminBots',JSON.stringify(bots));
-    renderBots();
-    alert('Bot added successfully!');
-  };
-  reader.readAsText(f);
-}
-
-// Save shared bots for user panel (can be replaced with GitHub push)
-function saveSharedBots(){
-  const sharedBots = bots.filter(b=>b.shared).map(b=>({name:b.file,category:b.category,price:b.price,xml:b.xmlContent}));
-  localStorage.setItem('sharedBots',JSON.stringify(sharedBots));
-}
-
+  const bot={file:f.name,category:cat||'General',price:price||0};
+  bots.push(bot);
+  localStorage.setItem('adminBots',JSON.stringify(bots));
+  renderBots();
+  alert('Bot added successfully!');
+};
 renderBots();
 
 /* -------- SETTINGS -------- */
 document.getElementById('saveSettingsBtn').onclick=()=>{
   const pass=document.getElementById('settingsPass').value;
-  if(pass!=='0758026285'){ 
+  if(pass!=='0758026285'){ // custom secondary password
     alert('Incorrect settings password.');
     return;
   }
