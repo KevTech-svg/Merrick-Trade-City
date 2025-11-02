@@ -15,6 +15,7 @@
   html,body{height:100%}
   body{display:flex;min-height:100vh;background:radial-gradient(circle at top,var(--bg),#05060d);color:#fff}
 
+  /* Loading overlay */
   .loading-overlay{
     position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
     background:linear-gradient(180deg, rgba(6,8,20,0.9), rgba(6,8,20,0.95));z-index:9999;flex-direction:column;
@@ -36,6 +37,7 @@
   }
   .loading-sub { margin-top:12px;color:var(--muted); font-size:13px }
 
+  /* Sidebar */
   .sidebar{
     width:260px;padding:22px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));
     display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.06)
@@ -57,28 +59,34 @@
   .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
   .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
 
+  /* Main */
   .main{flex:1;padding:18px;display:flex;flex-direction:column;gap:16px;overflow:auto}
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,12,0.5)}
   .welcome{display:flex;justify-content:space-between;align-items:center;gap:12px}
   .logo-small{width:48px;height:48px;border-radius:10px;object-fit:cover;filter:drop-shadow(0 6px 18px rgba(124,92,255,0.12))}
   .small-muted{color:var(--muted);font-size:13px}
 
+  /* Tiles and grid */
   .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
   .tile{padding:12px;border-radius:12px}
   .bots-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px}
   .bot-card{background:var(--glass);padding:12px;border-radius:12px;text-align:center;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.04)}
   .tag{display:inline-block;padding:4px 10px;border-radius:20px;background:linear-gradient(90deg, rgba(124,92,255,0.12), rgba(255,107,107,0.06));color:#e9deff;font-size:12px}
 
+  /* Trade area */
   .trade-wrap{display:flex;gap:12px;flex-wrap:wrap}
   .chart-box{flex:1;min-width:360px;height:420px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
   .controls{width:360px;min-width:260px;padding:12px;display:flex;flex-direction:column;gap:10px}
 
+  /* Modal */
   .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);align-items:center;justify-content:center}
   .modal-content{background:rgba(15,15,35,0.98);padding:18px;border-radius:12px;width:92%;max-width:520px}
   .input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff}
 
+  /* Footer */
   footer{margin-top:10px;text-align:center;color:var(--muted)}
 
+  /* Responsive */
   @media (max-width:980px){
     .sidebar{width:100%;flex-direction:row;gap:12px;padding:10px}
     .menu{flex-direction:row;overflow:auto}
@@ -99,11 +107,11 @@
   <div>
     <h2>User Panel</h2>
     <div class="profile-card card">
-      <img id="profilePic" src="assets/default-avatar.png" alt="User avatar" onclick="changeProfilePic()">
+      <img id="profilePic" src="assets/default-avatar.png" alt="User avatar" onclick="changeProfilePic()" title="Change profile picture">
       <div class="profile-info">
-        <div id="userName">Loading…</div>
+        <div id="userName">User</div>
         <small id="userBalance">Balance: —</small>
-        <small id="userEmail">—</small>
+        <small id="userEmail">user@example.com</small>
       </div>
     </div>
     <div class="menu" id="menu">
@@ -126,7 +134,7 @@
 <div class="main">
   <div class="welcome card">
     <div style="display:flex;gap:12px;align-items:center">
-      <img src="assets/logo.png" class="logo-small" alt="Merrick logo">
+      <img src="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg" class="logo-small" alt="Merrick logo">
       <div>
         <div style="font-weight:700">Welcome back, <span id="displayName">User</span></div>
         <div class="small-muted">Trade live with your Deriv account inside Merrick Trade City</div>
@@ -138,227 +146,173 @@
     </div>
   </div>
 
-  <!-- Dashboard Section -->
+  <!-- Dashboard -->
   <section id="dashboardSection">
     <div class="top-row" style="display:flex;gap:12px;flex-wrap:wrap">
       <div class="card tile" style="flex:1;min-width:300px">
         <small class="small-muted">Quick Tutorial</small>
         <h3 style="margin:8px 0">How to add & run bots</h3>
         <div style="aspect-ratio:16/9;border-radius:10px;overflow:hidden;margin-top:8px">
-          <iframe id="ytTutorial" src="https://www.youtube.com/embed/dQw4w9WgXcQ" style="width:100%;height:100%;border:0" allowfullscreen></iframe>
+          <iframe id="ytTutorial" src="https://www.youtube.com/embed/yup6kew1BBU?si=yNLIy1Fym8RjD9HI" title="Tutorial" style="width:100%;height:100%;border:0" allowfullscreen></iframe>
         </div>
-        <div style="margin-top:8px" class="small-muted">Replace this YouTube link anytime.</div>
+        <div style="margin-top:8px" class="small-muted">Replace this YouTube link any time.</div>
       </div>
-      <div class="card tile" style="width:320px">
-        <small class="small-muted">Quick Actions</small>
-        <h4 style="margin:8px 0">Add Bot</h4>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <input id="localBotFile" type="file" accept=".zip,.xml,.json" class="input">
-          <button class="btn btn-ghost" onclick="openDrive()">From Google Drive</button>
-          <button class="btn btn-ghost" onclick="openBotBuilder()">Bot Builder</button>
-          <select id="quickStrategy" class="input">
-            <option value="">Choose Quick Strategy</option>
-            <option value="scalp">Scalp (fast)</option>
-            <option value="swing">Swing (medium)</option>
-            <option value="trend">Trend (long)</option>
-          </select>
-          <button class="btn btn-primary" onclick="addQuickStrategy()">Use Strategy</button>
-        </div>
-      </div>
-    </div>
-
-    <div style="margin-top:14px" class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3>Available Bots</h3>
-        <div class="small-muted">Local & shared bots</div>
-      </div>
-      <div class="bots-grid" id="botsContainer"></div>
-    </div>
-  </section>
-
-  <!-- Free Bots Section -->
-<div id="freebotsSection" style="display:none">
-  <h3>Free Bots</h3>
-  <div class="bots-grid" id="freeBotsContainer"></div>
+      <<div class="card tile" style="width:320px">
+  <small class="small-muted">Quick Actions</small>
+  <h3 style="margin:8px 0">Add Your Bot</h3>
+  <button class="btn btn-primary" onclick="uploadBot()">Upload from Device</button>
+  <button class="btn btn-primary" onclick="importFromDrive()">Import from Google Drive</button>
+  <button class="btn btn-primary" onclick="openBotBuilder()">Open Bot Builder</button>
+  <button class="btn btn-primary" onclick="quickStrategy()">Quick Strategy</button>
 </div>
+</div>
+
+<!-- Free Bots Section -->
+<section id="freebotsSection" style="display:none">
+  <h3>Available Shared Bots</h3>
+  <div class="bots-grid" id="sharedBots">
+    <!-- Shared/admin bots will appear here -->
+  </div>
+</section>
 
 <!-- D-Trader Section -->
-<div id="dtraderSection" style="display:none">
-  <h3>D-Trader</h3>
+<section id="dtraderSection" style="display:none">
+  <h3>D-Trader Simulator</h3>
   <div class="trade-wrap">
-    <div class="chart-box" id="dTraderChart"></div>
+    <div class="chart-box" id="dtraderChart"></div>
     <div class="controls">
-      <button class="btn btn-primary" onclick="startDTrader()">Start Trading</button>
+      <button class="btn btn-primary" onclick="buy()">Buy</button>
+      <button class="btn btn-primary" onclick="sell()">Sell</button>
+      <div id="tradeLog" style="margin-top:10px;font-size:12px;color:var(--muted)"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Smart Analysis Section -->
+<section id="smartSection" style="display:none">
+  <h3>Smart Analysis</h3>
+  <div class="card">Coming Soon: Advanced analytics like Deriv's Smart Analysis.</div>
+</section>
+
+<!-- Analysis Tool Section -->
+<section id="analysisSection" style="display:none">
+  <h3>Analysis Tool</h3>
+  <div class="card">Coming Soon: Chart & prediction tools similar to Deriv.</div>
+</section>
+
+<!-- Signals Section -->
+<section id="signalsSection" style="display:none">
+  <h3>Trading Signals</h3>
+  <div class="card" id="signalsContent">Fetching signals...</div>
+</section>
+
+<!-- Charts Section -->
+<section id="chartsSection" style="display:none">
+  <h3>Trading Charts</h3>
+  <div class="card" id="tradingViewCharts">TradingView charts placeholder</div>
+</section>
+
+<!-- Copy Trading Section -->
+<section id="copySection" style="display:none">
+  <h3>Copy Trading</h3>
+  <div class="card">Copy trades from top traders — coming soon!</div>
+</section>
+
+<footer>
+  &copy; 2025 Merrick Trade City. All rights reserved.
+</footer>
+
+<!-- Modals -->
+<div class="modal" id="tokenModal">
+  <div class="modal-content">
+    <h3>Enter Deriv API Token</h3>
+    <input class="input" type="text" id="derivToken" placeholder="Paste your token here">
+    <div style="margin-top:10px;display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-primary" onclick="saveToken()">Save</button>
+      <button class="btn btn-ghost" onclick="closeTokenModal()">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Smart Analysis Section -->
-<div id="smartSection" style="display:none">
-  <h3>Smart Analysis</h3>
-  <div class="card">
-    <p>Smart Analysis tools like Deriv.</p>
-  </div>
-</div>
-
-<!-- Analysis Tool Section -->
-<div id="analysisSection" style="display:none">
-  <h3>Analysis Tool</h3>
-  <div class="card">
-    <p>Perform advanced market analysis here.</p>
-  </div>
-</div>
-
-<!-- Signals Section -->
-<div id="signalsSection" style="display:none">
-  <h3>Signals</h3>
-  <div class="card">
-    <p>Real-time trading signals.</p>
-  </div>
-</div>
-
-<!-- Charts Section -->
-<div id="chartsSection" style="display:none">
-  <h3>Charts</h3>
-  <div class="chart-box" id="tradingViewChart"></div>
-</div>
-
-<!-- Copy Trading Section -->
-<div id="copySection" style="display:none">
-  <h3>Copy Trading</h3>
-  <div class="card">
-    <p>Copy professional traders’ strategies.</p>
-  </div>
-</div>
-
-<!-- Token Modal -->
-<div id="tokenModal" class="modal">
-  <div class="modal-content">
-    <h3>Enter Deriv Token</h3>
-    <input type="text" id="derivToken" placeholder="Enter your token here" class="input">
-    <button class="btn btn-primary" onclick="saveToken()">Save Token</button>
-    <button class="btn btn-ghost" onclick="closeTokenModal()">Cancel</button>
-  </div>
-</div>
-
-<footer>Merrick Trade City © 2025</footer>
-
 <script>
-// ===== Loading Overlay =====
-window.addEventListener('load', () => {
-  document.getElementById('loadingOverlay').classList.add('loading-hidden');
-});
+  // Demo Users (replace with GitHub/Deriv storage integration)
+  const users = [
+    {id:1,name:"Alice",email:"alice@example.com",balance:1200,avatar:"assets/default-avatar.png",bots:[]},
+    {id:2,name:"Bob",email:"bob@example.com",balance:750,avatar:"assets/default-avatar.png",bots:[]}
+  ];
+  let currentUser = users[0];
 
-// ===== User & Bot Data =====
-let currentUser = null;
-let usersData = {}; // {email: {name, balance, bots:[], profilePic}}
-let sharedBots = []; // Admin bots
-let githubRepo = {
-  owner: 'your-github-username',
-  repo: 'merrick-trade-data',
-  token: 'GITHUB_PERSONAL_ACCESS_TOKEN'
-};
+  const sharedBots = [
+    {name:"AdminBot 1",desc:"Shared bot",id:"admin1"},
+    {name:"AdminBot 2",desc:"Shared bot",id:"admin2"}
+  ];
 
-// ===== Menu Navigation =====
-const sections = ['dashboard','freebots','dtrader','smart','analysis','signals','charts','copy'];
-document.querySelectorAll('.menu button').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    sections.forEach(s=>{
-      document.getElementById(s+'Section').style.display='none';
-      document.querySelector([data-section="${s}"]).classList.remove('active');
+  // Initialize
+  window.onload = ()=>{
+    loadUser(currentUser);
+    loadSharedBots();
+    setTimeout(()=>document.getElementById('loadingOverlay').classList.add('loading-hidden'), 1500);
+  }
+
+  function loadUser(user){
+    document.getElementById('userName').innerText = user.name;
+    document.getElementById('userBalance').innerText = Balance: $${user.balance};
+    document.getElementById('userEmail').innerText = user.email;
+    document.getElementById('profilePic').src = user.avatar;
+    document.getElementById('displayName').innerText = user.name;
+  }
+
+  function loadSharedBots(){
+    const grid = document.getElementById('sharedBots');
+    grid.innerHTML = '';
+    sharedBots.forEach(bot=>{
+      const card = document.createElement('div');
+      card.className='bot-card';
+      card.innerHTML=<h4>${bot.name}</h4><div class="tag">${bot.desc}</div>;
+      grid.appendChild(card);
     });
-    document.getElementById(btn.dataset.section+'Section').style.display='block';
-    btn.classList.add('active');
-  });
-});
-
-// ===== Profile Picture Change =====
-function changeProfilePic(){
-  let file = prompt('Enter image URL or leave blank for default:');
-  if(file){
-    currentUser.profilePic = file;
-    document.getElementById('profilePic').src = file;
-    saveUserData();
   }
-}
 
-// ===== Login / Logout =====
-function login(email){
-  currentUser = usersData[email] || {name:email.split('@')[0], email, balance:0, bots:[], profilePic:'assets/default-avatar.png'};
-  usersData[email] = currentUser;
-  document.getElementById('userName').textContent = currentUser.name;
-  document.getElementById('displayName').textContent = currentUser.name;
-  document.getElementById('userBalance').textContent = 'Balance: '+currentUser.balance;
-  document.getElementById('userEmail').textContent = currentUser.email;
-  document.getElementById('profilePic').src = currentUser.profilePic;
-  loadBots();
-}
-function logout(){currentUser=null;location.reload();}
-
-// ===== Token Modal =====
-function openTokenModal(){document.getElementById('tokenModal').style.display='flex'}
-function closeTokenModal(){document.getElementById('tokenModal').style.display='none'}
-function saveToken(){
-  let token = document.getElementById('derivToken').value;
-  if(token){alert('Token saved!');closeTokenModal();}
-}
-
-// ===== Bot Handling =====
-function loadBots(){
-  let container = document.getElementById('botsContainer');
-  container.innerHTML = '';
-  // User Bots
-  currentUser.bots.forEach(bot=>{
-    let div=document.createElement('div');div.className='bot-card';
-    div.innerHTML=<strong>${bot.name}</strong><div class="tag">Your Bot</div>;
-    container.appendChild(div);
-  });
-  // Shared Bots
-  sharedBots.forEach(bot=>{
-    let div=document.createElement('div');div.className='bot-card';
-    div.innerHTML=<strong>${bot.name}</strong><div class="tag">Shared</div>;
-    container.appendChild(div);
-  });
-}
-function addQuickStrategy(){
-  let strategy = document.getElementById('quickStrategy').value;
-  if(strategy){
-    let bot = {name: strategy+' Strategy'};
-    currentUser.bots.push(bot);
-    saveUserData();
-    loadBots();
-    alert('Strategy added!');
+  function uploadBot(){
+    alert('Upload bot from device — integrate with storage API');
   }
-}
-function openDrive(){alert('Google Drive integration coming soon')}
-function openBotBuilder(){alert('Bot Builder coming soon')}
+  function importFromDrive(){alert('Import bot from Google Drive — integrate with API')}
+  function openBotBuilder(){alert('Open bot builder')}
+  function quickStrategy(){alert('Open quick strategy interface')}
 
-// ===== Save to GitHub =====
-async function saveUserData(){
-  // Minimal example, real implementation would use GitHub API
-  console.log('Saving user to GitHub', currentUser);
-}
+  function buy(){logTrade('Buy executed')}
+  function sell(){logTrade('Sell executed')}
+  function logTrade(msg){
+    const log=document.getElementById('tradeLog');
+    const time=new Date().toLocaleTimeString();
+    log.innerHTML=[${time}] ${msg}<br>+log.innerHTML;
+  }
 
-// ===== TradingView Charts Placeholder =====
-function loadTradingViewChart(){
-  document.getElementById('tradingViewChart').innerHTML='<iframe src="https://s.tradingview.com/embed-widget/mini-symbol-overview/?symbol=NASDAQ%3AAAPL" style="width:100%;height:100%;border:0"></iframe>';
-}
-loadTradingViewChart();
+  // Menu switch
+  const menuBtns=document.querySelectorAll('.menu button');
+  menuBtns.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      menuBtns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      showSection(btn.dataset.section);
+    });
+  });
+  function showSection(sec){
+    const sections=['dashboard','freebots','dtrader','smart','analysis','signals','charts','copy'];
+    sections.forEach(s=>{
+      const el=document.getElementById(s+'Section');
+      if(el) el.style.display=(s===sec)?'block':'none';
+    });
+  }
 
-// ===== D-Trader Placeholder =====
-function startDTrader(){alert('D-Trader starting...')}
+  // Modals
+  function openTokenModal(){document.getElementById('tokenModal').style.display='flex'}
+  function closeTokenModal(){document.getElementById('tokenModal').style.display='none'}
+  function saveToken(){alert('Token saved — integrate with Deriv API');closeTokenModal()}
 
-// ===== Run Bot =====
-document.getElementById('runBotBtn').addEventListener('click',()=>{
-  if(currentUser.bots.length>0) alert('Running '+currentUser.bots[0].name);
-  else alert('No bots loaded');
-});
+  function logout(){alert('Logout — implement session clear')}
+  function changeProfilePic(){alert('Change profile pic — integrate with storage API')}
 
-// ===== Initialize Demo =====
-login('demo@example.com'); // replace with OAuth or manual token
-sharedBots=[{name:'Admin Bot 1'},{name:'Admin Bot 2'}];
-loadBots();
 </script>
 </body>
 </html>
-                                                                                      
