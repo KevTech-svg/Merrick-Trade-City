@@ -1,175 +1,215 @@
-<!doctype html>
-<html lang="en">  
-<head>  
-<meta charset="utf-8" />  
-<meta name="viewport" content="width=device-width,initial-scale=1" />  
-<title>Merrick Trade City — Admin Panel</title>  
-<link rel="icon" type="image/png" href="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg">  <style>  
-:root{--bg:#0a1025;--accent:#7c5cff}  
-body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:#fff;display:flex;min-height:100vh}  
-.sidebar{width:220px;background:linear-gradient(180deg,#7c5cff,#0f0c29);padding:18px;display:flex;flex-direction:column;gap:12px}  
-.sidebar h2{margin:0;text-align:center}  
-.sidebar button{background:none;border:none;color:#fff;padding:8px;text-align:left;cursor:pointer;border-radius:6px}  
-.sidebar button:hover{background:rgba(255,255,255,0.1)}  
-.main{flex:1;padding:18px;display:flex;flex-direction:column;gap:14px}  
-.summary{display:flex;gap:14px;flex-wrap:wrap}  
-.card{background:rgba(255,255,255,0.04);padding:12px;border-radius:10px;flex:1}  
-.table{width:100%;border-collapse:collapse}  
-.table th,.table td{padding:8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.1)}  
-.btn{padding:8px 10px;border-radius:8px;border:none;cursor:pointer}  
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#ddd}  
-.btn-primary{background:linear-gradient(90deg,#7c5cff,#ff6b6b);color:#fff}  
-input,textarea{padding:8px;border-radius:6px;border:none;background:rgba(255,255,255,0.05);color:#fff;width:100%}  
-</style>  </head>  
-<body>  
-  <div class="sidebar">  
-    <h2>Merrick Admin</h2>  
-    <button data-section="dashboard">Dashboard</button>  
-    <button data-section="users">Users</button>  
-    <button data-section="bots">Bots</button>  
-    <button data-section="transactions">Transactions</button>  
-    <button data-section="settings">Settings</button>  
-    <div style="margin-top:auto">  
-      <button id="logoutBtn" class="btn btn-ghost">Logout</button>  
-    </div>  
-  </div>    <div class="main">  
-    <h1 style="margin:0;font-size:1.3rem">Admin Dashboard</h1>  
-    <div id="dashboardSection">  
-      <div class="summary">  
-        <div class="card"><h3>Total Users</h3><p id="totalUsers">0</p></div>  
-        <div class="card"><h3>Total Bots</h3><p id="totalBots">0</p></div>  
-        <div class="card"><h3>Total Balance</h3><p id="totalBalance">Ksh 0</p></div>  
-      </div>  
-    </div>  <div id="usersSection" style="display:none" class="card">  
-  <h3>All Users & Activities</h3>  
-  <table class="table" id="userTable">  
-    <thead><tr><th>Name</th><th>Email</th><th>Balance</th><th>Last Activity</th></tr></thead>  
-    <tbody></tbody>  
-  </table>  
-</div>  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Merrick Trade City — Admin Panel</title>
 
-<div id="botsSection" style="display:none" class="card">  
-  <h3>Manage Bots</h3>  
-  <input type="file" id="botFile" accept=".xml" />  
-  <input type="text" id="botCategory" placeholder="Category (e.g. Forex)" />  
-  <input type="number" id="botPrice" placeholder="Price (Ksh)" />  
-  <button class="btn btn-primary" id="addBotBtn">Add Bot</button>  
-  <h4 style="margin-top:12px">Stored Bots</h4>  
-  <table class="table" id="botTable">  
-    <thead><tr><th>File</th><th>Category</th><th>Price</th><th>Action</th></tr></thead>  
-    <tbody></tbody>  
-  </table>  
-</div>  
+<!-- Chart.js UMD (v3.x works in browser without bundler; avoids "@kurkle/color" specifier errors) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
-<div id="transactionsSection" style="display:none" class="card">  
-  <h3>Transactions</h3>  
-  <table class="table" id="txTable">  
-    <thead><tr><th>User</th><th>Bot</th><th>Amount</th><th>Date</th></tr></thead>  
-    <tbody>  
-      <tr><td>Kelvin</td><td>GoldBot.xml</td><td>Ksh 800</td><td>22 Oct 2025</td></tr>  
-    </tbody>  
-  </table>  
-</div>  
+<style>
+  body {
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+    background: #0a1025;
+    color: white;
+    display: flex;
+    min-height: 100vh;
+  }
+  /* Sidebar */
+  .sidebar { width:220px; background: linear-gradient(180deg, #7c5cff, #0f0c29); padding:20px; gap:15px; display:flex; flex-direction:column;}
+  .sidebar h2 { margin:0 0 20px 0; font-size:1.5rem; text-align:center; color:#fff; }
+  .sidebar button { background:none;border:none;color:white;padding:10px;text-align:left;cursor:pointer;border-radius:6px;font-weight:bold;}
+  .sidebar button:hover { background:rgba(255,255,255,0.06); }
+  .main { flex:1; padding:20px; display:flex; flex-direction:column; gap:20px; }
+  .summary { display:flex; gap:20px; flex-wrap:wrap; }
+  .card { flex:1 1 180px; background:rgba(255,255,255,0.04); padding:20px; border-radius:12px; }
+  table { width:100%; border-collapse:collapse; background: rgba(255,255,255,0.02); border-radius:12px; overflow:hidden; }
+  th, td { padding:10px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.06); }
+  .modal{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; }
+  .modal-content{ background:#0f0c29; padding:20px; border-radius:12px; width:320px; }
+</style>
+</head>
+<body>
 
-<div id="settingsSection" style="display:none" class="card">  
-  <h3>Settings</h3>  
-  <label>M-Pesa Number</label>  
-  <input id="mpesa" value="0712345678" />  
-  <label style="margin-top:8px;">Budget Address</label>  
-  <textarea id="wallet">Wallet Address 0x12345abcde...</textarea>  
-  <label style="margin-top:8px;">Enter Settings Password to Confirm</label>  
-  <input id="settingsPass" type="password" placeholder="Settings password" />  
-  <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top:10px">Save Changes</button>  
+<div class="sidebar">
+  <h2>Merrick Admin</h2>
+  <button onclick="showSection('dashboard')">Dashboard</button>
+  <button onclick="showSection('users')">Users</button>
+  <button onclick="showSection('bots')">Bots</button>
+  <button onclick="showSection('transactions')">Transactions</button>
+  <button onclick="showSection('settings')">Settings</button>
+  <button onclick="logout()">Logout</button>
 </div>
 
-  </div>  <script>  
-const sections = {  
-  dashboard: document.getElementById('dashboardSection'),  
-  users: document.getElementById('usersSection'),  
-  bots: document.getElementById('botsSection'),  
-  transactions: document.getElementById('transactionsSection'),  
-  settings: document.getElementById('settingsSection')  
-};  
-  
-// Simple admin login check  
-if(!localStorage.getItem('merrick_admin')){  
-  alert('Admin not logged in.');  
-  location.href = 'index.html';  
-}  
-  
-// Nav handling  
-document.querySelectorAll('.sidebar button[data-section]').forEach(btn=>{  
-  btn.onclick=()=>{Object.values(sections).forEach(s=>s.style.display='none');sections[btn.dataset.section].style.display='block';};  
-});  
-  
-// Logout  
-document.getElementById('logoutBtn').onclick=()=>{  
-  localStorage.removeItem('merrick_admin');  
-  location.href='index.html';  
-};  
-  
-/* -------- USERS DEMO -------- */  
-const sampleUsers = [  
-  {name:'Kelvin',email:'kelvin@example.com',balance:'Ksh 1200',activity:'Bot Purchase'},  
-  {name:'Mary',email:'mary@demo.com',balance:'Ksh 750',activity:'Deposit'},  
-  {name:'Derrick',email:'derrick@bot.com',balance:'Ksh 0',activity:'Trial Bot'}  
-];  
-function renderUsers(){  
-  const body=document.querySelector('#userTable tbody');  
-  body.innerHTML='';  
-  sampleUsers.forEach(u=>{  
-    const tr=document.createElement('tr');  
-    tr.innerHTML=<td>${u.name}</td><td>${u.email}</td><td>${u.balance}</td><td>${u.activity}</td>;  
-    body.appendChild(tr);  
-  });  
-}  
-renderUsers();  
-  
-/* -------- BOTS MANAGER -------- */  
-const botTable=document.querySelector('#botTable tbody');  
-const bots=JSON.parse(localStorage.getItem('adminBots')||'[]');  
-  
-function renderBots(){  
-  botTable.innerHTML='';  
-  bots.forEach((b,i)=>{  
-    const tr=document.createElement('tr');  
-    tr.innerHTML=<td>${b.file}</td><td>${b.category}</td><td>Ksh ${b.price}</td><td><button class='btn-ghost' onclick='removeBot(${i})'>Remove</button></td>;  
-    botTable.appendChild(tr);  
-  });  
-  document.getElementById('totalBots').textContent=bots.length;  
-}  
-function removeBot(i){  
-  bots.splice(i,1);  
-  localStorage.setItem('adminBots',JSON.stringify(bots));  
-  renderBots();  
-}  
-document.getElementById('addBotBtn').onclick=()=>{  
-  const f=document.getElementById('botFile').files[0];  
-  const cat=document.getElementById('botCategory').value.trim();  
-  const price=document.getElementById('botPrice').value.trim();  
-  if(!f)return alert('Select a .xml file.');  
-  const bot={file:f.name,category:cat||'General',price:price||0};  
-  bots.push(bot);  
-  localStorage.setItem('adminBots',JSON.stringify(bots));  
-  renderBots();  
-  alert('Bot added successfully!');  
-};  
-renderBots();  
-  
-/* -------- SETTINGS -------- */  
-document.getElementById('saveSettingsBtn').onclick=()=>{  
-  const pass=document.getElementById('settingsPass').value;  
-  if(pass!=='0758026285'){ // custom secondary password  
-    alert('Incorrect settings password.');  
-    return;  
-  }  
-  const mpesa=document.getElementById('mpesa').value;  
-  const wallet=document.getElementById('wallet').value;  
-  localStorage.setItem('adminSettings',JSON.stringify({mpesa,wallet}));  
-  alert('Settings saved successfully!');  
-};  
-const saved=JSON.parse(localStorage.getItem('adminSettings')||'{}');  
-if(saved.mpesa)document.getElementById('mpesa').value=saved.mpesa;  
-if(saved.wallet)document.getElementById('wallet').value=saved.wallet;  
-</script>  </body>  
+<div class="main">
+  <div id="dashboard">
+    <div class="summary">
+      <div class="card"><h3>Total Users</h3><p id="totalUsers">0</p></div>
+      <div class="card"><h3>Total Bots</h3><p id="totalBots">0</p></div>
+      <div class="card"><h3>Total Balance</h3><p id="totalBalance">Ksh 0</p></div>
+    </div>
+
+    <div style="display:flex;gap:20px;flex-wrap:wrap">
+      <div class="card" style="flex:1;min-width:300px">
+        <canvas id="botCategoryChart" height="200"></canvas>
+      </div>
+      <div class="card" style="flex:1;min-width:300px">
+        <canvas id="transactionsChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div id="users" style="display:none">
+    <h3>Users</h3>
+    <table id="usersTable"><thead><tr><th>Email</th><th>Last Login</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div id="bots" style="display:none">
+    <h3>Bots</h3>
+    <p>Upload bots and manage.</p>
+  </div>
+
+  <div id="transactions" style="display:none">
+    <h3>Transactions</h3>
+    <table><thead><tr><th>User</th><th>Bot</th><th>Amount</th><th>Date</th></tr></thead>
+      <tbody><tr><td>Kelvin</td><td>GoldBot</td><td>Ksh 800</td><td>22 Oct 2025</td></tr></tbody></table>
+  </div>
+
+  <div id="settings" style="display:none">
+    <h3>Settings</h3>
+    <label>M-Pesa Number:</label>
+    <input id="mpesaNumber" value="0712345678"><br><br>
+    <label>Wallet Address:</label>
+    <input id="walletAddress" value="Wallet Address 0x44351a..."><br><br>
+    <button onclick="openAdminPasswordModal()">Save Changes</button>
+  </div>
+
+</div>
+
+<!-- Admin password modal -->
+<div class="modal" id="adminPassModal">
+  <div class="modal-content">
+    <h3>Confirm (Admin)</h3>
+    <input type="password" id="confirmAdminPass" placeholder="Enter admin password" style="width:100%;padding:8px;border-radius:6px;background:#111;color:#fff;border:none">
+    <div style="margin-top:10px;text-align:right">
+      <button onclick="confirmAdminSave()">Confirm</button>
+      <button onclick="closeAdminPasswordModal()" style="margin-left:8px;background:rgba(255,255,255,0.06)">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase + app logic -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+  // firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDD9yIS1kYVNJhVntodAUeeMAUOOtXwGdU",
+    authDomain: "merrick-trade-city.firebaseapp.com",
+    projectId: "merrick-trade-city",
+    storageBucket: "merrick-trade-city.firebasestorage.app",
+    messagingSenderId: "769684454569",
+    appId: "1:769684454569:web:5f9ccf6629a0ea0db17db8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  // persistence to avoid quick logout
+  await setPersistence(auth, browserLocalPersistence).catch(()=>{ /* ignore */ });
+
+  // Expose showSection & logout globally so inline onclick works
+  window.showSection = function(sec){
+    const ids = ['dashboard','users','bots','transactions','settings'];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.style.display = (id === sec) ? 'block' : 'none';
+    });
+  };
+
+  window.logout = async function(){
+    try{
+      await signOut(auth);
+    }catch(e){ console.warn('signOut', e); }
+    window.location.href = 'index.html';
+  };
+
+  // Admin-only protection: redirect non-admins to index
+  const ADMIN_EMAIL = "Saintmerrick66@gmail.com".toLowerCase();
+  onAuthStateChanged(auth, (user) => {
+    if(!user) {
+      // not logged in => go to index
+      window.location.href = 'index.html';
+      return;
+    }
+    const em = (user.email || '').toLowerCase();
+    if(em !== ADMIN_EMAIL){
+      // not admin -> sign out & redirect
+      signOut(auth).finally(()=> window.location.href = 'index.html');
+      return;
+    }
+    // Admin is authenticated - keep on the page
+    // (you can load admin data here)
+    loadAdminStats();
+  });
+
+  // Charts (sample data)
+  function loadAdminStats(){
+    const ctx1 = document.getElementById('botCategoryChart').getContext('2d');
+    const ctx2 = document.getElementById('transactionsChart').getContext('2d');
+
+    new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: ['Forex','Crypto','Stocks'],
+        datasets: [{
+          label: 'Bots',
+          data: [5,3,2],
+          backgroundColor: ['#7c5cff','#ff6b6b','#1dd1a1']
+        }]
+      },
+      options: { responsive: true, plugins:{ legend: { display:false } } }
+    });
+
+    new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri'],
+        datasets: [{ label:'Ksh', data:[500,800,300,900,400], backgroundColor:'#7c5cff' }]
+      },
+      options: { responsive:true, scales:{ y:{ beginAtZero:true } } }
+    });
+
+    // populate some quick admin info placeholders
+    document.getElementById('totalUsers').textContent = '128';
+    document.getElementById('totalBots').textContent = '18';
+    document.getElementById('totalBalance').textContent = 'Ksh 24,800';
+    // fill users table sample
+    const tbody = document.querySelector('#usersTable tbody');
+    if(tbody) tbody.innerHTML = '<tr><td>kelvin@example.com</td><td>2025-10-29</td></tr><tr><td>jane@example.com</td><td>2025-10-28</td></tr>';
+  }
+
+  // Admin password modal helpers
+  window.openAdminPasswordModal = function(){ document.getElementById('adminPassModal').style.display = 'flex'; };
+  window.closeAdminPasswordModal = function(){ document.getElementById('adminPassModal').style.display = 'none'; };
+  window.confirmAdminSave = function(){
+    const v = document.getElementById('confirmAdminPass').value || '';
+    if(v === 'Levis8254#'){ // optional check (matches Firebase password you gave)
+      closeAdminPasswordModal();
+      alert('Settings saved ✅');
+    } else {
+      alert('Incorrect admin password ❌');
+    }
+  };
+
+  // close modal when clicking outside
+  document.addEventListener('click', (e) => {
+    const m = document.getElementById('adminPassModal');
+    if(m && m.style.display === 'flex' && e.target === m) m.style.display = 'none';
+  });
+
+</script>
+</body>
 </html>
