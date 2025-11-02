@@ -148,7 +148,7 @@ async function renderUsers(){
   tbody.innerHTML = '';
   users.forEach(u=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = <td>${u.name}</td><td>${u.email}</td><td>Ksh ${u.balance}</td><td>${u.lastActivity}</td>;
+   tr.innerHTML = <td>${u.name}</td><td>${u.email}</td><td>Ksh ${u.balance}</td><td>${u.lastActivity}</td>;
     tbody.appendChild(tr);
   });
   document.getElementById('totalUsers').textContent = users.length;
@@ -237,3 +237,4 @@ setInterval(()=>{renderUsers();renderBots();renderTransactions();},10000);
 </script>
 </body>
 </html>
+
