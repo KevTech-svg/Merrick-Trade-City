@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merrick Trade City — Login</title>
+  <!-- ✅ Favicon -->
+  <link rel="icon" type="image/png" href="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      color: white;
+      display: flex;
+      min-height: 100vh;
+      background: #0a1025;
+    }
+
+    /* Left Section */
+    .left {
+      flex: 1;
+      background: linear-gradient(to bottom, rgba(10,16,37,0.7), rgba(10,16,37,0.8)),
+                  url('https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1470&q=80') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      font-size: 2rem;
+      padding: 20px;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #7c5cff, 0 0 20px #7c5cff, 0 0 30px #7c5cff; }
+      to { text-shadow: 0 0 20px #9b6cff, 0 0 40px #9b6cff, 0 0 60px #9b6cff; }
+    }
+
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-container {
+      background: rgba(255,255,255,0.05);
+      padding: 40px;
+      border-radius: 12px;
+      width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    button {
+      background: linear-gradient(90deg,#7c5cff,#9b6cff);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+      box-shadow: 0 0 10px #7c5cff;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #bbb;
+      margin-top: 10px;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .left { font-size: 1.5rem; padding: 40px 10px; }
+      .right { width: 100%; padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="left">
+    <div>Merrick Trade City</div>
+    <div style="font-size:1.2rem; margin-top:10px;">Trade Smarter, Not Harder</div>
+  </div>
+
+  <div class="right">
+    <div class="form-container">
+      <h2>Login</h2>
+      <p class="small">Admins use email & password. Users click “Login with Deriv”.</p>
+
+      <input type="email" id="email" placeholder="Email" autocomplete="email" />
+      <input type="password" id="password" placeholder="Password" autocomplete="current-password" />
+
+      <button id="adminLogin">Login as Admin</button>
+      <button id="derivLogin">Login with Deriv</button>
+
+      <p id="msg" class="small" style="color:#ff8;">&nbsp;</p>
+    </div>
+  </div>
+
+  <footer>© 2025 Merrick Trade City — All Rights Reserved.</footer>
+
+  <script>
+    const ADMIN_EMAIL = "saintmerrick66@gmail.com";
+    const ADMIN_PASSWORD = "Levis8254#";
+    const DERIV_APP_ID = "109286";
+    const DERIV_REDIRECT_URI = "https://kevtech-svg.github.io/Merrick-Trade-City/user.html";
+
+
+
+    const adminBtn = document.getElementById("adminLogin");
+    const derivBtn = document.getElementById("derivLogin");
+    const msg = document.getElementById("msg");
+
+    // Admin Login
+    adminBtn.addEventListener("click", () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        msg.textContent = "Please enter both email and password.";
+        return;
+      }
+
+      if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASSWORD) {
+        localStorage.setItem("merrick_admin", "true");
+        window.location.href = "admin.html";
+      } else {
+        msg.textContent = "Invalid admin credentials.";
+      }
+    });
+
+    // Deriv Login
+    derivBtn.addEventListener("click", () => {
+      const oauthUrl =
+        "https://oauth.deriv.com/oauth2/authorize?app_id=" +
+        encodeURIComponent(DERIV_APP_ID) +
+        "&redirect_uri=" +
+        encodeURIComponent(DERIV_REDIRECT_URI) +
+        "&response_type=token";
+      window.location.href = oauthUrl;
+    });
+  </script>
+</body>
+</html>
