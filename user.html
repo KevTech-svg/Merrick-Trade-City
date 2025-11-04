@@ -11,7 +11,7 @@
   @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
   :root{
     --bg:#0c0f1f; --panel:#0a1025; --accent:#7c5cff; --accent2:#6a4bff;
-    --muted:#bfbfcf;
+    --muted:#bfbfcf; --merrick-email: #fff;
   }
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
   html,body{height:100%}
@@ -49,7 +49,13 @@
 
   .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center}
   .modal-content{background:#0f0c29;padding:18px;border-radius:12px;width:92%;max-width:520px}
-  @media (max-width:980px){.sidebar{width:100%;flex-direction:row;gap:12px;padding:10px}.menu{flex-direction:row;overflow:auto}.chart-box{height:320px}}
+  @media (max-width:980px){
+    body{flex-direction:column}
+    .sidebar{width:100%;flex-direction:row;gap:12px;padding:10px;align-items:center}
+    .menu{flex-direction:row;overflow:auto}
+    .chart-box{height:320px}
+    .profile-card{display:flex;align-items:center}
+  }
 </style>
 </head>
 <body>
@@ -88,10 +94,11 @@
 
   <div style="margin-top:14px">
     <div style="margin-bottom:8px">
-      <button class="btn btn-primary" id="githubStatusBtn">Connect GitHub (auto)</button>
+      <button class="btn btn-primary" id="githubStatusBtn">Connect GitHub</button>
     </div>
     <button class="btn" onclick="openTokenModal()">Deriv Token</button>
     <button class="btn" onclick="logout()">Logout</button>
+    <div style="margin-top:10px;font-size:13px;color:var(--muted)">Support: <a href="mailto:Saintmerrick66@gmail.com" style="color:var(--merrick-email)">Saintmerrick66@gmail.com</a></div>
   </div>
 </div>
 
@@ -178,17 +185,16 @@
   <footer><small class="small-muted">© 2025 Merrick Trade City — All rights reserved.</small></footer>
 </div>
 
-<!-- GitHub (optional) modal -->
+<!-- GitHub token modal -->
 <div class="modal" id="githubModal">
   <div class="modal-content">
-    <h3>Connect to GitHub (optional)</h3>
-    <p>To let this page write users & bots directly to your repo (<strong>KevTech-svg/merrick-data</strong>), paste a GitHub Personal Access Token (repo scope).</p>
+    <h3>Connect to GitHub</h3>
+    <p class="small-muted">Paste a GitHub Personal Access Token (repo scope) to let this page read & write data in <strong>KevTech-svg/merrick-data</strong>.</p>
     <input id="githubTokenInput" class="input" placeholder="ghp_..." />
     <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
       <button class="btn" onclick="closeGithubModal()">Cancel</button>
       <button class="btn btn-primary" onclick="saveGithubToken()">Save & Connect</button>
     </div>
-    <p style="font-size:12px;margin-top:10px;color:var(--muted)">If you don't provide a token, admin bots will load from the public repo (read-only).</p>
   </div>
 </div>
 
@@ -201,6 +207,7 @@
       <button class="btn" onclick="closeTokenModal()">Cancel</button>
       <button class="btn btn-primary" onclick="saveDerivToken()">Save</button>
     </div>
+    <div style="margin-top:10px;color:var(--muted);font-size:13px">Or sign in via Deriv OAuth — you'll be redirected and returned to this page.</div>
   </div>
 </div>
 
@@ -220,38 +227,42 @@
 </div>
 
 <script>
-/* ====== Config ====== */
+/* ====== CONFIG (edit these if needed) ====== */
 const GITHUB_OWNER = 'KevTech-svg';
-const GITHUB_REPO = 'merrick-data'; // ensure this repo exists
-const USERS_PATH = 'users.json';
+const GITHUB_REPO  = 'merrick-data';      // ensure repo exists
+const USERS_PATH   = 'users.json';
 const ADMIN_BOTS_PATH = 'admin_bots.json';
 
-const DERIV_APP_ID = '109286';
+const DERIV_APP_ID = '109286';            // you provided this
 const REDIRECT_URI = location.origin + '/Merrick-Trade-City/user.html';
 
-/* ====== State ====== */
+/* ====== STATE ====== */
 let githubToken = localStorage.getItem('merrick_github_token') || null;
-let usersData = {};          // { email: { name, email, balance, bots:[], avatar } }
-let adminBots = [];          // admin/shared bots
+let usersData = {};       // keyed by email
+let adminBots = [];
 let currentUserEmail = localStorage.getItem('merrick_current_user') || null;
 let currentUser = null;
 let portfolioChart = null;
 let pollingInterval = null;
 let derivWS = null;
 
-/* ====== Helpers ====== */
+/* ====== HELPERS ====== */
 function qs(sel){ return document.querySelector(sel); }
 function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
 function openModal(id){ qs('#'+id).style.display = 'flex'; }
 function closeModal(id){ qs('#'+id).style.display = 'none'; }
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ====== Menu wiring ====== */
+/* ====== MENU WIRING & RESPONSIVE FIX ====== */
+function hideAllSections(){ 
+  ['dashboardSection','freebotsSection','dtraderSection','smartSection','analysisSection','signalsSection','chartsSection','copySection']
+    .forEach(id=>{ const el = qs('#'+id); if(el) el.style.display = 'none'; });
+}
 qsa('.menu button').forEach(btn=>{
   btn.addEventListener('click', ()=> {
     qsa('.menu button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    const section = btn.dataset.section;
+    hideAllSections();
     const map = {
       dashboard: 'dashboardSection',
       freebots: 'freebotsSection',
@@ -262,39 +273,35 @@ qsa('.menu button').forEach(btn=>{
       charts: 'chartsSection',
       copy: 'copySection'
     };
-    Object.values(map).forEach(id => { const el = qs('#'+id); if(el) el.style.display = 'none'; });
-    const showId = map[section];
+    const showId = map[btn.dataset.section];
     if(showId){ const el = qs('#'+showId); if(el) el.style.display = 'block'; }
   });
 });
 
-/* ====== GitHub helpers ====== */
+/* ====== GITHUB: lightweight helpers (read/write files) ====== */
 function githubApiHeaders(){
   const headers = { 'Accept': 'application/vnd.github.v3+json' };
   if(githubToken) headers['Authorization'] = 'token ' + githubToken;
   return headers;
 }
-
 async function fetchGitHubFile(path){
-  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
+  const url = https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)};
   const res = await fetch(url, { headers: githubApiHeaders() });
   if(res.status === 404) return null;
   if(!res.ok) throw new Error('GitHub fetch error: ' + res.status);
   return await res.json();
 }
-
 async function getJsonFromGitHub(path){
   const file = await fetchGitHubFile(path);
   if(!file) return null;
   const text = atob(file.content.replace(/\n/g,''));
   try { return JSON.parse(text); } catch(e){ console.warn('Invalid JSON in', path); return null; }
 }
-
 async function putJsonToGitHub(path, obj, sha = null){
   if(!githubToken) throw new Error('No GitHub token available for write');
-  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
+  const url = https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)};
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2))));
-  const payload = { message: `Update ${path} via Merrick UI`, content };
+  const payload = { message: Update ${path} via Merrick UI, content };
   if(sha) payload.sha = sha;
   const res = await fetch(url, {
     method: 'PUT',
@@ -304,32 +311,26 @@ async function putJsonToGitHub(path, obj, sha = null){
   if(!res.ok) throw new Error('GitHub write error: ' + res.status);
   return await res.json();
 }
-
-/* Read admin bots from public raw when no token available */
-async function loadAdminBotsFromGitHubReadOnly(){
+/* Read public admin bots (auto, no modal) */
+async function loadAdminBotsPublic(){
   try{
-    const url = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${ADMIN_BOTS_PATH}`;
-    const res = await fetch(url);
-    if(res.ok){
-      adminBots = await res.json();
-      console.info('Loaded admin bots (read-only) from raw.githubusercontent');
-    } else {
-      adminBots = [{ name:'Admin Bot 1' }, { name:'Admin Bot 2' }];
-    }
-  } catch(e){
-    console.warn('Could not load admin bots read-only', e);
-    adminBots = [{ name:'Admin Bot 1' }, { name:'Admin Bot 2' }];
-  }
+    const url = https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${ADMIN_BOTS_PATH};
+    const r = await fetch(url);
+    if(r.ok){ adminBots = await r.json(); return; }
+  } catch(e){ console.warn('public admin bots load failed', e); }
+  // fallback
+  adminBots = [{ name:'Admin Bot 1' }, { name:'Admin Bot 2' }];
 }
 
-async function loadAllDataFromGitHub(){
+/* Load users/admin bots if token available */
+async function loadAllData(){
   try{
-    const usersJson = await getJsonFromGitHub(USERS_PATH);
-    if(usersJson) usersData = usersJson;
-    const adminJson = await getJsonFromGitHub(ADMIN_BOTS_PATH);
-    if(adminJson) adminBots = adminJson;
+    const users = await getJsonFromGitHub(USERS_PATH);
+    if(users) usersData = users;
+    const admin = await getJsonFromGitHub(ADMIN_BOTS_PATH);
+    if(admin) adminBots = admin;
   } catch(err){
-    console.warn('loadAllDataFromGitHub error', err);
+    console.warn('loadAllData error', err);
   }
 }
 
@@ -359,7 +360,7 @@ async function saveAdminBotsToGitHub(){
   }
 }
 
-/* ====== User management ====== */
+/* ====== USER MANAGEMENT ====== */
 function setCurrentUser(email, fallback){
   currentUserEmail = email;
   localStorage.setItem('merrick_current_user', email);
@@ -375,11 +376,12 @@ function setCurrentUser(email, fallback){
   qs('#userBalance').textContent = 'Balance: ' + (currentUser.balance !== undefined ? currentUser.balance : 0);
   qs('#userEmail').textContent = currentUser.email;
   qs('#profilePic').src = currentUser.avatar || qs('#profilePic').src;
+
   buildBotsUI();
   setupPortfolioChart();
 }
 
-/* Basic prompt login for demo (you can replace with real OAuth) */
+/* quick login prompt (demo flow) */
 async function promptLogin(){
   const email = prompt('Enter your email to sign in:');
   if(!email) return;
@@ -390,9 +392,10 @@ async function promptLogin(){
   setCurrentUser(email);
 }
 
-/* ====== Bots UI & handling ====== */
+/* ====== BOTS UI & HANDLING ====== */
 function buildBotsUI(){
   const container = qs('#botsContainer');
+  if(!container) return;
   container.innerHTML = '';
 
   if(currentUser && Array.isArray(currentUser.bots)){
@@ -411,7 +414,6 @@ function buildBotsUI(){
     });
   }
 
-  // Admin/shared bots
   adminBots.forEach(bot=>{
     const d = document.createElement('div');
     d.className = 'bot-card';
@@ -423,17 +425,14 @@ function buildBotsUI(){
     container.appendChild(d);
   });
 
-  // shared bots container
   const sharedContainer = qs('#sharedBotsContainer');
   if(sharedContainer){
-    sharedContainer.innerHTML = adminBots.map(b => `<div class="bot-card"><h4>${escapeHtml(b.name)}</h4></div>`).join('');
+    sharedContainer.innerHTML = adminBots.map(b => <div class="bot-card"><h4>${escapeHtml(b.name)}</h4></div>).join('');
   }
 }
-
 function runUserBot(encodedName){
   const name = decodeURIComponent(encodedName);
-  alert('Running your bot: ' + name + ' (placeholder: implement bot runtime).');
-  // Implement actual bot runtime / calls to Deriv here
+  alert('Running your bot: ' + name + ' (placeholder — bot runtime must be implemented server-side or with secure client runtime).');
 }
 function removeUserBot(idx){
   if(!confirm('Remove this bot from your account?')) return;
@@ -443,24 +442,29 @@ function removeUserBot(idx){
   if(githubToken) saveUsersToGitHub();
 }
 
-/* local upload: store metadata and optionally save users.json */
-qs('#localBotFile').addEventListener('change', async (e) => {
-  if(!e.target.files || e.target.files.length === 0) return;
-  const f = e.target.files[0];
-  const bot = { name: f.name.replace(/\.[^/.]+$/, ''), filename: f.name, uploadedAt: new Date().toISOString() };
-  currentUser.bots.push(bot);
-  usersData[currentUser.email] = currentUser;
-  buildBotsUI();
-  if(githubToken) await saveUsersToGitHub();
-  alert('Bot metadata saved to your account. To execute XML bots, you will need a parser/runtime.');
-});
+/* local upload: save only metadata */
+const localBotFileEl = qs('#localBotFile');
+if(localBotFileEl){
+  localBotFileEl.addEventListener('change', async (e) => {
+    if(!e.target.files || e.target.files.length === 0) return;
+    const f = e.target.files[0];
+    const bot = { name: f.name.replace(/\.[^/.]+$/, ''), filename: f.name, uploadedAt: new Date().toISOString() };
+    if(!currentUser){ alert('No user loaded'); return; }
+    currentUser.bots.push(bot);
+    usersData[currentUser.email] = currentUser;
+    buildBotsUI();
+    if(githubToken) await saveUsersToGitHub();
+    alert('Bot metadata saved to your account. To execute XML bots you will need a runtime.');
+  });
+}
 
-/* Builder modal helpers */
+/* builder helpers */
 function openBotBuilder(){ openModal('builderModal'); }
 function closeBotBuilder(){ closeModal('builderModal'); }
 function createBotFromBuilder(){
   const name = qs('#builderName').value.trim() || (qs('#builderStrategy').value + ' Bot');
   const bot = { name, createdAt: new Date().toISOString(), fromBuilder: true };
+  if(!currentUser){ alert('No user loaded'); return; }
   currentUser.bots.push(bot);
   usersData[currentUser.email] = currentUser;
   closeBotBuilder();
@@ -468,12 +472,11 @@ function createBotFromBuilder(){
   if(githubToken) saveUsersToGitHub();
   alert('Bot created: ' + name);
 }
-
-/* quick strategy */
 function addQuickStrategy(){
   const val = qs('#quickStrategy').value;
   if(!val) return alert('Choose a strategy');
   const bot = { name: 'Quick-' + val, createdAt: new Date().toISOString() };
+  if(!currentUser){ alert('No user loaded'); return; }
   currentUser.bots.push(bot);
   usersData[currentUser.email] = currentUser;
   buildBotsUI();
@@ -481,7 +484,7 @@ function addQuickStrategy(){
   alert('Quick strategy added: ' + bot.name);
 }
 
-/* ====== Portfolio chart (Chart.js) ====== */
+/* ====== CHART (portfolio) ====== */
 function setupPortfolioChart(){
   const el = qs('#portfolioChart');
   if(!el) return;
@@ -495,12 +498,11 @@ function setupPortfolioChart(){
     options: { responsive:true, scales:{ y:{ beginAtZero:true } } }
   });
 }
-
 function generatePastDaysLabels(n){
   const out=[];
   for(let i=n-1;i>=0;i--){
     const d=new Date(); d.setDate(d.getDate()-i);
-    out.push(`${d.getMonth()+1}/${d.getDate()}`);
+    out.push(${d.getMonth()+1}/${d.getDate()});
   }
   return out;
 }
@@ -508,197 +510,129 @@ function generateDemoBalances(n, latest){
   if(!latest && latest !== 0) latest = Math.floor(Math.random()*1000)+100;
   const arr = [];
   for(let i=0;i<n;i++){
-    arr.push(Math.max(0, Math.floor(latest - (n-i-1)*Math.random()*200)));
+    arr.push(Math.max(latest - Math.floor(Math.random()*50), 0));
   }
   return arr;
 }
 
-/* ====== Polling for live updates ====== */
-async function startPolling(){
-  if(pollingInterval) clearInterval(pollingInterval);
-  pollingInterval = setInterval(async ()=>{
-    try{
-      if(githubToken){
-        await loadAllDataFromGitHub();
-        if(currentUserEmail && usersData[currentUserEmail]) {
-          currentUser = usersData[currentUserEmail];
-          setCurrentUser(currentUserEmail);
-        }
-        buildBotsUI();
-        if(portfolioChart && currentUser && currentUser.balance !== undefined){
-          const last = portfolioChart.data.datasets[0].data;
-          last[last.length - 1] = currentUser.balance;
-          portfolioChart.update();
-        }
-      }
-    } catch(e){
-      console.warn('poll error', e);
-    }
-  }, 10000);
-}
-
-/* ====== GitHub modal logic ====== */
+/* ====== GITHUB MODAL HANDLERS ====== */
 function openGithubModal(){ openModal('githubModal'); }
 function closeGithubModal(){ closeModal('githubModal'); }
 function saveGithubToken(){
   const t = qs('#githubTokenInput').value.trim();
-  if(!t) return alert('Paste a GitHub token first');
+  if(!t) return alert('Enter a valid GitHub token');
   githubToken = t;
   localStorage.setItem('merrick_github_token', t);
   closeGithubModal();
-  // attempt to load and save
-  loadAllDataFromGitHub().then(()=>{ alert('Connected to GitHub (read/write).'); buildBotsUI(); saveUsersToGitHub(); }).catch(err=>{ alert('GitHub connection failed: '+err.message); console.error(err); });
+  loadAllData();
+  alert('GitHub connected successfully');
 }
-qs('#githubStatusBtn').addEventListener('click', ()=> {
-  // open modal only if token not present
-  if(!githubToken) openGithubModal();
-  else alert('GitHub token present (auto-connected).');
-});
 
-/* ====== Deriv token & OAuth ====== */
+/* ====== DERIV AUTH ====== */
 function openTokenModal(){ openModal('tokenModal'); }
 function closeTokenModal(){ closeModal('tokenModal'); }
+
 function saveDerivToken(){
-  const t = qs('#manualDerivToken').value.trim();
-  if(!t) return alert('Paste a Deriv token (starts with 1|...)');
-  localStorage.setItem('deriv_token', t);
+  const token = qs('#manualDerivToken').value.trim();
+  if(!token) return alert('Please enter your token');
+  localStorage.setItem('deriv_token', token);
   closeTokenModal();
-  connectDerivWS();
-  alert('Deriv token saved (manual).');
+  connectDeriv(token);
+  alert('Deriv account connected!');
 }
 
-function grabDerivTokenFromUrl(){
-  const hash = window.location.hash || '';
-  if(!hash) return null;
-  const params = new URLSearchParams(hash.replace('#','?'));
-  const token = params.get('access_token') || params.get('access_token'); // safe-check
-  if(token){
-    localStorage.setItem('deriv_token', token);
-    try{ history.replaceState(null, '', window.location.pathname + window.location.search); }catch(e){}
-    return token;
-  }
-  return null;
-}
-
-function connectDerivWS(){
-  const token = localStorage.getItem('deriv_token');
-  if(!token) {
-    console.warn('No Deriv token found.');
-    return;
-  }
-  const wsUrl = 'wss://ws.binaryws.com/websockets/v3?app_id=' + encodeURIComponent(DERIV_APP_ID);
-  if(derivWS) try{ derivWS.close(); }catch(e){}
-  derivWS = new WebSocket(wsUrl);
-  derivWS.onopen = ()=> {
+function connectDeriv(token){
+  derivWS = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=' + DERIV_APP_ID);
+  derivWS.onopen = () => {
     derivWS.send(JSON.stringify({ authorize: token }));
-    console.log('Deriv WS open; authorizing...');
   };
-  derivWS.onmessage = (evt) => {
-    try{
-      const data = JSON.parse(evt.data);
-      if(data.authorize){
-        const auth = data.authorize;
-        if(auth.display_name) qs('#displayName').textContent = auth.display_name;
-        if(auth.email){
-          // switch to that user if exists
-          if(usersData[auth.email]) setCurrentUser(auth.email);
-        }
-        requestDerivBalance();
+  derivWS.onmessage = (msg) => {
+    const data = JSON.parse(msg.data);
+    if(data.error){
+      console.error('Deriv error:', data.error);
+      alert('Deriv API error: ' + data.error.message);
+      return;
+    }
+    if(data.msg_type === 'authorize'){
+      const user = data.authorize;
+      const email = user.email || ('user' + Date.now() + '@deriv.fake');
+      const balance = user.balance || 0;
+      if(!usersData[email]){
+        usersData[email] = { name: user.fullname || email.split('@')[0], email, balance, bots: [], avatar:'' };
+      } else {
+        usersData[email].balance = balance;
       }
-      if(data.balance){
-        const b = Array.isArray(data.balance) ? data.balance[0] : data.balance;
-        if(b && currentUser){
-          currentUser.balance = b.balance;
-          qs('#userBalance').textContent = 'Balance: ' + b.balance + (b.currency ? ' ' + b.currency : '');
-          if(githubToken) saveUsersToGitHub(); // persist balance if desired
-        }
+      setCurrentUser(email);
+      localStorage.setItem('deriv_email', email);
+      if(githubToken) saveUsersToGitHub();
+      qs('#loadingOverlay').classList.add('loading-hidden');
+    }
+    if(data.msg_type === 'balance'){
+      if(currentUser) {
+        currentUser.balance = data.balance.balance;
+        qs('#userBalance').textContent = 'Balance: ' + currentUser.balance;
+        setupPortfolioChart();
       }
-    } catch(err){ console.warn('Deriv ws parse error', err); }
+    }
   };
-  derivWS.onerror = (e)=> console.error('Deriv WS error', e);
-  derivWS.onclose = ()=> console.warn('Deriv WS closed');
 }
-function requestDerivBalance(){ if(!derivWS || derivWS.readyState !== WebSocket.OPEN) return; derivWS.send(JSON.stringify({ balance: 1 })); }
 
-/* ====== TradingView embed ====== */
-function embedTradingView(targetId, symbol='OANDA:XAUUSD'){
-  const w = qs('#' + targetId);
-  if(!w) return;
-  const frame = document.createElement('iframe');
-  frame.style.width = '100%';
-  frame.style.height = '100%';
-  frame.style.border = 0;
-  frame.src = 'https://s.tradingview.com/widgetembed/?frameElementId=' + encodeURIComponent(targetId) + '&symbol=' + encodeURIComponent(symbol) + '&interval=60&hidesidetoolbar=1&theme=dark';
-  w.innerHTML = '';
-  w.appendChild(frame);
-}
-embedTradingView('tvFrameWrap', 'OANDA:XAUUSD');
-embedTradingView('tvChartWrap', 'OANDA:XAUUSD');
-
-/* ====== Utility UI functions ====== */
-function onChangeProfilePic(){
-  const url = prompt('Paste image URL for your avatar:','');
-  if(!url) return;
-  currentUser.avatar = url;
-  qs('#profilePic').src = url;
-  usersData[currentUser.email] = currentUser;
-  if(githubToken) saveUsersToGitHub();
-}
-function openDrive(){ alert('Google Drive integration requires OAuth and API keys — placeholder'); }
-function logout(){ localStorage.removeItem('merrick_current_user'); location.reload(); }
-
-/* Run loaded bot button */
-qs('#runBotBtn').addEventListener('click', ()=>{
-  const lb = qs('#loadedBot').textContent || 'None';
-  if(lb === 'None') return alert('Load a bot first');
-  alert('Running bot: ' + lb + ' (placeholder).');
-});
-
-/* ====== Initialization ====== */
+/* ====== AUTO AUTH FLOW ====== */
 async function init(){
-  try{
-    // attempt to auto-load GitHub token from localStorage (auto-connect)
-    if(githubToken){
-      try{
-        await loadAllDataFromGitHub();
-        qs('#githubStatusBtn').textContent = 'GitHub: connected (auto)';
-      } catch(e){
-        console.warn('Auto GitHub load failed', e);
-        // fallback to read-only admin bots
-        await loadAdminBotsFromGitHubReadOnly();
-        qs('#githubStatusBtn').textContent = 'GitHub: read-only';
-      }
-    } else {
-      // no token: try read-only admin bots
-      await loadAdminBotsFromGitHubReadOnly();
-      qs('#githubStatusBtn').textContent = 'GitHub: read-only';
-    }
+  qs('#loadingSub').textContent = 'Initializing...';
 
-    // restore current user or create demo
-    if(currentUserEmail && usersData[currentUserEmail]){
-      setCurrentUser(currentUserEmail);
-    } else {
-      // fallback demo user
-      setCurrentUser('demo@example.com', { name: 'Demo User', email: 'demo@example.com', balance: 1200, bots: [], avatar: '' });
-    }
-
-    buildBotsUI();
-    setupPortfolioChart();
-    startPolling();
-
-    // parse deriv token if returning from OAuth
-    const maybeDeriv = grabDerivTokenFromUrl();
-    if(maybeDeriv) connectDerivWS();
-  } catch(err){
-    console.error('Init error', err);
-  } finally {
-    qs('#loadingOverlay').classList.add('loading-hidden');
-    setTimeout(()=> { qs('#loadingOverlay').style.display='none'; }, 600);
+  // Auto GitHub load if token exists
+  if(githubToken){
+    await loadAllData();
   }
+
+  // Auto Deriv connection if token exists
+  const derivToken = localStorage.getItem('deriv_token');
+  if(derivToken){
+    qs('#loadingSub').textContent = 'Connecting to Deriv...';
+    connectDeriv(derivToken);
+  } else {
+    qs('#loadingSub').textContent = 'Waiting for login...';
+    setTimeout(()=>{ qs('#loadingOverlay').classList.add('loading-hidden'); promptLogin(); }, 1500);
+  }
+
+  // Load admin bots public in case no GitHub token
+  await loadAdminBotsPublic();
+  buildBotsUI();
 }
 
-/* Start */
-window.addEventListener('load', init);
+function logout(){
+  localStorage.removeItem('merrick_current_user');
+  localStorage.removeItem('deriv_token');
+  localStorage.removeItem('deriv_email');
+  alert('You have been logged out.');
+  location.reload();
+}
+
+function onChangeProfilePic(){
+  const f = document.createElement('input');
+  f.type = 'file';
+  f.accept = 'image/*';
+  f.onchange = async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (r) => {
+      const base64 = r.target.result;
+      qs('#profilePic').src = base64;
+      if(currentUser){
+        currentUser.avatar = base64;
+        usersData[currentUser.email] = currentUser;
+        if(githubToken) saveUsersToGitHub();
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+  f.click();
+}
+
+/* ====== START ====== */
+init();
 </script>
 </body>
 </html>
