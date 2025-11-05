@@ -90,7 +90,7 @@ function decrypt(b64){
     // optional affiliate params could be added here
     const state = uuidv4();
     req.session.oauth_state = state;
-    const redirectUri = ${SERVER_ORIGIN}${REDIRECT_PATH};
+   const redirectUri = ${SERVER_ORIGIN}${REDIRECT_PATH};
     // Deriv's docs: redirect to https://oauth.deriv.com/oauth2/authorize?app_id=YOUR_APP_ID&redirect_uri=...
     // They will redirect back with acct1/token1/cur1 etc. We include state to match.
     const url = ${BASE_OAUTH}?app_id=${encodeURIComponent(APP_ID)}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodeURIComponent(state)};
