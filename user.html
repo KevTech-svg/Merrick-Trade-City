@@ -1,208 +1,223 @@
-<!doctype html>
-
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Merrick Trade City — User Panel</title>
 <link rel="icon" type="image/png" href="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://s3.tradingview.com/tv.js"></script>
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
-:root{--bg:#0c0f1f;--accent:#7c5cff;--accent2:#6a4bff;--muted:#bfbfcf}
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
-html,body{height:100%}
-body{display:flex;min-height:100vh;background:radial-gradient(circle at top,var(--bg),#05060d);color:#fff}
-.loading-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(6,8,20,0.9), rgba(6,8,20,0.95));z-index:9999;flex-direction:column;transition:opacity .5s,visibility .5s}
-.loading-hidden{opacity:0;visibility:hidden;pointer-events:none}
-.brand-glow{font-size:36px;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;color:transparent}
-.loading-sub{margin-top:12px;color:var(--muted)}
-.sidebar{width:260px;padding:22px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.06)}
-.profile-card{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px}
-.profile-card img{width:64px;height:64px;border-radius:50%;object-fit:cover;cursor:pointer}
-.menu{display:flex;flex-direction:column;gap:6px}
-.menu button{background:none;border:none;color:#fff;padding:12px;border-radius:10px;text-align:left;cursor:pointer;font-weight:600}
-.menu button.active{background:linear-gradient(90deg,var(--accent),var(--accent2))}
-.main{flex:1;padding:18px;display:flex;flex-direction:column;gap:16px;overflow:auto}
-.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px}
-.chart-box{height:420px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
-.bots-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px}
-.bot-card{background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;text-align:center}
-.input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff}
-footer{margin-top:10px;text-align:center;color:var(--muted)}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center}
-.modal-content{background:#0f0c29;padding:18px;border-radius:12px;width:94%;max-width:520px}
-.btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
-.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
-@media(max-width:980px){.sidebar{width:100%;flex-direction:row;overflow:auto}.menu{flex-direction:row}}
+  @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+  :root{--bg:#0c0f1f;--accent:#7c5cff;--accent2:#6a4bff;--muted:#bfbfcf}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
+  html,body{height:100%}
+  body{display:flex;min-height:100vh;background:radial-gradient(circle at top,var(--bg),#05060d);color:#fff}
+  .sidebar{width:260px;padding:22px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.06)}
+  .profile-card{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px}
+  .menu{display:flex;flex-direction:column;gap:6px}
+  .menu button{background:none;border:none;color:#fff;padding:12px;border-radius:10px;text-align:left;cursor:pointer;font-weight:600}
+  .menu button.active{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+  .main{flex:1;padding:18px;display:flex;flex-direction:column;gap:16px;overflow:auto}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px}
+  .chart-box{height:420px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+  .input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff}
+  .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+  .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+  footer{margin-top:10px;text-align:center;color:var(--muted)}
+  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center}
+  .modal-content{background:#0f0c29;padding:18px;border-radius:12px;width:94%;max-width:520px}
+  @media(max-width:980px){.sidebar{width:100%;flex-direction:row;overflow:auto}.menu{flex-direction:row}}
 </style>
 </head>
-<body><div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite">
-  <div class="brand-glow">Merrick Trade City</div>
-  <div class="loading-sub" id="loadingSub">Connecting… please wait</div>
-</div><div class="sidebar" role="navigation">
+<body><div class="sidebar" role="navigation">
   <div>
     <h2>User Panel</h2>
     <div class="profile-card card">
-      <img id="profilePic" src="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg" alt="avatar" onclick="onChangeProfilePic()" />
+      <img id="profilePic" src="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg" alt="logo" />
       <div>
         <div id="userName">—</div>
         <small id="userBalance">Balance: —</small>
-        <small id="userEmail">—</small>
       </div>
     </div>
     <div class="menu" id="menu">
       <button data-section="dashboard" class="active">Dashboard</button>
-      <button data-section="bots">Bots</button>
-      <button data-section="charts">Charts</button>
+      <button data-section="trading">Trading</button>
+      <button data-section="history">Trade History</button>
     </div>
   </div>
+  <div style="margin-top:14px">
+    <button class="btn btn-primary" id="derivLoginBtn">Login with Deriv</button>
+    <button class="btn" onclick="logout()">Logout</button>
+  </div>
 </div><div class="main">
-  <div class="welcome card">
-    <div style="display:flex;gap:12px;align-items:center">
-      <img src="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg" style="width:48px;height:48px;border-radius:10px" alt="logo">
-      <div>
-        <div style="font-weight:700">Welcome back, <span id="displayName">User</span></div>
-        <div class="small-muted">Trade live with Deriv inside Merrick Trade City</div>
-      </div>
-    </div>
-  </div>  <section id="dashboardSection" class="card">
-    <h3>TradingView Chart</h3>
+  <!-- Dashboard -->
+  <section id="dashboardSection" class="card">
+    <h3>Welcome back, <span id="displayName">User</span></h3>
     <div class="chart-box" id="tvChartWrap"></div>
-  </section>  <section id="botsSection" style="display:none" class="card">
-    <h3>Your Bots</h3>
-    <div class="bots-grid" id="botsContainer"></div>
+  </section>  <!-- Trading -->  <section id="tradingSection" style="display:none" class="card">
+    <h3>Place Trade</h3>
+    <label>Choose Symbol:</label>
+    <select id="symbolSelect" class="input">
+      <option value="R_100">R_100</option>
+      <option value="R_25">R_25</option>
+      <option value="frxEURUSD">EUR/USD</option>
+      <option value="frxUSDJPY">USD/JPY</option>
+      <option value="frxGBPUSD">GBP/USD</option>
+      <option value="frxAUDUSD">AUD/USD</option>
+    </select>
+    <label>Stake:</label>
+    <input id="tradeStake" class="input" type="number" value="1" />
+    <label>Trade Type:</label>
+    <select id="tradeType" class="input">
+      <option value="CALL">CALL (Buy)</option>
+      <option value="PUT">PUT (Sell)</option>
+    </select>
+    <button class="btn btn-primary" onclick="confirmTrade()">Execute Trade</button>
+  </section>  <!-- Trade History -->  <section id="historySection" style="display:none" class="card">
+    <h3>Trade History</h3>
+    <div id="tradeHistory"></div>
   </section>  <footer><small class="small-muted">© 2025 Merrick Trade City — All rights reserved.</small></footer>
+</div><!-- Confirmation Modal --><div class="modal" id="confirmModal">
+  <div class="modal-content">
+    <h3>Confirm Trade</h3>
+    <p id="confirmText"></p>
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+      <button class="btn" onclick="closeModal('confirmModal')">Cancel</button>
+      <button class="btn btn-primary" id="confirmBtn">Confirm</button>
+    </div>
+  </div>
 </div><script>
-/* ======== Basic UI and Menu ======== */
-qsa = sel=>Array.from(document.querySelectorAll(sel));
-qs = sel=>document.querySelector(sel);
+const DERIV_APP_ID = '109286';
+let derivToken = null;
+let ws = null;
+let tradeHistory = [];
+let currentTrade = null;
+
+/* ====== UI Helpers ====== */
+function qs(sel){ return document.querySelector(sel); }
+function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
+function show(el){ if(el) el.style.display='block'; }
+function hide(el){ if(el) el.style.display='none'; }
+function openModal(id){ qs('#'+id).style.display='flex'; }
+function closeModal(id){ qs('#'+id).style.display='none'; }
+
+/* ====== Menu Switch ====== */
 qsa('.menu button').forEach(btn=>{
   btn.addEventListener('click', ()=> {
     qsa('.menu button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    const sections={'dashboard':'dashboardSection','bots':'botsSection','charts':'dashboardSection'};
-    Object.values(sections).forEach(id=>{const el=qs('#'+id); if(el) el.style.display='none';});
-    const showId = sections[btn.dataset.section];
-    if(showId) qs('#'+showId).style.display='block';
+    const section = btn.dataset.section;
+    const map = {dashboard:'dashboardSection', trading:'tradingSection', history:'historySection'};
+    Object.values(map).forEach(id => { const el = qs('#'+id); if(el) hide(el); });
+    if(map[section]) show(qs('#'+map[section]));
   });
 });
 
-/* ======== Deriv WS ======== */
-const DERIV_APP_ID='109286';
-let derivWS=null;
-function connectDeriv(){
-  const token=prompt('Login to Deriv — paste your token (for demo you can use test token):');
-  if(!token) return alert('No token entered');
-  derivWS=new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id='+DERIV_APP_ID);
-  derivWS.onopen=()=>{ derivWS.send(JSON.stringify({authorize:token})); alert('Connected!'); initUser(); };
-  derivWS.onmessage=(evt)=>{const d=JSON.parse(evt.data); if(d.authorize){if(d.authorize.balance){qs('#userBalance').textContent='Balance: '+d.authorize.balance;}}};
-  derivWS.onerror=e=>console.error('WS error',e);
-  derivWS.onclose=()=>console.log('Deriv WS closed');
-}
-function initUser(){
-  qs('#displayName').textContent='DerivUser';
-  qs('#userEmail').textContent='user@deriv.com';
-  qs('#userBalance').textContent='Balance: 1000';
-}
-connectDeriv();
-
-/* ======== TradingView ======== */
-function embedTradingView(targetId,symbol='OANDA:XAUUSD'){
-  const w=qs('#'+targetId);
-  if(!w) return;
-  const frame=document.createElement('iframe');
-  frame.style.width='100%';
-  frame.style.height='100%';
-  frame.style.border=0;
-  frame.src='https://s.tradingview.com/widgetembed/?frameElementId='+encodeURIComponent(targetId)+'&symbol='+encodeURIComponent(symbol)+'&interval=60&hidesidetoolbar=1&theme=dark';
-  w.innerHTML=''; w.appendChild(frame);
-}
-embedTradingView('tvChartWrap','OANDA:XAUUSD');
-
-/* ======== Live Bot System ======== */
-const botsContainer = document.getElementById('botsContainer');
-let activeBots = [];
-
-function createBot(symbol,direction,stake,duration){
-  const botId='bot-'+Date.now();
-  const bot={id:botId,symbol,direction,stake,duration,interval:null,log:[]};
-  const botCard=document.createElement('div');
-  botCard.className='bot-card card';
-  botCard.id=botId;
-  botCard.innerHTML=`
-    <h4>Bot: ${symbol}</h4>
-    <div>Direction: ${direction}</div>
-    <div>Stake: ${stake} USD</div>
-    <div>Duration: ${duration}m</div>
-    <div id="${botId}-log" style="margin-top:6px;max-height:120px;overflow:auto;background:rgba(255,255,255,0.05);padding:4px;border-radius:6px;font-size:12px"></div>
-    <button id="${botId}-start" class="btn btn-primary" style="margin-top:6px">Start</button>
-    <button id="${botId}-stop" class="btn" style="margin-top:6px">Stop</button>
-  `;
-  botsContainer.appendChild(botCard);
-
-  document.getElementById(botId+'-start').addEventListener('click',()=>{
-    if(bot.interval) return alert('Bot already running');
-    bot.interval=setInterval(()=>executeBotTrade(bot),duration*60*1000);
-    executeBotTrade(bot);
+/* ====== Deriv Login ====== */
+qs('#derivLoginBtn').addEventListener('click', ()=> {
+  const state = Math.random().toString(36).slice(2);
+  localStorage.setItem('deriv_oauth_state', state);
+  const redirect = encodeURIComponent(location.origin + location.pathname);
+  const url = https://oauth.deriv.com/oauth2/authorize?app_id=${DERIV_APP_ID}&response_type=token&state=${state}&redirect_uri=${redirect};
+  window.location.href = url;
 });
 
-document.getElementById(botId+'-stop').addEventListener('click',()=>{
-clearInterval(bot.interval);
-bot.interval=null;
-appendBotLog(bot,'Bot stopped.');
+function grabTokenFromUrl(){
+  const hash = window.location.hash;
+  if(!hash) return null;
+  const params = new URLSearchParams(hash.replace('#','?'));
+  const token = params.get('access_token');
+  const state = params.get('state');
+  if(token && state===localStorage.getItem('deriv_oauth_state')){
+    localStorage.setItem('deriv_token', token);
+    history.replaceState(null,'',location.pathname);
+    return token;
+  }
+  return null;
+}
+
+/* ====== Connect WS ====== */
+function connectWS(){
+  derivToken = localStorage.getItem('deriv_token');
+  if(!derivToken) return;
+  ws = new WebSocket(wss://ws.binaryws.com/websockets/v3?app_id=${DERIV_APP_ID});
+  ws.onopen = ()=> { ws.send(JSON.stringify({ authorize: derivToken })); console.log('Connected to Deriv WS'); };
+  ws.onmessage = msg=>{
+    const data = JSON.parse(msg.data);
+    if(data.authorize) {
+      qs('#displayName').textContent = data.authorize.display_name || 'User';
+      qs('#userBalance').textContent = 'Balance: ' + (data.authorize.balance||0);
+    }
+    if(data.transaction) console.log('Transaction update', data.transaction);
+  };
+  ws.onerror = e=>console.error('WS Error',e);
+  ws.onclose = ()=>console.log('WS closed');
+}
+
+/* ====== Trade Execution ====== */
+function confirmTrade(){
+  const symbol = qs('#symbolSelect').value;
+  const stake = parseFloat(qs('#tradeStake').value);
+  const type = qs('#tradeType').value;
+  if(!symbol || !stake || !type) return alert('Fill all fields');
+  currentTrade = { symbol, stake, type };
+  qs('#confirmText').textContent = You are about to ${type} ${symbol} with ${stake} Ksh. Confirm?;
+  openModal('confirmModal');
+}
+
+qs('#confirmBtn').addEventListener('click', ()=>{
+  closeModal('confirmModal');
+  executeTrade(currentTrade);
 });
 
-activeBots.push(bot);
+function executeTrade(trade){
+  if(!ws || ws.readyState!==WebSocket.OPEN) return alert('WebSocket not connected');
+  const request = {
+    buy: 1,
+    price: trade.stake,
+    parameters: {
+      amount: trade.stake,
+      basis: 'stake',
+      contract_type: trade.type,
+      currency: 'USD',
+      symbol: trade.symbol,
+      duration: 1,
+      duration_unit: 'm'
+    }
+  };
+  ws.send(JSON.stringify(request));
+  tradeHistory.push({...trade, time:new Date().toLocaleString()});
+  updateTradeHistory();
+  alert(Trade sent: ${trade.type} ${trade.symbol} for ${trade.stake} Ksh);
 }
 
-function appendBotLog(bot,msg){
-bot.log.push(msg);
-const logEl=qs('#'+bot.id+'-log');
-if(logEl){
-const entry=document.createElement('div'); entry.textContent=msg;
-logEl.appendChild(entry);
-logEl.scrollTop=logEl.scrollHeight;
-}
+function updateTradeHistory(){
+  qs('#tradeHistory').innerHTML = tradeHistory.map(t=><div>${t.time}: ${t.type} ${t.symbol} (${t.stake} Ksh)</div>).join('');
 }
 
-function executeBotTrade(bot){
-if(!derivWS || derivWS.readyState!==1){
-appendBotLog(bot,'Deriv WS not connected.');
-return;
-}
-
-const tradeRequest={
-buy:1,
-price:bot.stake,
-parameters:{
-amount:bot.stake,
-basis:'stake',
-contract_type:(bot.direction.toUpperCase()=='CALL')?'CALL':'PUT',
-currency:'USD',
-duration:bot.duration,
-duration_unit:'m',
-symbol:bot.symbol
-}
-};
-
-derivWS.send(JSON.stringify(tradeRequest));
-appendBotLog(bot,'Placed '+bot.direction+' trade on '+bot.symbol+' with $'+bot.stake);
-}
-
-/* ======== Misc UI ======== */
-function onChangeProfilePic(){
-const newPic=prompt('Enter image URL for profile:');
-if(newPic) qs('#profilePic').src=newPic;
-}
-
-/* ======== Loading Overlay ======== */
-window.addEventListener('load',()=>{
-setTimeout(()=>{
-qs('#loadingOverlay').classList.add('loading-hidden');
-},1000);
+/* ====== TradingView Embed ====== */
+new TradingView.widget({
+  container_id: "tvChartWrap",
+  width: "100%",
+  height: "100%",
+  symbol: "OANDA:XAUUSD",
+  interval: "60",
+  timezone: "Etc/UTC",
+  theme: "dark",
+  style: "1",
+  locale: "en",
+  toolbar_bg: "#f1f3f6",
+  enable_publishing: false,
+  allow_symbol_change: true
 });
-</script>
 
-</body>
+/* ====== Startup ====== */
+if(grabTokenFromUrl()) connectWS();
+else if(localStorage.getItem('deriv_token')) connectWS();
+
+function logout(){
+  localStorage.removeItem('deriv_token');
+  location.reload();
+}
+</script></body>
 </html>
