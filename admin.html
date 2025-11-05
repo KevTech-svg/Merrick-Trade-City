@@ -1,611 +1,227 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Merrick Trade City — Admin Panel</title>
-<link rel="icon" type="image/png" href="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg">
-<link href="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/chart.js" rel="stylesheet">
 <style>
-:root{--bg:#0a1025;--accent:#7c5cff}
-body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:#fff;display:flex;min-height:100vh}
-.sidebar{width:240px;background:linear-gradient(180deg,var(--accent),#0f0c29);padding:18px;display:flex;flex-direction:column;gap:12px}
-.sidebar h2{margin:0;text-align:center}
-.sidebar button{background:none;border:none;color:#fff;padding:10px;text-align:left;cursor:pointer;border-radius:6px}
-.sidebar button:hover{background:rgba(255,255,255,0.08)}
-.main{flex:1;padding:18px;display:flex;flex-direction:column;gap:14px;overflow:auto}
-.summary{display:flex;gap:14px;flex-wrap:wrap}
-.card{background:rgba(255,255,255,0.04);padding:12px;border-radius:10px;flex:1}
-.table{width:100%;border-collapse:collapse}
-.table th,.table td{padding:8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.1)}
-.btn{padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#ddd}
-.btn-primary{background:linear-gradient(90deg,#7c5cff,#ff6b6b);color:#fff}
-input,textarea,select{padding:8px;border-radius:6px;border:none;background:rgba(255,255,255,0.05);color:#fff;width:100%}
-.form-inline{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:9999}
-.modal-content{background:#0f0c29;padding:20px;border-radius:12px;width:420px;max-width:95%}
-.small{font-size:12px;color:#cfcfe6}
-.row{display:flex;gap:10px}
-.table-scroll{max-height:360px;overflow:auto;border-radius:8px}
-.chart-row{display:flex;gap:12px;flex-wrap:wrap}
-.chart-box{flex:1 1 320px;background:rgba(255,255,255,0.03);padding:12px;border-radius:8px}
-.kpi{font-size:20px;color:#f0f0ff}
-.note{font-size:13px;color:#bfbfcf;margin-top:6px}
-@media(max-width:900px){body{flex-direction:column}.sidebar{width:100%;flex-direction:row;overflow:auto}.main{padding:12px}}
+  body {
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+    background: #0a1025;
+    color: white;
+    display: flex;
+    min-height: 100vh;
+  }
+  /* Sidebar */
+  .sidebar {
+    width: 220px;
+    background: linear-gradient(180deg, #7c5cff, #0f0c29);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 15px;
+  }
+  .sidebar h2 { margin:0 0 20px 0; font-size:1.5rem; color:#fff; text-align:center; }
+  .sidebar button {
+    background:none; border:none; color:white; padding:10px; text-align:left;
+    cursor:pointer; border-radius:6px; transition:0.3s; font-weight:bold;
+  }
+  .sidebar button:hover { background: rgba(255,255,255,0.1); }
+
+  /* Main content */
+  .main { flex:1; padding:20px; display:flex; flex-direction:column; gap:20px; }
+
+  /* Cards */
+  .summary { display:flex; gap:20px; flex-wrap:wrap; }
+  .card {
+    flex:1 1 180px;
+    background: rgba(255,255,255,0.05);
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+    backdrop-filter: blur(8px);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .card:hover { transform:translateY(-5px); box-shadow:0 10px 20px rgba(124,92,255,0.4); }
+  .card h3{ margin:0 0 10px 0; font-size:1.2rem; }
+  .card p{ font-size:1.4rem; color:#ddd; }
+
+  /* Tables */
+  table {
+    width:100%; border-collapse:collapse; background:rgba(255,255,255,0.05);
+    border-radius:12px; overflow:hidden;
+  }
+  th, td { padding:10px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.1); }
+  th { background: rgba(124,92,255,0.3); }
+  tr:hover { background: rgba(124,92,255,0.2); }
+  td img { width:40px; height:40px; border-radius:50%; object-fit:cover; }
+  button.action-btn {
+    padding:6px 12px; border:none; border-radius:6px; cursor:pointer; color:white;
+    font-weight:bold; transition: transform 0.2s, box-shadow 0.2s;
+  }
+  button.action-btn:hover { transform:translateY(-2px); box-shadow:0 5px 10px rgba(124,92,255,0.5); }
+  .edit-btn { background:#7c5cff; }
+  .delete-btn { background:#ff6b6b; }
+
+  /* Forms */
+  .form-inline { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+  .form-inline input, .form-inline select { padding:8px; border-radius:6px; border:none; outline:none; }
+  .form-inline button {
+    padding:8px 12px; border-radius:6px; border:none;
+    background: linear-gradient(90deg,#7c5cff,#ff6b6b); color:white; font-weight:bold; cursor:pointer;
+  }
+  .form-inline button:hover { transform:translateY(-2px); box-shadow:0 5px 10px rgba(124,92,255,0.5); }
+
+  /* Charts */
+  .charts { display:flex; flex-wrap:wrap; gap:20px; }
+  .chart-container { flex:1 1 300px; background:rgba(255,255,255,0.05); padding:20px; border-radius:12px; }
+
+  /* Budget display */
+  .budget { background: rgba(124,92,255,0.1); padding:15px; border-radius:12px; }
+
+  /* Modal */
+  .modal {
+    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.6); justify-content:center; align-items:center;
+  }
+  .modal-content {
+    background:#0f0c29; padding:20px; border-radius:12px; text-align:center; width:300px;
+  }
+  .modal-content input { width:100%; padding:8px; border:none; border-radius:6px; margin-top:10px; }
+  .modal-content button {
+    margin-top:10px; padding:8px 12px; border:none; border-radius:6px;
+    background:#7c5cff; color:white; cursor:pointer;
+  }
+
+  @media(max-width:900px) {
+    body{ flex-direction:column; }
+    .sidebar{ width:100%; flex-direction:row; overflow-x:auto; }
+    .main{ padding:10px; }
+  }
 </style>
 </head>
 <body>
 
 <div class="sidebar">
-  <h2>Merrick Admin</h2>
-  <button data-section="dashboard" onclick="showSection('dashboard')">Dashboard</button>
-  <button data-section="users" onclick="showSection('users')">Users</button>
-  <button data-section="bots" onclick="showSection('bots')">Bots</button>
-  <button data-section="transactions" onclick="showSection('transactions')">Transactions</button>
-  <button data-section="settings" onclick="showSection('settings')">Settings</button>
-  <div style="margin-top:auto">
-    <button class="btn btn-ghost" onclick="logout()">Logout</button>
-    <button class="btn btn-ghost" onclick="openGitModal()">GitHub</button>
-  </div>
+  <h2>Admin Panel</h2>
+  <button onclick="showSection('dashboard')">Dashboard</button>
+  <button onclick="showSection('users')">Users</button>
+  <button onclick="showSection('bots')">Bots</button>
+  <button onclick="showSection('transactions')">Transactions</button>
+  <button onclick="showSection('settings')">Settings</button>
+  <button onclick="logout()">Logout</button>
 </div>
 
 <div class="main">
-  <!-- Git status -->
-  <div id="gitStatus" class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div>
-        <div style="font-weight:700">Repository</div>
-        <div class="small" id="repoInfo">Not connected — click GitHub to connect</div>
-      </div>
-      <div>
-        <button class="btn btn-primary" onclick="syncAll()">Sync Now</button>
-      </div>
+  <!-- Dashboard -->
+  <div id="dashboard">
+    <div class="summary">
+      <div class="card"><h3>Total Users</h3><p id="totalUsers">0</p></div>
+      <div class="card"><h3>Total Bots</h3><p id="totalBots">0</p></div>
+      <div class="card"><h3>Total Balance</h3><p id="totalBalance">Ksh 0</p></div>
+    </div>
+    <div class="charts">
+      <div class="chart-container"><canvas id="botCategoryChart"></canvas></div>
+      <div class="chart-container"><canvas id="transactionsChart"></canvas></div>
     </div>
   </div>
 
-  <!-- DASHBOARD -->
-  <div id="dashboard" class="card">
-    <h2 style="margin-top:0">Dashboard</h2>
-    <div class="summary" style="margin-bottom:12px">
-      <div class="card"><h3>Total Users</h3><p id="totalUsers" class="kpi">0</p></div>
-      <div class="card"><h3>Total Bots</h3><p id="totalBots" class="kpi">0</p></div>
-      <div class="card"><h3>Total Balance</h3><p id="totalBalance" class="kpi">Ksh 0</p></div>
-    </div>
-
-    <div class="chart-row">
-      <div class="chart-box">
-        <h4 style="margin:0 0 8px 0">Bots by Category</h4>
-        <canvas id="botCategoryChart" height="240"></canvas>
-      </div>
-      <div class="chart-box">
-        <h4 style="margin:0 0 8px 0">Transactions (Last 7 days)</h4>
-        <canvas id="transactionsChart" height="240"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- USERS -->
-  <div id="users" class="card" style="display:none">
-    <h2 style="margin-top:0">Users</h2>
-    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
-      <button class="btn btn-primary" onclick="openCreateUser()">Create User</button>
-      <div class="note">Users are stored at <code>data/users.json</code> in your repo.</div>
-    </div>
-    <div class="table-scroll">
-      <table class="table" id="usersTable">
-        <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Balance</th><th>Actions</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- BOTS -->
-  <div id="bots" class="card" style="display:none">
-    <h2 style="margin-top:0">Bots</h2>
-    <form id="botForm" class="form-inline">
-      <input id="botName" placeholder="Bot name" required>
-      <input id="botCategoryInput" placeholder="Category (e.g., Forex)" required>
-      <input id="botPrice" placeholder="Price (Ksh)" type="number" required>
-      <input id="botUpload" type="file" accept=".xml,.zip" required>
-      <button class="btn btn-primary" type="submit">Upload & Save</button>
+  <!-- Bots -->
+  <div id="bots" style="display:none;">
+    <h3>Upload Bot</h3>
+    <form class="form-inline" id="botForm">
+      <input type="text" id="botName" placeholder="Bot Name" required>
+      <input type="text" id="botCategory" placeholder="Category" required>
+      <input type="number" id="botPrice" placeholder="Price (Ksh)" required>
+      <input type="file" id="botFile" accept=".zip,.xml" required>
+      <button type="submit">Upload</button>
     </form>
-    <div class="note">Bot files will be saved under <code>bots/</code> and metadata in <code>data/bots.json</code>.</div>
-    <div class="table-scroll" style="margin-top:12px">
-      <table class="table" id="botsTable">
-        <thead><tr><th>#</th><th>Name</th><th>Category</th><th>Price</th><th>File</th><th>Action</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
+
+    <h3>Available Bots</h3>
+    <table id="botsTable">
+      <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>File</th></tr></thead>
+      <tbody></tbody>
+    </table>
   </div>
 
-  <!-- TRANSACTIONS -->
-  <div id="transactions" class="card" style="display:none">
-    <h2 style="margin-top:0">Transactions</h2>
-    <form id="txForm" class="form-inline">
-      <select id="txUser"></select>
-      <select id="txBot"></select>
-      <input id="txAmount" placeholder="Amount (Ksh)" type="number" required>
-      <button class="btn btn-primary" type="submit">Record Transaction</button>
-    </form>
-    <div class="table-scroll">
-      <table class="table" id="txTable">
-        <thead><tr><th>#</th><th>User</th><th>Bot</th><th>Amount</th><th>Date</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <div style="margin-top:12px">
-      <button class="btn btn-ghost" onclick="requestWithdraw()">Create Withdraw Request (logs tx)</button>
-      <div class="note">Withdrawals are recorded as transactions. No real money movement occurs from this UI.</div>
-    </div>
+  <!-- Transactions -->
+  <div id="transactions" style="display:none;">
+    <h3>Transactions</h3>
+    <table><thead><tr><th>User</th><th>Bot</th><th>Amount</th><th>Date</th></tr></thead>
+      <tbody><tr><td>Kelvin</td><td>GoldBot</td><td>Ksh 800</td><td>22 Oct 2025</td></tr></tbody>
+    </table>
   </div>
 
-  <!-- SETTINGS -->
-  <div id="settings" class="card" style="display:none">
-    <h2 style="margin-top:0">Settings</h2>
-    <div class="small">Repository & GitHub connection (used as storage)</div>
-    <div style="display:flex;gap:12px;margin-top:12px">
-      <button class="btn btn-primary" onclick="openGitModal()">Set GitHub Repo / Token</button>
-      <button class="btn btn-ghost" onclick="clearGit()">Clear GitHub Connection</button>
+  <!-- Settings -->
+  <div id="settings" style="display:none;">
+    <h3>Settings</h3>
+    <div class="budget">
+      <label>M-Pesa Number:</label>
+      <input type="text" id="mpesaNumber" value="0712345678"><br><br>
+      <label>Bidget Address:</label>
+      <input type="text" id="bidgetAddress" value="Wallet Address 0x44351a88c95f2d7a1038aa7f3c7c81e1908fc77a"><br><br>
+      <button onclick="verifyPassword()">Save Changes</button>
     </div>
-    <div style="margin-top:12px" class="note">You can change repo settings at any time. Use a PAT with repo scope.</div>
   </div>
 </div>
 
-<!-- MODALS -->
-<div class="modal" id="gitModal">
+<!-- Modal -->
+<div class="modal" id="passwordModal">
   <div class="modal-content">
-    <h3>Connect to GitHub</h3>
-    <p class="small">Enter GitHub details so this page can read/write data files in your repo.</p>
-    <input id="ghOwner" placeholder="Owner (username or org)" />
-    <input id="ghRepo" placeholder="Repository name" />
-    <input id="ghBranch" placeholder="Branch (default: main)" />
-    <input id="ghToken" placeholder="Personal Access Token (PAT)" />
-    <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end">
-      <button class="btn btn-ghost" onclick="closeGitModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="connectGit()">Connect</button>
-    </div>
-    <div class="note" style="margin-top:10px">PAT must have repo access. Keep it secret.</div>
+    <h3>Enter Admin Password</h3>
+    <input type="password" id="adminPass" placeholder="Enter password">
+    <button onclick="confirmChanges()">Confirm</button>
   </div>
 </div>
 
-<div class="modal" id="userModal">
-  <div class="modal-content">
-    <h3 id="userModalTitle">Create User</h3>
-    <input id="uName" placeholder="Full name" />
-    <input id="uEmail" placeholder="Email" />
-    <input id="uBalance" placeholder="Balance (Ksh)" type="number" />
-    <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end">
-      <button class="btn btn-ghost" onclick="closeUserModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveUser()">Save</button>
-    </div>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-/* ===========================
-   GitHub-backed Admin Panel
-   Stores: data/users.json, data/bots.json, data/transactions.json
-   Bot files saved to bots/<filename>
-   =========================== */
+  const sections=['dashboard','bots','transactions','settings'];
+  function showSection(sec){sections.forEach(s=>document.getElementById(s).style.display=s===sec?'block':'none');}
+  function logout(){alert("Logged out!");location.href='index.html';}
 
-let GH = {
-  owner: null,
-  repo: null,
-  branch: 'main',
-  token: null,
-  baseUrl: 'https://api.github.com'
-};
-
-let state = {
-  users: [],
-  bots: [],
-  transactions: []
-};
-
-/* -------- Helper: GitHub Contents API -------- */
-async function ghRequest(path, method='GET', body=null, raw=false){
-  if(!GH.token) throw new Error('GitHub token missing — connect first.');
-  const url = GH.baseUrl + '/repos/' + GH.owner + '/' + GH.repo + path;
-  const headers = {
-    'Authorization': 'token ' + GH.token,
-    'Accept': 'application/vnd.github.v3+json'
-  };
-  const opts = { method, headers };
-  if(body) opts.body = JSON.stringify(body);
-  const res = await fetch(url, opts);
-  if(!res.ok) {
-    const txt = await res.text();
-    throw new Error('GitHub API error: ' + res.status + ' — ' + txt);
-  }
-  return raw ? res : res.json();
-}
-
-/* Get file content (returns {content, sha}) */
-async function ghGetFile(filePath){
-  const p = '/contents/' + encodeURIComponent(filePath) + '?ref=' + encodeURIComponent(GH.branch);
-  const data = await ghRequest(p);
-  // file not JSON? data.content is base64
-  return { content: atob(data.content.replace(/\n/g,'')), sha: data.sha, raw: data };
-}
-
-/* Create or update file */
-async function ghPutFile(filePath, contentStr, commitMsg='update via admin', sha=null){
-  // contentStr -> base64
-  const base64 = btoa(unescape(encodeURIComponent(contentStr)));
-  const p = '/contents/' + encodeURIComponent(filePath);
-  const payload = { message: commitMsg, content: base64, branch: GH.branch };
-  if(sha) payload.sha = sha;
-  const res = await ghRequest(p, 'PUT', payload);
-  return res;
-}
-
-/* Upload binary file (File object) */
-async function ghUploadFile(filePath, fileObj, commitMsg){
-  const arrayBuffer = await fileObj.arrayBuffer();
-  // convert to base64
-  const bytes = new Uint8Array(arrayBuffer);
-  let binary = '';
-  const chunkSize = 0x8000; // avoid stack
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
-  }
-  const base64 = btoa(binary);
-  const p = '/contents/' + encodeURIComponent(filePath);
-  const payload = { message: commitMsg, content: base64, branch: GH.branch };
-  const res = await ghRequest(p, 'PUT', payload);
-  return res;
-}
-
-/* -------- Git connect UI -------- */
-function openGitModal(){
-  document.getElementById('gitModal').style.display='flex';
-}
-function closeGitModal(){ document.getElementById('gitModal').style.display='none'; }
-function clearGit(){
-  GH = { owner:null, repo:null, branch:'main', token:null, baseUrl:'https://api.github.com' };
-  document.getElementById('repoInfo').innerText = 'Not connected — click GitHub to connect';
-  alert('GitHub connection cleared.');
-}
-
-/* Connect to GitHub and load initial data */
-async function connectGit(){
-  const owner = document.getElementById('ghOwner').value.trim();
-  const repo = document.getElementById('ghRepo').value.trim();
-  const branch = document.getElementById('ghBranch').value.trim() || 'main';
-  const token = document.getElementById('ghToken').value.trim();
-  if(!owner || !repo || !token) return alert('Enter owner, repo and token.');
-  GH.owner = owner; GH.repo = repo; GH.branch = branch; GH.token = token;
-  document.getElementById('repoInfo').innerText = ${owner}/${repo} @ ${branch};
-  closeGitModal();
-  try{
-    await ensureDataFiles(); // create files if absent
-    await loadAll(); // load users, bots, transactions
-    alert('Connected to GitHub repository successfully.');
-  }catch(err){
-    alert('GitHub connect failed: ' + err.message);
-    console.error(err);
-  }
-}
-
-/* Ensure data folder and json files exist */
-async function ensureDataFiles(){
-  // helper: try get file, if fails create with []
-  const files = ['data/users.json','data/bots.json','data/transactions.json'];
-  for(const f of files){
-    try{
-      await ghGetFile(f);
-    }catch(e){
-      // create file
-      await ghPutFile(f, JSON.stringify([],null,2), 'create ' + f);
-    }
-  }
-}
-
-/* -------- Load / Save state -------- */
-async function loadAll(){
-  try{
-    const u = await ghGetFile('data/users.json');
-    state.users = JSON.parse(u.content);
-    const b = await ghGetFile('data/bots.json');
-    state.bots = JSON.parse(b.content);
-    const t = await ghGetFile('data/transactions.json');
-    state.transactions = JSON.parse(t.content);
-    renderAll();
-  }catch(err){
-    console.error('loadAll error', err);
-    alert('Failed to load data: ' + err.message);
-  }
-}
-
-async function saveUsers(){
-  const cur = await ghGetFile('data/users.json').catch(()=>({sha:null}));
-  await ghPutFile('data/users.json', JSON.stringify(state.users, null, 2), 'update users', cur.sha);
-}
-async function saveBots(){
-  const cur = await ghGetFile('data/bots.json').catch(()=>({sha:null}));
-  await ghPutFile('data/bots.json', JSON.stringify(state.bots, null, 2), 'update bots', cur.sha);
-}
-async function saveTransactions(){
-  const cur = await ghGetFile('data/transactions.json').catch(()=>({sha:null}));
-  await ghPutFile('data/transactions.json', JSON.stringify(state.transactions, null, 2), 'update transactions', cur.sha);
-}
-
-/* -------- Rendering -------- */
-function renderAll(){
-  renderUsersTable();
-  renderBotsTable();
-  renderTransactionsTable();
-  updateDashboardKPIs();
-  updateSelects();
-  updateCharts();
-}
-
-function renderUsersTable(){
-  const tbody = document.querySelector('#usersTable tbody');
-  tbody.innerHTML = '';
-  state.users.forEach((u,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${i+1}</td><td>${escapeHtml(u.name)}</td><td>${escapeHtml(u.email)}</td><td>Ksh ${u.balance||0}</td>
-      <td>
-        <button class="btn btn-ghost" onclick="editUser(${i})">Edit</button>
-        <button class="btn btn-ghost" onclick="deleteUser(${i})">Delete</button>
-      </td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-function renderBotsTable(){
-  const tbody = document.querySelector('#botsTable tbody');
-  tbody.innerHTML = '';
-  state.bots.forEach((b,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${i+1}</td><td>${escapeHtml(b.name)}</td><td>${escapeHtml(b.category)}</td><td>Ksh ${b.price}</td><td>${escapeHtml(b.file)}</td>
-      <td><button class="btn btn-ghost" onclick="downloadBot('${encodeURIComponent(b.file)}')">Download</button>
-          <button class="btn btn-ghost" onclick="removeBot(${i})">Remove</button></td>`;
-    tbody.appendChild(tr);
-  });
-  document.getElementById('totalBots').innerText = state.bots.length;
-}
-
-function renderTransactionsTable(){
-  const tbody = document.querySelector('#txTable tbody');
-  tbody.innerHTML = '';
-  state.transactions.forEach((tx,i)=>{
-    const tr = document.createElement('tr');
-    const date = new Date(tx.date).toLocaleString();
-    tr.innerHTML = <td>${i+1}</td><td>${escapeHtml(tx.user)}</td><td>${escapeHtml(tx.bot)}</td><td>Ksh ${tx.amount}</td><td>${date}</td>;
-    tbody.appendChild(tr);
-  });
-  // total balance
-  const total = state.transactions.reduce((s,t)=>s + Number(t.amount||0), 0);
-  document.getElementById('totalBalance').innerText = 'Ksh ' + total;
-  document.getElementById('totalUsers').innerText = state.users.length || 0;
-}
-
-/* update selects */
-function updateSelects(){
-  const tu = document.getElementById('txUser');
-  const tb = document.getElementById('txBot');
-  tu.innerHTML = state.users.map(u=><option value="${escapeHtml(u.name)}">${escapeHtml(u.name)}</option>).join('');
-  tb.innerHTML = state.bots.map(b=><option value="${escapeHtml(b.name)}">${escapeHtml(b.name)}</option>).join('');
-}
-
-/* ====== Charts ====== */
-let botChart=null, txChart=null;
-function updateCharts(){
-  // Bot categories pie
-  const catCounts = {};
-  state.bots.forEach(b=> catCounts[b.category] = (catCounts[b.category]||0) + 1);
-  const labels = Object.keys(catCounts);
-  const data = Object.values(catCounts);
-  const ctx = document.getElementById('botCategoryChart').getContext('2d');
-  if(botChart) botChart.destroy();
-  botChart = new Chart(ctx, {
-    type: 'pie',
-    data: { labels, datasets: [{ data, backgroundColor: ['#7c5cff','#ff6b6b','#1dd1a1','#ffd166'] }]},
+  // Charts
+  new Chart(document.getElementById('botCategoryChart'),{
+    type:'pie',
+    data:{labels:['Forex','Crypto','Stocks'],datasets:[{data:[5,3,2],backgroundColor:['#7c5cff','#ff6b6b','#1dd1a1']}]},
     options:{plugins:{legend:{position:'bottom'}}}
   });
-
-  // Transactions chart (last 7 days)
-  const last7 = {};
-  for(let i=6;i>=0;i--){
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0,10);
-    last7[key] = 0;
-  }
-  state.transactions.forEach(tx=>{
-    const k = new Date(tx.date).toISOString().slice(0,10);
-    if(k in last7) last7[k] += Number(tx.amount||0);
-  });
-  const txLabels = Object.keys(last7);
-  const txData = Object.values(last7);
-  const ctx2 = document.getElementById('transactionsChart').getContext('2d');
-  if(txChart) txChart.destroy();
-  txChart = new Chart(ctx2, {
+  new Chart(document.getElementById('transactionsChart'),{
     type:'bar',
-    data:{ labels: txLabels, datasets: [{ label:'Ksh', data: txData, backgroundColor: '#7c5cff' }]},
+    data:{labels:['Mon','Tue','Wed','Thu','Fri'],datasets:[{label:'Ksh',data:[500,800,300,900,400],backgroundColor:'#7c5cff'}]},
     options:{scales:{y:{beginAtZero:true}}}
   });
-}
 
-/* ====== CRUD actions ====== */
-// USERS
-function openCreateUser(){
-  document.getElementById('userModalTitle').innerText='Create User';
-  document.getElementById('uName').value='';
-  document.getElementById('uEmail').value='';
-  document.getElementById('uBalance').value=0;
-  document.getElementById('userModal').style.display='flex';
-  document.getElementById('userModal').dataset.index = -1;
-}
-function closeUserModal(){ document.getElementById('userModal').style.display='none'; }
-async function saveUser(){
-  const idx = Number(document.getElementById('userModal').dataset.index);
-  const name = document.getElementById('uName').value.trim();
-  const email = document.getElementById('uEmail').value.trim();
-  const bal = Number(document.getElementById('uBalance').value || 0);
-  if(!name || !email) return alert('Enter name and email');
-  const user = { name, email, balance: bal };
-  if(idx >= 0) state.users[idx] = user; else state.users.push(user);
-  try{
-    await saveUsers();
-    renderUsersTable();
-    closeUserModal();
-  }catch(err){ alert('Save user failed: ' + err.message); console.error(err); }
-}
-function editUser(i){
-  const u = state.users[i];
-  document.getElementById('userModalTitle').innerText='Edit User';
-  document.getElementById('uName').value = u.name;
-  document.getElementById('uEmail').value = u.email;
-  document.getElementById('uBalance').value = u.balance || 0;
-  document.getElementById('userModal').style.display='flex';
-  document.getElementById('userModal').dataset.index = i;
-}
-async function deleteUser(i){
-  if(!confirm('Delete user?')) return;
-  state.users.splice(i,1);
-  try{ await saveUsers(); renderUsersTable(); updateSelects(); }catch(e){ alert('Delete failed: '+e.message); }
-}
-
-// BOTS
-document.getElementById('botForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  if(!GH.token) return alert('Connect GitHub first.');
-  const name = document.getElementById('botName').value.trim();
-  const category = document.getElementById('botCategoryInput').value.trim();
-  const price = Number(document.getElementById('botPrice').value || 0);
-  const fileInput = document.getElementById('botUpload');
-  const file = fileInput.files[0];
-  if(!name || !category || !file) return alert('Complete the bot form.');
-  try{
-    // upload binary to bots/<filename>
-    const filename = ${Date.now()}_${file.name};
-    await ghUploadFile('bots/' + filename, file, upload bot file ${filename});
-    // add metadata
-    const meta = { name, category, price, file: filename, created: new Date().toISOString() };
-    state.bots.push(meta);
-    await saveBots();
-    renderBotsTable();
-    updateSelects();
-    fileInput.value = '';
-    document.getElementById('botForm').reset();
-    alert('Bot uploaded and saved.');
-  }catch(err){
-    alert('Bot upload failed: ' + err.message);
-    console.error(err);
-  }
-});
-
-async function downloadBot(encodedFile){
-  // opens raw file url from GitHub
-  const filename = decodeURIComponent(encodedFile);
-  const rawUrl = https://raw.githubusercontent.com/${GH.owner}/${GH.repo}/${GH.branch}/bots/${filename};
-  window.open(rawUrl, '_blank');
-}
-async function removeBot(i){
-  if(!confirm('Remove bot metadata? This will not delete the file from repo.')) return;
-  state.bots.splice(i,1);
-  try{ await saveBots(); renderBotsTable(); updateSelects(); }catch(e){ alert('Remove failed: '+e.message); }
-}
-
-// TRANSACTIONS
-document.getElementById('txForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const user = document.getElementById('txUser').value;
-  const bot = document.getElementById('txBot').value;
-  const amount = Number(document.getElementById('txAmount').value || 0);
-  const tx = { user, bot, amount, date: new Date().toISOString(), id: Date.now() };
-  state.transactions.unshift(tx);
-  try{ await saveTransactions(); renderTransactionsTable(); updateCharts(); }catch(e){ alert('Record tx failed: '+e.message); }
-});
-
-function requestWithdraw(){
-  const user = prompt('Withdraw request - enter username:');
-  if(!user) return;
-  const bot = 'Withdraw';
-  const amount = Number(prompt('Amount to withdraw (Ksh):', '0') || 0);
-  if(amount <= 0) return alert('Invalid amount');
-  const tx = { user, bot, amount: -Math.abs(amount), date: new Date().toISOString(), id: Date.now() };
-  state.transactions.unshift(tx);
-  saveTransactions().then(()=>{ renderTransactionsTable(); updateCharts(); alert('Withdraw request logged.'); }).catch(e=>alert('Failed to log withdraw: '+e.message));
-}
-
-/* -------- Sync all (pull remote -> local state) -------- */
-async function syncAll(){
-  if(!GH.token) return alert('Connect GitHub first.');
-  try{
-    await loadAll();
-    alert('Synced from GitHub.');
-  }catch(e){ alert('Sync failed: ' + e.message); console.error(e); }
-}
-
-/* -------- Utilities -------- */
-function showSection(sec){
-  const secs = ['dashboard','users','bots','transactions','settings'];
-  secs.forEach(s=>{
-    const el = document.getElementById(s);
-    if(el) el.style.display = (s === sec) ? 'block' : 'none';
+  // Bots upload
+  const bots=[];
+  document.getElementById('botForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const name=document.getElementById('botName').value;
+    const category=document.getElementById('botCategory').value;
+    const price=document.getElementById('botPrice').value;
+    const file=document.getElementById('botFile').files[0]?.name;
+    bots.push({name,category,price,file});
+    updateBotsTable();
+    e.target.reset();
   });
-}
-function logout(){ if(confirm('Sign out?')) location.href='index.html'; }
-function escapeHtml(s){ if(!s && s!==0) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function updateBotsTable(){
+    const tbody=document.querySelector('#botsTable tbody');
+    tbody.innerHTML=bots.map(b=>`<tr><td>${b.name}</td><td>${b.category}</td><td>Ksh ${b.price}</td><td>${b.file}</td></tr>`).join('');
+  }
 
-/* Initialize default view */
-showSection('dashboard');
-
-/* If GH details were prefilled in localStorage, restore them */
-(function restoreGH(){
-  try{
-    const g = JSON.parse(localStorage.getItem('merrick_github') || 'null');
-    if(g && g.owner && g.repo && g.token){
-      GH = Object.assign(GH, g);
-      document.getElementById('repoInfo').innerText = ${GH.owner}/${GH.repo} @ ${GH.branch};
-      // load data
-      loadAll().catch(()=>{/ignore/});
-    }
-  }catch(e){}
-})();
-
-/* Save GH to localStorage when connected */
-async function connectGitAndSave(){
-  await connectGit();
-  localStorage.setItem('merrick_github', JSON.stringify(GH));
-}
-
-/* Connect button uses connectGit above but also persists */
-async function connectGit(){
-  // use earlier connectGit() function but persist
-  // Keep compatibility: call the modal input handler
-  const owner = document.getElementById('ghOwner').value.trim();
-  const repo = document.getElementById('ghRepo').value.trim();
-  const branch = document.getElementById('ghBranch').value.trim() || 'main';
-  const token = document.getElementById('ghToken').value.trim();
-  if(!owner || !repo || !token) return alert('Enter owner, repo and token.');
-  GH.owner = owner; GH.repo = repo; GH.branch = branch; GH.token = token;
-  localStorage.setItem('merrick_github', JSON.stringify(GH));
-  document.getElementById('repoInfo').innerText = ${owner}/${repo} @ ${branch};
-  closeGitModal();
-  try{ await ensureDataFiles(); await loadAll(); alert('Connected and ready.'); }
-  catch(err){ alert('GitHub connect failed: ' + err.message); console.error(err); }
-}
-
-/* provide compatibility for function declared earlier */
-window.connectGit = connectGit;
-window.openGitModal = openGitModal;
-window.closeGitModal = closeGitModal;
-window.clearGit = clearGit;
-window.showSection = showSection;
-window.logout = logout;
-window.syncAll = syncAll;
-window.requestWithdraw = requestWithdraw;
-window.openCreateUser = openCreateUser;
-window.closeUserModal = closeUserModal;
-window.saveUser = saveUser;
-
-/* Quick tip: keep your PAT safe — for production use a server-side proxy or authentication flow. */
+  // Settings Password Modal
+  function verifyPassword(){
+    document.getElementById('passwordModal').style.display='flex';
+  }
+  function confirmChanges(){
+    const pass=document.getElementById('adminPass').value;
+    if(pass==='0758026285'){
+      document.getElementById('passwordModal').style.display='none';
+      alert('Changes saved successfully ✅');
+    } else alert('Incorrect password ❌');
+  }
 </script>
 </body>
 </html>
