@@ -1,223 +1,457 @@
-<!DOCTYPE html><html lang="en">
+<!doctype html>
+
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Merrick Trade City — User Panel</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Merrick Trade City — User Panel (Simulated Trading)</title>
 <link rel="icon" type="image/png" href="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg">
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- TradingView widget -->
 <script src="https://s3.tradingview.com/tv.js"></script>
 <style>
   @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
-  :root{--bg:#0c0f1f;--accent:#7c5cff;--accent2:#6a4bff;--muted:#bfbfcf}
+  :root{
+    --bg:#0b0f1a; --panel:#0f1630; --accent:#7c5cff; --accent2:#6a4bff;
+    --muted:#bfbfcf; --glass: rgba(255,255,255,0.03);
+  }
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
   html,body{height:100%}
-  body{display:flex;min-height:100vh;background:radial-gradient(circle at top,var(--bg),#05060d);color:#fff}
-  .sidebar{width:260px;padding:22px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.06)}
-  .profile-card{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px}
+  body{display:flex;min-height:100vh;background:linear-gradient(180deg,#04050a,#0c0f1f);color:#fff}
+  .sidebar{
+    width:280px;padding:20px;background:linear-gradient(180deg,rgba(124,92,255,0.12),rgba(12,10,30,0.9));
+    border-right:1px solid rgba(255,255,255,0.04);display:flex;flex-direction:column;gap:18px;
+  }
+  .brand{display:flex;gap:12px;align-items:center}
+  .brand img{width:44px;height:44px;border-radius:8px;object-fit:cover}
+  .brand h1{font-size:16px;letter-spacing:0.6px}
+  .profile{display:flex;gap:12px;align-items:center;background:var(--glass);padding:12px;border-radius:10px}
+  .avatar{width:56px;height:56px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px}
+  .profile-info{font-size:14px}
   .menu{display:flex;flex-direction:column;gap:6px}
-  .menu button{background:none;border:none;color:#fff;padding:12px;border-radius:10px;text-align:left;cursor:pointer;font-weight:600}
-  .menu button.active{background:linear-gradient(90deg,var(--accent),var(--accent2))}
-  .main{flex:1;padding:18px;display:flex;flex-direction:column;gap:16px;overflow:auto}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px}
-  .chart-box{height:420px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
-  .input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff}
-  .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
-  .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
-  footer{margin-top:10px;text-align:center;color:var(--muted)}
-  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center}
-  .modal-content{background:#0f0c29;padding:18px;border-radius:12px;width:94%;max-width:520px}
-  @media(max-width:980px){.sidebar{width:100%;flex-direction:row;overflow:auto}.menu{flex-direction:row}}
+  .menu button{background:none;border:none;color:var(--muted);padding:10px 12px;text-align:left;border-radius:8px;cursor:pointer}
+  .menu button.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+  .bottom{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+  .btn{padding:10px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+  .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}.main{flex:1;padding:20px;display:flex;flex-direction:column;gap:14px;overflow:auto}
+.top-row{display:flex;gap:12px;align-items:center}
+.card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:14px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+.chart-card{height:420px;overflow:hidden;border-radius:12px}
+.controls{min-width:300px;max-width:380px}
+.input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff;margin-top:8px}
+.small-muted{color:var(--muted);font-size:13px}
+.bots-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.bot-card{background:var(--glass);padding:10px;border-radius:10px;text-align:center}
+.trade-history{max-height:220px;overflow:auto;padding-right:8px}
+
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:999}
+.modal-content{background:#0b0f1a;padding:18px;border-radius:12px;width:92%;max-width:520px;border:1px solid rgba(255,255,255,0.04)}
+.row{display:flex;gap:8px;align-items:center}
+@media (max-width:980px){
+.sidebar{width:100%;flex-direction:row;align-items:center;padding:12px}
+.main{padding:12px}
+.top-row{flex-direction:column;align-items:stretch}
+.controls{width:100%;max-width:100%}
+.chart-card{height:300px}
+}
 </style>
+
 </head>
-<body><div class="sidebar" role="navigation">
-  <div>
-    <h2>User Panel</h2>
-    <div class="profile-card card">
-      <img id="profilePic" src="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg" alt="logo" />
-      <div>
-        <div id="userName">—</div>
-        <small id="userBalance">Balance: —</small>
-      </div>
+<body><!-- Sidebar --><aside class="sidebar" aria-label="Sidebar">
+  <div class="brand">
+    <img src="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg" alt="Merrick logo">
+    <h1>Merrick Trade City</h1>
+  </div>  <div class="profile card">
+    <div class="avatar" id="avatar">M</div>
+    <div class="profile-info">
+      <div id="userName">Guest</div>
+      <div class="small-muted" id="userBalance">Balance: 10,000 (sim)</div>
     </div>
-    <div class="menu" id="menu">
-      <button data-section="dashboard" class="active">Dashboard</button>
-      <button data-section="trading">Trading</button>
-      <button data-section="history">Trade History</button>
-    </div>
+  </div>  <nav class="menu" role="navigation" aria-label="Main menu">
+    <button class="active" data-section="dashboard">Dashboard</button>
+    <button data-section="trade">Trade</button>
+    <button data-section="bots">Bots</button>
+    <button data-section="history">History</button>
+    <button data-section="settings">Settings</button>
+  </nav>  <div class="bottom">
+    <button class="btn btn-primary" id="demoSignIn">Sign in (Demo)</button>
+    <button class="btn btn-ghost" id="resetDemo">Reset Demo</button>
+    <div class="small-muted">Support: <a href="mailto:Saintmerrick66@gmail.com" style="color:inherit">Saintmerrick66@gmail.com</a></div>
   </div>
-  <div style="margin-top:14px">
-    <button class="btn btn-primary" id="derivLoginBtn">Login with Deriv</button>
-    <button class="btn" onclick="logout()">Logout</button>
-  </div>
-</div><div class="main">
+</aside><!-- Main --><main class="main" role="main">
   <!-- Dashboard -->
   <section id="dashboardSection" class="card">
-    <h3>Welcome back, <span id="displayName">User</span></h3>
-    <div class="chart-box" id="tvChartWrap"></div>
-  </section>  <!-- Trading -->  <section id="tradingSection" style="display:none" class="card">
-    <h3>Place Trade</h3>
-    <label>Choose Symbol:</label>
-    <select id="symbolSelect" class="input">
-      <option value="R_100">R_100</option>
-      <option value="R_25">R_25</option>
-      <option value="frxEURUSD">EUR/USD</option>
-      <option value="frxUSDJPY">USD/JPY</option>
-      <option value="frxGBPUSD">GBP/USD</option>
-      <option value="frxAUDUSD">AUD/USD</option>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h2 style="margin-bottom:6px">Welcome back — Simulated Trading Mode</h2>
+        <div class="small-muted">This environment simulates live trading for demo/testing. No real money is used.</div>
+      </div>
+      <div style="text-align:right">
+        <div class="small-muted">Loaded bot: <strong id="loadedBot">None</strong></div>
+        <div style="margin-top:8px">
+          <button class="btn btn-primary" id="openNewOrder">Place New Order</button>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
+      <div class="card chart-card" style="flex:1;min-width:420px" id="tvChartWrap">
+        <!-- TradingView will be injected here -->
+      </div>
+      <div class="card controls">
+        <h4>Quick Trade</h4>
+        <label class="small-muted">Symbol</label>
+        <select id="quickSymbol" class="input">
+          <option value="OANDA:XAUUSD">XAUUSD (Gold)</option>
+          <option value="OANDA:EURUSD">EURUSD</option>
+          <option value="OANDA:GBPUSD">GBPUSD</option>
+          <option value="R_100">Synthetic 100</option>
+        </select>    <label class="small-muted">Amount (sim)</label>
+    <input id="quickAmount" class="input" type="number" value="10" min="1">
+
+    <label class="small-muted">Direction</label>
+    <select id="quickDirection" class="input">
+      <option value="CALL">CALL</option>
+      <option value="PUT">PUT</option>
     </select>
-    <label>Stake:</label>
-    <input id="tradeStake" class="input" type="number" value="1" />
-    <label>Trade Type:</label>
-    <select id="tradeType" class="input">
-      <option value="CALL">CALL (Buy)</option>
-      <option value="PUT">PUT (Sell)</option>
-    </select>
-    <button class="btn btn-primary" onclick="confirmTrade()">Execute Trade</button>
-  </section>  <!-- Trade History -->  <section id="historySection" style="display:none" class="card">
-    <h3>Trade History</h3>
-    <div id="tradeHistory"></div>
-  </section>  <footer><small class="small-muted">© 2025 Merrick Trade City — All rights reserved.</small></footer>
-</div><!-- Confirmation Modal --><div class="modal" id="confirmModal">
+
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn btn-primary" id="quickPlace">Place (Confirm)</button>
+      <button class="btn btn-ghost" id="quickCancel">Cancel</button>
+    </div>
+
+    <hr style="border:0;border-top:1px solid rgba(255,255,255,0.04);margin:12px 0">
+
+    <h4>Portfolio (sim)</h4>
+    <canvas id="portfolioChart" style="width:100%;height:160px"></canvas>
+  </div>
+</div>
+
+  </section>  <!-- Trade Section -->  <section id="tradeSection" class="card" style="display:none">
+    <h3>Place Trade (detailed)</h3>
+    <div class="row" style="margin-top:10px">
+      <div style="flex:1">
+        <label class="small-muted">Symbol</label>
+        <select id="symbol" class="input">
+          <option value="OANDA:XAUUSD">XAUUSD</option>
+          <option value="OANDA:EURUSD">EURUSD</option>
+          <option value="OANDA:GBPUSD">GBPUSD</option>
+          <option value="R_100">R_100</option>
+        </select>
+        <label class="small-muted">Amount (sim)</label>
+        <input id="amount" class="input" type="number" value="10">
+        <label class="small-muted">Duration (minutes)</label>
+        <input id="duration" class="input" type="number" value="1" min="1">
+        <label class="small-muted">Direction</label>
+        <select id="direction" class="input">
+          <option value="CALL">CALL</option>
+          <option value="PUT">PUT</option>
+        </select>
+        <div style="margin-top:10px">
+          <button class="btn btn-primary" id="openConfirm">Confirm Trade</button>
+        </div>
+      </div>
+      <div style="width:320px;padding-left:12px">
+        <h4>Sim Status</h4>
+        <div id="simStatus" class="small-muted">No active trades</div>
+        <h4 style="margin-top:12px">Open Trades</h4>
+        <div id="openTrades" class="trade-history small-muted"></div>
+      </div>
+    </div>
+  </section>  <!-- Bots -->  <section id="botsSection" class="card" style="display:none">
+    <h3>Admin / Shared Bots (sim)</h3>
+    <div class="bots-grid" id="botsGrid">
+      <!-- sample bots -->
+    </div>
+    <div style="margin-top:12px;">
+      <button class="btn btn-primary" id="loadBotSample">Load Sample Bot</button>
+      <button class="btn btn-ghost" id="clearBots">Clear Bots</button>
+    </div>
+  </section>  <!-- History -->  <section id="historySection" class="card" style="display:none">
+    <h3>Trade History (sim)</h3>
+    <div id="historyList" class="trade-history small-muted"></div>
+    <div style="margin-top:12px"><button class="btn btn-ghost" id="exportHistory">Export (JSON)</button></div>
+  </section>  <!-- Settings -->  <section id="settingsSection" class="card" style="display:none">
+    <h3>Settings</h3>
+    <div class="small-muted">This demo simulates trading. To integrate real trading you'll need a secure server-side implementation — see the instructions below the UI.</div>
+  </section>  <footer style="margin-top:10px;color:var(--muted)">Merrick Trade City — Demo mode (no real trades)</footer>
+</main><!-- Confirmation Modal --><div id="confirmModal" class="modal" role="dialog" aria-modal="true">
   <div class="modal-content">
     <h3>Confirm Trade</h3>
     <p id="confirmText"></p>
-    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-      <button class="btn" onclick="closeModal('confirmModal')">Cancel</button>
-      <button class="btn btn-primary" id="confirmBtn">Confirm</button>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+      <button class="btn btn-ghost" id="confirmCancel">Cancel</button>
+      <button class="btn btn-primary" id="confirmOk">Confirm</button>
     </div>
   </div>
 </div><script>
-const DERIV_APP_ID = '109286';
-let derivToken = null;
-let ws = null;
-let tradeHistory = [];
-let currentTrade = null;
+/* ========= Simulated trading engine + UI glue ========= */
 
-/* ====== UI Helpers ====== */
-function qs(sel){ return document.querySelector(sel); }
-function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
-function show(el){ if(el) el.style.display='block'; }
-function hide(el){ if(el) el.style.display='none'; }
-function openModal(id){ qs('#'+id).style.display='flex'; }
-function closeModal(id){ qs('#'+id).style.display='none'; }
+const state = {
+  user: { name: 'Demo User', avatarLetter: 'M', balance: 10000 },
+  openTrades: [],
+  history: [],
+  bots: [],
+};
 
-/* ====== Menu Switch ====== */
+// UI shortcuts
+const qs = s => document.querySelector(s);
+const qsa = s => Array.from(document.querySelectorAll(s));
+
+// Menu wiring
 qsa('.menu button').forEach(btn=>{
   btn.addEventListener('click', ()=> {
     qsa('.menu button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    const section = btn.dataset.section;
-    const map = {dashboard:'dashboardSection', trading:'tradingSection', history:'historySection'};
-    Object.values(map).forEach(id => { const el = qs('#'+id); if(el) hide(el); });
-    if(map[section]) show(qs('#'+map[section]));
+    // hide all sections
+    ['dashboardSection','tradeSection','botsSection','historySection','settingsSection'].forEach(id=>{
+      const el = qs('#'+id);
+      if(el) el.style.display='none';
+    });
+    // show
+    const key = btn.dataset.section;
+    const map = {dashboard:'dashboardSection', trade:'tradeSection', bots:'botsSection', history:'historySection', settings:'settingsSection'};
+    const show = map[key]||'dashboardSection';
+    const el = qs('#'+show);
+    if(el) el.style.display='block';
   });
 });
 
-/* ====== Deriv Login ====== */
-qs('#derivLoginBtn').addEventListener('click', ()=> {
-  const state = Math.random().toString(36).slice(2);
-  localStorage.setItem('deriv_oauth_state', state);
-  const redirect = encodeURIComponent(location.origin + location.pathname);
-  const url = https://oauth.deriv.com/oauth2/authorize?app_id=${DERIV_APP_ID}&response_type=token&state=${state}&redirect_uri=${redirect};
-  window.location.href = url;
-});
+// Init UI
+function renderProfile(){
+  qs('#userName').textContent = state.user.name;
+  qs('#avatar').textContent = state.user.avatarLetter;
+  qs('#userBalance').textContent = Balance: ${formatNumber(state.user.balance)} (sim);
+}
+renderProfile();
 
-function grabTokenFromUrl(){
-  const hash = window.location.hash;
-  if(!hash) return null;
-  const params = new URLSearchParams(hash.replace('#','?'));
-  const token = params.get('access_token');
-  const state = params.get('state');
-  if(token && state===localStorage.getItem('deriv_oauth_state')){
-    localStorage.setItem('deriv_token', token);
-    history.replaceState(null,'',location.pathname);
-    return token;
+// TradingView embed (readonly visualization)
+// We use TradingView widget (no hooks to signals). Symbol switching by quickSymbol or symbol select not wired to widget for simplicity
+function embedTradingView(defaultSymbol = 'OANDA:XAUUSD'){
+  if(typeof TradingView === 'undefined'){ // fallback simple iframe
+    const wrap = qs('#tvChartWrap');
+    wrap.innerHTML = <iframe src="https://s.tradingview.com/widgetembed/?symbol=${encodeURIComponent(defaultSymbol)}&interval=60&theme=dark" style="width:100%;height:100%;border:0"></iframe>;
+    return;
   }
-  return null;
+  new TradingView.widget({
+    container_id: "tvChartWrap",
+    width: "100%",
+    height: "100%",
+    symbol: defaultSymbol,
+    interval: "60",
+    timezone: "Etc/UTC",
+    theme: "dark",
+    style: "1",
+    locale: "en",
+    toolbar_bg: "#0b0f1a",
+    hide_top_toolbar: false,
+    allow_symbol_change: true,
+    enable_publishing: false
+  });
+}
+embedTradingView();
+
+// Portfolio Chart (balances over time)
+let portfolioChart = null;
+function setupPortfolioChart(){
+  const ctx = qs('#portfolioChart').getContext('2d');
+  const labels = generateLabels(7);
+  const data = generateDemoBalances(7, state.user.balance);
+  if(portfolioChart) portfolioChart.destroy();
+  portfolioChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [{ label: 'Sim Balance', data, fill:true, tension:0.3 }]},
+    options: { plugins:{legend:{display:false}}, scales:{ y:{ beginAtZero:false }}}
+  });
+}
+setupPortfolioChart();
+
+// helpers
+function formatNumber(n){ return Number(n).toLocaleString(); }
+function generateLabels(n){
+  const out=[];
+  for(let i=n-1;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    out.push(${d.getMonth()+1}/${d.getDate()});
+  }
+  return out;
+}
+function generateDemoBalances(n, latest){
+  const arr=[]; let cur=latest;
+  for(let i=0;i<n;i++){ arr.push(Math.max(0, Math.round(cur - (n-i-1)*Math.random()*150))); }
+  return arr;
 }
 
-/* ====== Connect WS ====== */
-function connectWS(){
-  derivToken = localStorage.getItem('deriv_token');
-  if(!derivToken) return;
-  ws = new WebSocket(wss://ws.binaryws.com/websockets/v3?app_id=${DERIV_APP_ID});
-  ws.onopen = ()=> { ws.send(JSON.stringify({ authorize: derivToken })); console.log('Connected to Deriv WS'); };
-  ws.onmessage = msg=>{
-    const data = JSON.parse(msg.data);
-    if(data.authorize) {
-      qs('#displayName').textContent = data.authorize.display_name || 'User';
-      qs('#userBalance').textContent = 'Balance: ' + (data.authorize.balance||0);
-    }
-    if(data.transaction) console.log('Transaction update', data.transaction);
-  };
-  ws.onerror = e=>console.error('WS Error',e);
-  ws.onclose = ()=>console.log('WS closed');
-}
+// Quick place flow -> open confirm modal
+qs('#quickPlace').addEventListener('click', ()=>{
+  const symbol = qs('#quickSymbol').value;
+  const amount = Number(qs('#quickAmount').value);
+  const direction = qs('#quickDirection').value;
+  if(!amount || amount<=0) return alert('Enter a valid amount');
+  showConfirm({symbol,amount,direction,source:'quick'});
+});
+qs('#quickCancel').addEventListener('click', ()=>{/noop/});
 
-/* ====== Trade Execution ====== */
-function confirmTrade(){
-  const symbol = qs('#symbolSelect').value;
-  const stake = parseFloat(qs('#tradeStake').value);
-  const type = qs('#tradeType').value;
-  if(!symbol || !stake || !type) return alert('Fill all fields');
-  currentTrade = { symbol, stake, type };
-  qs('#confirmText').textContent = You are about to ${type} ${symbol} with ${stake} Ksh. Confirm?;
-  openModal('confirmModal');
-}
-
-qs('#confirmBtn').addEventListener('click', ()=>{
-  closeModal('confirmModal');
-  executeTrade(currentTrade);
+// Detailed trade confirm button
+qs('#openConfirm').addEventListener('click', ()=>{
+  const symbol = qs('#symbol').value;
+  const amount = Number(qs('#amount').value);
+  const duration = Number(qs('#duration').value);
+  const direction = qs('#direction').value;
+  if(!amount || amount<=0) return alert('Enter amount');
+  showConfirm({symbol,amount,direction,duration,source:'detailed'});
 });
 
-function executeTrade(trade){
-  if(!ws || ws.readyState!==WebSocket.OPEN) return alert('WebSocket not connected');
-  const request = {
-    buy: 1,
-    price: trade.stake,
-    parameters: {
-      amount: trade.stake,
-      basis: 'stake',
-      contract_type: trade.type,
-      currency: 'USD',
-      symbol: trade.symbol,
-      duration: 1,
-      duration_unit: 'm'
-    }
-  };
-  ws.send(JSON.stringify(request));
-  tradeHistory.push({...trade, time:new Date().toLocaleString()});
-  updateTradeHistory();
-  alert(Trade sent: ${trade.type} ${trade.symbol} for ${trade.stake} Ksh);
+function showConfirm(trade){
+  currentPendingTrade = trade;
+  qs('#confirmText').textContent = Confirm ${trade.direction} ${trade.symbol} for ${trade.amount} sim units + (trade.duration ? ` for ${trade.duration} min` : '');
+  qs('#confirmModal').style.display = 'flex';
 }
+qs('#confirmCancel').addEventListener('click', ()=>qs('#confirmModal').style.display='none');
 
-function updateTradeHistory(){
-  qs('#tradeHistory').innerHTML = tradeHistory.map(t=><div>${t.time}: ${t.type} ${t.symbol} (${t.stake} Ksh)</div>).join('');
-}
-
-/* ====== TradingView Embed ====== */
-new TradingView.widget({
-  container_id: "tvChartWrap",
-  width: "100%",
-  height: "100%",
-  symbol: "OANDA:XAUUSD",
-  interval: "60",
-  timezone: "Etc/UTC",
-  theme: "dark",
-  style: "1",
-  locale: "en",
-  toolbar_bg: "#f1f3f6",
-  enable_publishing: false,
-  allow_symbol_change: true
+// When user confirms -> run simulated trade
+let currentPendingTrade = null;
+qs('#confirmOk').addEventListener('click', ()=>{
+  qs('#confirmModal').style.display='none';
+  if(!currentPendingTrade) return;
+  placeSimTrade(currentPendingTrade);
+  currentPendingTrade = null;
 });
 
-/* ====== Startup ====== */
-if(grabTokenFromUrl()) connectWS();
-else if(localStorage.getItem('deriv_token')) connectWS();
+// Core simulated trading: place trade, add to openTrades, simulate P/L after duration
+function placeSimTrade(trade){
+  if(trade.amount > state.user.balance){
+    return alert('Insufficient simulated balance');
+  }
+  // Deduct stake
+  state.user.balance -= trade.amount;
+  renderProfile();
+  setupPortfolioChart();
 
-function logout(){
-  localStorage.removeItem('deriv_token');
-  location.reload();
+  const id = 'T' + Date.now();
+  const start = new Date();
+  const durationMs = (trade.duration ? trade.duration : 1) * 60 * 1000; // minutes -> ms (default 1 min)
+  const expiry = new Date(Date.now() + durationMs);
+
+  const open = {
+    id, symbol: trade.symbol, stake: trade.amount, direction: trade.direction, start: start.toLocaleString(),
+    expiry: expiry.toLocaleString(), durationMin: trade.duration || 1
+  };
+  state.openTrades.push(open);
+  updateOpenTradesUI();
+
+  // Schedule resolution (simulate result)
+  setTimeout(()=>{
+    // Simple random result: win ~55% chance, payout 80% (sim)
+    const win = Math.random() < 0.55;
+    const payoutMultiplier = win ? 1.8 : 0; // returns stake*payoutMultiplier on win
+    const resultAmount = Math.round(trade.amount * payoutMultiplier * 100)/100;
+    const profit = Math.round((resultAmount - trade.amount) * 100)/100;
+    // Update balance with payout (if win)
+    if(resultAmount > 0) state.user.balance += resultAmount;
+    // Remove from openTrades and add to history
+    state.openTrades = state.openTrades.filter(t=>t.id !== id);
+    state.history.unshift({
+      id, symbol: trade.symbol, stake: trade.amount, direction: trade.direction, result: win ? 'WIN' : 'LOSS',
+      profit, timestamp: new Date().toLocaleString()
+    });
+    renderProfile();
+    setupPortfolioChart();
+    updateOpenTradesUI();
+    updateHistoryUI();
+    showToast(Trade ${win ? 'WON' : 'LOST'} — ${trade.direction} ${trade.symbol} — P/L: ${profit});
+  }, durationMs);
 }
+
+// UI helpers to update lists
+function updateOpenTradesUI(){
+  const el = qs('#openTrades');
+  if(!el) return;
+  if(state.openTrades.length===0) el.innerHTML = '<div class="small-muted">No open trades</div>';
+  else el.innerHTML = state.openTrades.map(t=><div style="padding:8px;border-bottom:1px solid rgba(255,255,255,0.03)">${t.start}<br><strong>${t.symbol}</strong> ${t.direction} — stake ${t.stake}</div>).join('');
+}
+function updateHistoryUI(){
+  const el = qs('#historyList');
+  el.innerHTML = state.history.length===0 ? '<div class="small-muted">No history</div>' : state.history.map(h=><div style="padding:8px;border-bottom:1px solid rgba(255,255,255,0.03)">${h.timestamp} — <strong>${h.symbol}</strong> ${h.direction} — ${h.result} — P/L: ${h.profit}</div>).join('');
+}
+
+// Toast
+function showToast(txt){
+  const t = document.createElement('div');
+  t.className='toast';
+  t.style.position='fixed'; t.style.right='18px'; t.style.bottom='18px'; t.style.background='linear-gradient(90deg,var(--accent),var(--accent2))'; t.style.padding='10px 14px'; t.style.borderRadius='8px';
+  t.textContent = txt;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.remove(),500); }, 2800);
+}
+
+// Demo sign in & reset
+qs('#demoSignIn').addEventListener('click', ()=>{
+  state.user = { name: 'Kelvin', avatarLetter: 'K', balance: 10000 };
+  state.openTrades = []; state.history = []; state.bots = [];
+  renderProfile(); updateOpenTradesUI(); updateHistoryUI(); setupPortfolioChart();
+  showToast('Signed in (demo)');
+});
+qs('#resetDemo').addEventListener('click', ()=>{
+  if(!confirm('Reset demo data?')) return;
+  state.user = { name: 'Demo User', avatarLetter: 'M', balance: 10000 };
+  state.openTrades = []; state.history = []; state.bots = [];
+  renderProfile(); updateOpenTradesUI(); updateHistoryUI(); setupPortfolioChart();
+  showToast('Demo reset');
+});
+
+// Open New Order button
+qs('#openNewOrder').addEventListener('click', ()=>{
+  // switch to Trade section and focus
+  document.querySelectorAll('.menu button').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.menu button[data-section="trade"]').classList.add('active');
+  qsa('#dashboardSection,#botsSection,#historySection,#settingsSection').forEach(el=>{ if(el) el.style.display='none'; });
+  qs('#tradeSection').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+// Bots grid sample actions
+qs('#loadBotSample').addEventListener('click', ()=>{
+  const bot = { name: 'Sample Scalper', desc: 'Buys on dips (sim)', loaded: false };
+  state.bots.push(bot);
+  renderBots();
+});
+qs('#clearBots').addEventListener('click', ()=>{ state.bots=[]; renderBots(); });
+
+function renderBots(){
+  const g = qs('#botsGrid');
+  if(!g) return;
+  if(state.bots.length===0) g.innerHTML = '<div class="small-muted">No shared bots</div>';
+  else g.innerHTML = state.bots.map((b,i)=><div class="bot-card"><strong>${b.name}</strong><div class="small-muted">${b.desc||''}</div><div style="margin-top:8px"><button class="btn btn-primary" onclick="loadBot(${i})">Load</button></div></div>).join('');
+}
+window.loadBot = function(i){
+  const bot = state.bots[i];
+  if(!bot) return;
+  state.loadedBot = bot.name;
+  qs('#loadedBot').textContent = bot.name;
+  showToast('Loaded bot: ' + bot.name);
+};
+
+// History export
+qs('#exportHistory').addEventListener('click', ()=> {
+  const data = JSON.stringify(state.history, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'trade_history_demo.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+// Export / render initial
+renderBots();
+updateOpenTradesUI();
+updateHistoryUI();
+
+/* ========== Utility: attach simulated quick confirm flow ========== */
+qs('#confirmModal').style.display='none';
+
+// allow pressing Esc to close modal
+document.addEventListener('keydown', e => { if(e.key === 'Escape') qs('#confirmModal').style.display='none'; });
+
 </script></body>
 </html>
