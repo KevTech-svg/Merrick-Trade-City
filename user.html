@@ -1,442 +1,546 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Merrick Trade City — Live</title>
-<link rel="icon" type="image/png" href="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Merrick Trade City — User Panel</title>
+<link rel="icon" href="assets/favicon.png" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
+  /* Merrick glow theme */
   @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
-  :root{--bg:#0c0f1f;--accent:#7c5cff;--accent2:#6a4bff;--muted:#bfbfcf}
+  :root{
+    --bg:#0c0f1f; --panel:#0a1025; --accent:#7c5cff; --accent2:#ff6b6b;
+    --muted:#bfbfcf; --glass:rgba(255,255,255,0.04); --radius:12px;
+  }
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
-  html,body{height:100%}
   body{display:flex;min-height:100vh;background:radial-gradient(circle at top,var(--bg),#05060d);color:#fff}
-  .sidebar{width:320px;padding:20px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));border-right:1px solid rgba(255,255,255,0.06)}
-  .main{flex:1;padding:20px;overflow:auto}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;margin-bottom:12px}
-  .input{padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff;width:100%}
-  .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
-  .muted{color:var(--muted);font-size:13px}
-  .trade-btn{padding:8px 12px;border-radius:6px;border:none;cursor:pointer;margin-right:4px;}
-  .call-btn{background:#2ecc71;color:#fff;}
-  .put-btn{background:#e74c3c;color:#fff;}
-  .small{font-size:13px;color:var(--muted)}
-  select.input{height:40px}
-  .row{display:flex;gap:8px;align-items:center}
-  .col{display:flex;flex-direction:column;gap:8px}
-  footer{color:var(--muted);font-size:12px;margin-top:12px}
-  pre { white-space: pre-wrap; word-break: break-word; font-size: 12px; color: #ddd }
+
+  /* Sidebar */
+  .sidebar{
+    width:260px;padding:22px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));
+    display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.06)
+  }
+  .sidebar h2{font-size:1.4rem;text-align:center;margin-bottom:14px;background:linear-gradient(90deg,#fff,#ccc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .profile-card{display:flex;gap:12px;align-items:center;background:var(--glass);padding:12px;border-radius:12px;backdrop-filter:blur(8px);margin-bottom:14px}
+  .profile-card img{width:64px;height:64px;border-radius:50%;border:2px solid var(--accent);cursor:pointer;object-fit:cover}
+  .profile-info small{color:var(--muted);display:block}
+
+  .menu{display:flex;flex-direction:column;gap:6px}
+  .menu button{
+    background:none;border:none;color:#fff;text-align:left;padding:12px;border-radius:10px;cursor:pointer;font-weight:600;transition:all .15s;
+  }
+  .menu button:hover{transform:translateX(6px);box-shadow:0 6px 18px rgba(124,92,255,0.12);background:rgba(255,255,255,0.03)}
+  .menu button.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+
+  .sidebar .bottom-actions{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+  .btn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+  .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+
+  /* Main */
+  .main{flex:1;padding:18px;display:flex;flex-direction:column;gap:16px;overflow:auto}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,12,0.5)}
+  .welcome{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .logo-small{width:48px;height:48px;border-radius:10px;object-fit:cover;filter:drop-shadow(0 6px 18px rgba(124,92,255,0.12))}
+  .small-muted{color:var(--muted);font-size:13px}
+
+  /* Tiles and grid */
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .tile{padding:12px;border-radius:12px}
+  .bots-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px}
+  .bot-card{background:var(--glass);padding:12px;border-radius:12px;text-align:center;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.04)}
+  .tag{display:inline-block;padding:4px 10px;border-radius:20px;background:linear-gradient(90deg, rgba(124,92,255,0.12), rgba(255,107,107,0.06));color:#e9deff;font-size:12px}
+
+  /* Trade area */
+  .trade-wrap{display:flex;gap:12px;flex-wrap:wrap}
+  .chart-box{flex:1;min-width:360px;height:420px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+  .controls{width:360px;min-width:260px;padding:12px;display:flex;flex-direction:column;gap:10px}
+
+  /* Modal */
+  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+  .modal-content{background:rgba(15,15,35,0.98);padding:18px;border-radius:12px;width:92%;max-width:520px}
+  .input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff}
+
+  /* Footer */
+  footer{margin-top:10px;text-align:center;color:var(--muted)}
+
+  /* Responsive */
+  @media (max-width:980px){
+    .sidebar{width:100%;flex-direction:row;gap:12px;padding:10px}
+    .menu{flex-direction:row;overflow:auto}
+    .main{padding:12px}
+    .controls{width:100%}
+    .chart-box{height:320px;min-width:100%}
+    .trade-wrap{flex-direction:column}
+  }
 </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <h2>Merrick Trade City</h2>
+<!-- Sidebar -->
+<div class="sidebar" role="navigation" aria-label="Main sidebar">
+  <div>
+    <h2>User Panel</h2>
 
-  <div class="card">
-    <div class="small">Sign in</div>
-    <div style="margin-top:8px">
-      <button id="loginBtn" class="btn">Log in with Deriv (OAuth)</button>
+    <div class="profile-card card">
+      <img id="profilePic" src="assets/default-avatar.png" alt="User avatar" onclick="changeProfilePic()" title="Change profile picture">
+      <div class="profile-info">
+        <div id="userName">Kelvin Njuguna</div>
+        <small id="userBalance">Balance: —</small>
+        <small id="userEmail">kelvin@example.com</small>
+      </div>
     </div>
-    <div class="small muted" style="margin-top:8px">After login your accounts will be saved server-side and displayed below.</div>
-  </div>
 
-  <div class="card">
-    <div class="small">Connected accounts</div>
-    <select id="accountSelect" class="input"></select>
-    <div style="margin-top:8px">
-      <button id="btnRefreshAccounts" class="btn" style="background:#444">Refresh Accounts</button>
+    <div class="menu" id="menu">
+      <button data-section="dashboard" class="active"><i class="fa fa-house"></i> Dashboard</button>
+      <button data-section="freebots"><i class="fa fa-robot"></i> Free Bots</button>
+      <button data-section="dtrader"><i class="fa fa-chart-line"></i> D-Trader</button>
+      <button data-section="smart"><i class="fa fa-brain"></i> Smart Analysis</button>
+      <button data-section="analysis"><i class="fa fa-magnifying-glass"></i> Analysis Tool</button>
+      <button data-section="signals"><i class="fa fa-bell"></i> Signals</button>
+      <button data-section="charts"><i class="fa fa-chart-area"></i> Charts</button>
+      <button data-section="copy"><i class="fa fa-user-friends"></i> Copy Trading</button>
     </div>
-    <div class="small muted" style="margin-top:8px">Accounts are stored server-side (encrypted) and never exposed in the browser.</div>
   </div>
 
-  <div class="card">
-    <div class="small">Symbols</div>
-    <input id="symbolFilter" class="input" placeholder="Filter symbols (e.g. R_100, forex, volatility)" />
-    <select id="symbolSelect" class="input" size="6" style="height:220px;margin-top:8px"></select>
-    <div class="small muted" style="margin-top:8px">Symbols pulled from Deriv public API.</div>
+  <div class="bottom-actions">
+    <button class="btn btn-ghost" onclick="openTokenModal()">Enter Deriv Token</button>
+    <button class="btn btn-ghost" onclick="logout()">Logout</button>
   </div>
-
-  <div class="card">
-    <div class="small">Settings</div>
-    <label class="small">Chart update interval (ms)</label>
-    <input id="chartInterval" class="input" type="number" value="2000" />
-    <div class="small muted" style="margin-top:8px">Note: server executes trades — tokens are never stored client-side.</div>
-  </div>
-
-  <footer>© 2025 Merrick Trade City — Use responsibly. Live funds: confirm accounts before buying.</footer>
 </div>
 
-<div class="main">
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center">
+<!-- Main -->
+<div class="main" role="main">
+  <div class="welcome card">
+    <div style="display:flex;gap:12px;align-items:center">
+      <img src="assets/logo.png" class="logo-small" alt="Merrick logo">
       <div>
-        <h3>Welcome back, <span id="displayName">Trader</span></h3>
-        <div class="small muted">Connected accounts & live trading via the server</div>
-      </div>
-
-      <div style="width:360px">
-        <div class="small">Combined Balance</div>
-        <canvas id="portfolioChart" style="height:120px"></canvas>
-        <div class="small" id="combinedBalanceText">Loading...</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h4>Quick Trade (server-side)</h4>
-    <div class="row" style="margin-bottom:8px;align-items:center">
-      <button id="proposalCALL" class="trade-btn call-btn">Proposal CALL</button>
-      <button id="proposalPUT" class="trade-btn put-btn">Proposal PUT</button>
-
-      <div style="width:120px">
-        <input id="stakeInput" class="input" type="number" value="1" />
-      </div>
-      <div style="width:120px">
-        <input id="durationInput" class="input" type="number" value="1" />
-      </div>
-      <div style="width:120px">
-        <select id="durationUnit" class="input"><option value="m">min</option><option value="s">sec</option><option value="t">ticks</option></select>
-      </div>
-      <div style="width:160px">
-        <select id="basisSelect" class="input"><option value="stake">Stake</option><option value="payout">Payout</option></select>
+        <div style="font-weight:700">Welcome back, <span id="displayName">Kelvin</span></div>
+        <div class="small-muted">Trade live with your Deriv account inside Merrick Trade City</div>
       </div>
     </div>
 
-    <div id="proposalArea" class="small">No proposal requested</div>
-
-    <div style="margin-top:12px">
-      <button id="buyBtn" class="btn" disabled>Buy / Execute</button>
-      <button id="refreshSymbols" class="btn" style="background:#666">Refresh symbols</button>
+    <div style="text-align:right">
+      <small class="small-muted">Loaded bot: <strong id="loadedBot">None</strong></small><br>
+      <button class="btn btn-primary" id="runBotBtn">Run Loaded Bot</button>
     </div>
   </div>
 
-  <div class="card">
-    <h4>Events log</h4>
-    <div id="eventsLog" style="max-height:360px;overflow:auto"></div>
-  </div>
+  <!-- Dashboard -->
+  <section id="dashboardSection">
+    <div class="top-row" style="display:flex;gap:12px;flex-wrap:wrap">
+      <div class="card tile" style="flex:1;min-width:300px">
+        <small class="small-muted">Quick Tutorial</small>
+        <h3 style="margin:8px 0">How to add & run bots</h3>
+        <div style="aspect-ratio:16/9;border-radius:10px;overflow:hidden;margin-top:8px">
+          <iframe id="ytTutorial" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Tutorial" style="width:100%;height:100%;border:0" allowfullscreen></iframe>
+        </div>
+        <div style="margin-top:8px" class="small-muted">Replace this YouTube link any time.</div>
+      </div>
+
+      <div class="card tile" style="width:320px">
+        <small class="small-muted">Quick Actions</small>
+        <h4 style="margin:8px 0">Add Bot</h4>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input id="localBotFile" type="file" accept=".zip,.xml,.json" class="input">
+          <button class="btn btn-ghost" onclick="openDrive()">From Google Drive</button>
+          <button class="btn btn-ghost" onclick="openBotBuilder()">Bot Builder</button>
+          <select id="quickStrategy" class="input">
+            <option value="">Choose Quick Strategy</option>
+            <option value="scalp">Scalp (fast)</option>
+            <option value="swing">Swing (medium)</option>
+            <option value="trend">Trend (long)</option>
+          </select>
+          <button class="btn btn-primary" onclick="addQuickStrategy()">Use Strategy</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px" class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3>Available Bots</h3>
+        <div class="small-muted">Local & uploaded bots</div>
+      </div>
+      <div class="bots-grid" id="botsContainer"></div>
+    </div>
+  </section>
+
+  <!-- Free Bots -->
+  <section id="freebotsSection" style="display:none">
+    <div class="card">
+      <h3>Free Bots</h3>
+      <p class="small-muted">Select a free bot to load (requires Deriv login to run live)</p>
+      <div class="bots-grid" id="freeBots"></div>
+    </div>
+  </section>
+
+  <!-- D-Trader -->
+  <section id="dtraderSection" style="display:none">
+    <div class="card trade-wrap">
+      <div class="chart-box card" id="chartBox">
+        <iframe id="tvFrame" style="width:100%;height:100%;border:0"></iframe>
+      </div>
+      <div class="controls card">
+        <h4>Trade Controls</h4>
+        <div class="small-muted">Select market</div>
+        <select id="marketSelect" class="input">
+          <option value="OANDA:XAUUSD">XAUUSD (Gold)</option>
+          <option value="OANDA:EUR_USD">EURUSD</option>
+          <option value="SYNTHETIC:103">Volatility 100</option>
+          <option value="BINANCE:BTCUSDT">BTCUSD</option>
+        </select>
+
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input id="stake" class="input" placeholder="Stake (USD)" value="1">
+          <input id="duration" class="input" placeholder="Duration (s)" value="5">
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-primary" onclick="placeTrade('CALL')">CALL</button>
+          <button class="btn btn-ghost" onclick="placeTrade('PUT')">PUT</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4>Account</h4>
+          <div id="derivInfo" class="small-muted">Not connected</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Smart Analysis -->
+  <section id="smartSection" style="display:none">
+    <div class="card"><h3>Smart Analysis</h3><p class="small-muted">Advanced indicators & signals (placeholder)</p><div id="analysisPanel"></div></div>
+  </section>
+
+  <!-- Analysis Tool -->
+  <section id="analysisSection" style="display:none">
+    <div class="card"><h3>Analysis Tool</h3><p class="small-muted">Backtesting & scenarios (placeholder)</p><div id="analysisTool"></div></div>
+  </section>
+
+  <!-- Signals -->
+  <section id="signalsSection" style="display:none">
+    <div class="card"><h3>Signals</h3><div id="signalsList" class="small-muted">No signals yet</div></div>
+  </section>
+
+  <!-- Charts -->
+  <section id="chartsSection" style="display:none">
+    <div class="card">
+      <h3>Charts</h3>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+        <select id="chartSymbolSelect" class="input" style="width:240px">
+          <option value="OANDA:XAUUSD">XAUUSD (Gold)</option>
+          <option value="OANDA:EUR_USD">EURUSD</option>
+          <option value="SYNTHETIC:103">Volatility 100</option>
+          <option value="BINANCE:BTCUSDT">BTCUSD</option>
+        </select>
+        <button class="btn btn-primary" onclick="loadTradingView()">Load Chart</button>
+      </div>
+      <div style="margin-top:12px;border-radius:12px;overflow:hidden" id="chartArea">
+        <iframe id="chartFrame" style="width:100%;height:520px;border:0"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- Copy Trading -->
+  <section id="copySection" style="display:none">
+    <div class="card"><h3>Copy Trading</h3><p class="small-muted">Follow top traders (placeholder)</p><div id="copyList"></div></div>
+  </section>
+
+  <footer><small class="small-muted">© 2025 Merrick Trade City — All rights reserved.</small></footer>
 </div>
+
+<!-- Token Modal -->
+<div class="modal" id="tokenModal"><div class="modal-content">
+  <h3>Enter Deriv API Token</h3>
+  <p class="small-muted">Paste a token (starts with "1|") if you used OAuth to obtain it. If your login flow stores a token automatically, you don't need to paste one.</p>
+  <input id="manualTokenInput" class="input" placeholder="1|..." />
+  <div style="display:flex;gap:8px;margin-top:10px">
+    <button class="btn btn-primary" id="saveTokenBtn">Save Token</button>
+    <button class="btn btn-ghost" onclick="closeTokenModal()">Cancel</button>
+  </div>
+</div></div>
+
+<!-- Bot Builder Modal -->
+<div class="modal" id="builderModal"><div class="modal-content">
+  <h3>Bot Builder — Quick Strategy</h3>
+  <input id="builderName" class="input" placeholder="Bot name">
+  <select id="builderStrategy" class="input">
+    <option value="scalp">Scalp</option>
+    <option value="trend">Trend</option>
+    <option value="mean">Mean reversion</option>
+  </select>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button class="btn btn-primary" onclick="createBotFromBuilder()">Create Bot</button>
+    <button class="btn btn-ghost" onclick="closeBotBuilder()">Close</button>
+  </div>
+</div></div>
 
 <script>
-/* ============================
-   Frontend config & helpers
-   ============================ */
+/* ====== Config & state ====== */
+const DERIV_APP_ID = 'YOUR_DERIV_APP_ID'; // replace with your Deriv app id if required
+let derivToken = localStorage.getItem('deriv_token') || null;
+let ws = null;
+let loadedBot = localStorage.getItem('loaded_bot') || null;
 
-/*
-  API_BASE:
-  - assumes your server (backend) is the same origin that serves this file and exposes:
-    /auth/start  (redirects to Deriv OAuth)
-    /api/accounts/detailed
-    /api/balance/:accountId
-    /api/proposal
-    /api/buy
-  If your server is on another origin (e.g. https://api.mydomain.com), change API_BASE accordingly.
-*/
-const API_BASE = ''; // empty string means same origin, otherwise e.g. 'https://api.mydomain.com'
-const qs = s => document.querySelector(s);
-const qsa = s => Array.from(document.querySelectorAll(s));
-function logEvent(title, obj){
-  const el = qs('#eventsLog');
-  const t = new Date().toLocaleTimeString();
-  el.insertAdjacentHTML('afterbegin', <div><strong>[${t}] ${escapeHtml(title)}</strong><pre>${escapeHtml(JSON.stringify(obj, null, 2))}</pre></div>);
+/* ====== Sidebar navigation ====== */
+const sectionMap = {
+  dashboard: document.getElementById('dashboardSection'),
+  freebots: document.getElementById('freebotsSection'),
+  dtrader: document.getElementById('dtraderSection'),
+  smart: document.getElementById('smartSection'),
+  analysis: document.getElementById('analysisSection'),
+  signals: document.getElementById('signalsSection'),
+  charts: document.getElementById('chartsSection'),
+  copy: document.getElementById('copySection')
+};
+
+function navTo(key){
+  Object.values(sectionMap).forEach(s => s && (s.style.display = 'none'));
+  const el = sectionMap[key];
+  if(el) el.style.display = 'block';
+  // set active class
+  document.querySelectorAll('.menu button').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector(.menu button[data-section="${key}"]);
+  if(btn) btn.classList.add('active');
 }
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ============================
-   UI state
-   ============================ */
-let accounts = []; // from /api/accounts/detailed -> [{id, login_id, currency}]
-let activeSymbols = []; // array of {symbol,display,market}
-let selectedAccountId = null;
-let lastProposal = null;
-let chart = null;
-
-/* ============================
-   OAuth / Accounts
-   ============================ */
-qs('#loginBtn').addEventListener('click', ()=> {
-  // Redirect to server endpoint - server should forward to Deriv OAuth
-  window.location.href = (API_BASE || '') + '/auth/start';
+/* attach menu button handlers */
+document.querySelectorAll('.menu button').forEach(btn=>{
+  btn.addEventListener('click', ()=> navTo(btn.dataset.section));
 });
 
-async function fetchAccounts(){
-  try{
-    const res = await fetch((API_BASE || '') + '/api/accounts/detailed', { credentials: 'include' });
-    if(!res.ok) throw new Error('Failed to fetch accounts');
-    const data = await res.json();
-    accounts = data.accounts || [];
-    renderAccounts();
-    logEvent('accounts', accounts);
-    // after loading accounts, fetch balances for each
-    for(const a of accounts){
-      fetchBalanceForAccount(a.id);
-    }
-    return accounts;
-  }catch(err){
-    console.error(err);
-    logEvent('fetchAccounts error', err.message || err);
-    accounts = [];
-    renderAccounts();
-  }
+/* ====== Bots ====== */
+const localBots = [
+  { name: "GoldBot", category: "Forex", price: 800, file: "GoldBot.zip" },
+  { name: "CryptoKing", category: "Crypto", price: 1200, file: "CryptoKing.zip" },
+  { name: "IndexMax", category: "Indices", price: 950, file: "IndexMax.zip" }
+];
+
+function renderBots(list = localBots){
+  const container = document.getElementById('botsContainer');
+  container.innerHTML = list.map(b => `
+    <div class="bot-card">
+      <div class="tag">${b.category}</div>
+      <h4>${b.name}</h4>
+      <p><strong>Ksh ${b.price}</strong></p>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
+        <button class="btn btn-ghost" onclick="loadBot('${escapeHtml(b.name)}')">Load</button>
+        <button class="btn btn-primary" onclick="openPayment('${escapeHtml(b.name)}', ${b.price})">Buy</button>
+      </div>
+    </div>
+  `).join('');
 }
 
-function renderAccounts(){
-  const sel = qs('#accountSelect');
-  sel.innerHTML = '';
-  if(accounts.length === 0){
-    const opt = document.createElement('option');
-    opt.value = '';
-    opt.textContent = 'No accounts (Log in)';
-    sel.appendChild(opt);
-    selectedAccountId = null;
-    return;
-  }
-  accounts.forEach((a, idx) => {
-    const opt = document.createElement('option');
-    opt.value = a.id;
-    opt.textContent = ${a.login_id} (${a.currency});
-    sel.appendChild(opt);
-  });
-  sel.selectedIndex = 0;
-  selectedAccountId = sel.value;
-  sel.addEventListener('change', ()=> {
-    selectedAccountId = sel.value;
+function renderFreeBots(){
+  const free = document.getElementById('freeBots');
+  if(!free) return;
+  free.innerHTML = localBots.map(b => `
+    <div class="bot-card">
+      <div class="tag">${b.category}</div>
+      <h4>${b.name}</h4>
+      <div style="margin-top:8px"><button class="btn btn-ghost" onclick="loadBot('${escapeHtml(b.name)}')">Load</button></div>
+    </div>
+  `).join('');
+}
+
+/* handle local upload */
+const localFileInput = document.getElementById('localBotFile');
+if(localFileInput){
+  localFileInput.addEventListener('change', (e)=>{
+    const f = e.target.files[0];
+    if(!f) return;
+    const bot = { name: f.name.replace(/\.[^/.]+$/, ""), category: "Local", price: 0, file: f.name };
+    localBots.unshift(bot);
+    renderBots();
+    alert('Bot added from local storage: ' + bot.name);
   });
 }
 
-/* ============================
-   Balances & Chart
-   ============================ */
-async function fetchBalanceForAccount(accountId){
-  try{
-    const r = await fetch((API_BASE || '') + /api/balance/${accountId}, { credentials: 'include' });
-    if(!r.ok) throw new Error('Balance fetch failed');
-    const j = await r.json();
-    // j.resp likely contains a balance object from server
-    // store locally on accounts list
-    const idx = accounts.findIndex(a=>a.id===accountId);
-    if(idx>=0){
-      // try to parse balance from j.resp
-      let b = 0;
-      if(j.resp && j.resp.balance){
-        const balObj = Array.isArray(j.resp.balance) ? j.resp.balance[0] : j.resp.balance;
-        b = Number(balObj.balance || 0);
+function openDrive(){ window.open('https://drive.google.com/drive/my-drive', '_blank'); }
+function openBotBuilder(){ document.getElementById('builderModal').style.display='flex'; }
+function closeBotBuilder(){ document.getElementById('builderModal').style.display='none'; }
+function createBotFromBuilder(){
+  const name = document.getElementById('builderName').value || 'QuickBot';
+  const strat = document.getElementById('builderStrategy').value || 'scalp';
+  const bot = { name: ${name} — ${strat}, category: 'Builder', price: 0, file: ${name}.json };
+  localBots.unshift(bot); renderBots(); closeBotBuilder(); alert('Bot created: ' + bot.name);
+}
+function addQuickStrategy(){
+  const val = document.getElementById('quickStrategy').value;
+  if(!val) return alert('Choose a strategy');
+  const bot = { name: Quick-${val}, category: 'Quick', price: 0, file: quick-${val}.json };
+  localBots.unshift(bot); renderBots(); alert('Quick strategy added: ' + bot.name);
+}
+
+function loadBot(name){ loadedBot = name; localStorage.setItem('loaded_bot', name); document.getElementById('loadedBot').textContent = name; alert('Loaded bot: ' + name); }
+
+/* Payment placeholder */
+function openPayment(name, price){ alert('Purchase flow placeholder for ' + name + ' — price: Ksh ' + price); }
+
+/* ====== Deriv WebSocket & Auth (token stored by index.html after Deriv OAuth) ====== */
+function openTokenModal(){ document.getElementById('tokenModal').style.display='flex'; }
+function closeTokenModal(){ document.getElementById('tokenModal').style.display='none'; }
+document.getElementById('saveTokenBtn').addEventListener('click', ()=>{
+  const t = document.getElementById('manualTokenInput').value.trim();
+  if(!t) return alert('Paste the token first');
+  derivToken = t;
+  localStorage.setItem('deriv_token', t);
+  closeTokenModal();
+  connectDerivWS();
+  alert('Token saved. Connecting to Deriv...');
+});
+
+function connectDerivWS(){
+  if(!derivToken) return console.warn('No Deriv token');
+  const appId = DERIV_APP_ID || '1089';
+  const wsUrl = wss://ws.binaryws.com/websockets/v3?app_id=${encodeURIComponent(appId)};
+  if(ws) ws.close();
+  ws = new WebSocket(wsUrl);
+  ws.onopen = ()=> {
+    ws.send(JSON.stringify({ authorize: derivToken }));
+    document.getElementById('derivInfo').textContent = 'Connecting...';
+  };
+  ws.onmessage = (evt) => {
+    try{
+      const data = JSON.parse(evt.data);
+      // authorize
+      if(data.authorize){
+        document.getElementById('derivInfo').textContent = Connected as: ${data.authorize.login_id || 'user'};
       }
-      accounts[idx].balance = b;
-      updateChart();
-      updateCombinedText();
-      logEvent('balance', { accountId, balance: b });
-    }
-  }catch(err){
-    console.error(err);
-    logEvent('balance error', err.message || err);
-  }
-}
-
-function updateCombinedText(){
-  const combined = accounts.reduce((s,a)=> s + (Number(a.balance) || 0), 0);
-  qs('#combinedBalanceText').textContent = 'Combined: ' + combined.toFixed(2);
-}
-
-/* Chart */
-function setupChart(){
-  const ctx = qs('#portfolioChart').getContext('2d');
-  chart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: accounts.map(a=>a.login_id || 'acct'),
-      datasets: [{ label:'Balance', data: accounts.map(a=>Number(a.balance||0)), backgroundColor: ['#7c5cff','#6a4bff','#4bc0c0'] }]
-    },
-    options: { responsive:true, scales:{ y:{ beginAtZero:true } } }
-  });
-}
-function updateChart(){
-  if(!chart){ setupChart(); return; }
-  chart.data.labels = accounts.map(a=>a.login_id || 'acct');
-  chart.data.datasets[0].data = accounts.map(a=>Number(a.balance || 0));
-  chart.update();
-}
-
-/* ============================
-   Symbols & Ticks (public)
-   ============================ */
-const PUBLIC_ACTIVE_SYMBOLS_ENDPOINT = (API_BASE || '') + '/api/public/active_symbols'; // optional: you can implement server endpoint that proxies Deriv activeSymbols
-// We'll call a public server endpoint if available; otherwise we fetch directly from Deriv public WS via a lightweight approach below
-
-async function loadActiveSymbols(){
-  // Try to fetch from server proxy first (recommended)
-  try{
-    const res = await fetch((API_BASE || '') + '/api/active_symbols', { credentials: 'include' });
-    if(res.ok){
-      const j = await res.json();
-      activeSymbols = j.active_symbols || j || [];
-      populateSymbolSelect();
-      logEvent('symbols (from server)', activeSymbols.length);
-      return;
-    }
-  }catch(e){
-    // ignore and fallback to client public WS below
-  }
-
-  // Fallback: use Deriv public API via WebSocket to fetch active symbols
-  try{
-    const ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=109286');
-    ws.addEventListener('open', ()=> ws.send(JSON.stringify({ active_symbols: 'brief' })));
-    ws.addEventListener('message', (evt)=>{
-      try{
-        const d = JSON.parse(evt.data);
-        if(d.active_symbols){
-          activeSymbols = d.active_symbols.map(s => ({ symbol: s.symbol, display: s.display_name || s.symbol, market: s.market }));
-          populateSymbolSelect();
-          logEvent('symbols', activeSymbols.length);
-          ws.close();
+      // handle balance responses
+      if(data.balance){
+        if(Array.isArray(data.balance) && data.balance[0]){
+          document.getElementById('userBalance').textContent = Balance: ${data.balance[0].balance};
+        } else if(data.balance.balance !== undefined){
+          document.getElementById('userBalance').textContent = Balance: ${data.balance.balance};
         }
-      }catch(e){}
-    });
-  }catch(e){
-    console.error('active symbols error', e);
-  }
+      }
+      // ticks & other messages - store for bot logic
+      if(data.tick) localStorage.setItem('latest_tick', JSON.stringify(data.tick));
+      // buy response
+      if(data.buy) { console.log('buy', data.buy); alert('Trade result received'); }
+    }catch(e){ console.warn(e); }
+  };
+  ws.onerror = (e)=> console.error('Deriv WS error', e);
+  ws.onclose = ()=> { console.info('WS closed'); document.getElementById('derivInfo').textContent = 'Disconnected'; };
 }
 
-function populateSymbolSelect(){
-  const sel = qs('#symbolSelect');
-  sel.innerHTML = '';
-  activeSymbols.forEach(s=>{
-    const opt = document.createElement('option');
-    opt.value = s.symbol;
-    opt.textContent = ${s.symbol} — ${s.display || s.symbol} [${s.market||''}];
-    sel.appendChild(opt);
+/* request balance helper */
+function requestBalance(){
+  if(!ws || ws.readyState !== WebSocket.OPEN) return;
+  ws.send(JSON.stringify({ balance: 1 }));
+}
+
+/* proposal & buy pattern */
+function requestProposal(symbol, amount, duration, contractType){
+  return new Promise((resolve,reject)=>{
+    if(!ws || ws.readyState !== WebSocket.OPEN) return reject(new Error('WS not open'));
+    const reqId = p_${Date.now()};
+    const req = { proposal: 1, amount, basis: "stake", contract_type: contractType, symbol, duration, duration_unit: "s", id: reqId };
+    function handler(evt){
+      const d = JSON.parse(evt.data);
+      if(d.proposal && d.proposal.display_name && d.proposal.underlying === symbol.split(':').pop()){
+        ws.removeEventListener('message', handler); resolve(d.proposal);
+      }
+      if(d.error){ ws.removeEventListener('message', handler); reject(new Error(d.error.message || 'proposal error')); }
+    }
+    ws.addEventListener('message', handler);
+    ws.send(JSON.stringify(req));
+    setTimeout(()=>{ ws.removeEventListener('message', handler); reject(new Error('proposal timeout')); }, 8000);
   });
 }
 
-/* Symbol filter */
-qs('#symbolFilter').addEventListener('input', (e)=>{
-  const q = e.target.value.trim().toLowerCase();
-  if(!q) return populateSymbolSelect();
-  const filtered = activeSymbols.filter(s => s.symbol.toLowerCase().includes(q) || (s.display||'').toLowerCase().includes(q) || (s.market||'').toLowerCase().includes(q));
-  const sel = qs('#symbolSelect');
-  sel.innerHTML = '';
-  filtered.forEach(s=>{
-    const opt = document.createElement('option');
-    opt.value = s.symbol;
-    opt.textContent = ${s.symbol} — ${s.display || s.symbol} [${s.market||''}];
-    sel.appendChild(opt);
+function buyProposal(proposal){
+  return new Promise((resolve,reject)=>{
+    if(!ws || ws.readyState !== WebSocket.OPEN) return reject(new Error('WS not open'));
+    function h(evt){
+      const d = JSON.parse(evt.data);
+      if(d.buy){ ws.removeEventListener('message', h); resolve(d.buy); }
+      if(d.error){ ws.removeEventListener('message', h); reject(new Error(d.error.message || 'buy error')); }
+    }
+    ws.addEventListener('message', h);
+    // proposal may include 'id' field or 'longcode' etc - Deriv expects buy with 'proposal.id' in many cases
+    const payload = { buy: proposal.id || proposal.contract_id || proposal.purchase_reference || proposal.proposal_id };
+    ws.send(JSON.stringify(payload));
+    setTimeout(()=>{ ws.removeEventListener('message', h); reject(new Error('buy timeout')); }, 10000);
   });
+}
+
+async function placeTrade(direction, symbol=null, stake=null, duration=null){
+  // determine params
+  symbol = symbol || (document.getElementById('marketSelect')?.value || 'OANDA:XAUUSD');
+  stake = stake || Number(document.getElementById('stake')?.value) || 1;
+  duration = duration || Number(document.getElementById('duration')?.value) || 5;
+  const contractType = direction === 'CALL' ? 'CALL' : 'PUT';
+
+  if(!derivToken) return alert('Please login via index.html (Deriv OAuth) or paste token.');
+  if(!ws || ws.readyState !== WebSocket.OPEN) return alert('Not connected to Deriv. Token may be missing or expired.');
+
+  try{
+    const proposal = await requestProposal(symbol, stake, duration, contractType);
+    if(!proposal) throw new Error('No proposal returned');
+    // buy using proposal id
+    const buyRes = await buyProposal(proposal);
+    console.log('buyRes', buyRes);
+    alert('Trade placed. Check Deriv account for result.');
+  }catch(err){ console.error(err); alert('Trade failed: ' + (err.message || err)); }
+}
+
+/* ====== TradingView loader ====== */
+function loadTradingView(){
+  const symbol = document.getElementById('chartSymbolSelect').value || 'OANDA:XAUUSD';
+  const src = https://s.tradingview.com/widgetembed/?frameElementId=chartFrame&symbol=${encodeURIComponent(symbol)}&interval=60&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=F1F3F6&studies=%5B%5D&theme=dark;
+  document.getElementById('chartFrame').src = src;
+}
+function loadDTraderChart(symbol='OANDA:XAUUSD'){
+  const src = https://s.tradingview.com/widgetembed/?frameElementId=tvFrame&symbol=${encodeURIComponent(symbol)}&interval=60&hidesidetoolbar=1&toolbarbg=F1F3F6&symboledit=1&theme=dark;
+  document.getElementById('tvFrame').src = src;
+}
+
+/* ====== small utils & init ====== */
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function changeProfilePic(){
+  const input = document.createElement('input'); input.type='file'; input.accept='image/*';
+  input.onchange = e => {
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader(); r.onload = ev => { document.getElementById('profilePic').src = ev.target.result; localStorage.setItem('userPic', ev.target.result); };
+    r.readAsDataURL(f);
+  };
+  input.click();
+}
+function logout(){ localStorage.removeItem('deriv_token'); localStorage.removeItem('loaded_bot'); alert('Logged out locally'); window.location.href = 'index.html'; }
+
+/* token modal helpers */
+function openTokenModal(){ document.getElementById('tokenModal').style.display='flex'; }
+function closeTokenModal(){ document.getElementById('tokenModal').style.display='none'; }
+
+/* run loaded bot button */
+document.getElementById('runBotBtn').addEventListener('click', ()=>{
+  if(!loadedBot) return alert('Load a bot first');
+  if(!derivToken) return alert('Please login on index.html to provide Deriv access (or paste token in modal).');
+  // This is where your bot logic would analyze ticks and call placeTrade repeatedly
+  // Here we make a single example call (CALL for demo)
+  placeTrade('CALL');
 });
 
-/* ============================
-   Proposal & Buy (via server)
-   ============================ */
-async function requestProposal(contractType){
-  if(!selectedAccountId) return alert('Choose an account first');
-  const symbol = qs('#symbolSelect').value;
-  if(!symbol) return alert('Choose a symbol');
-  const stake = Number(qs('#stakeInput').value) || 1;
-  const duration = Number(qs('#durationInput').value) || 1;
-  const duration_unit = qs('#durationUnit').value || 'm';
-  const basis = qs('#basisSelect').value || 'stake';
-
-  qs('#proposalArea').textContent = 'Requesting proposal...';
-
-  try{
-    const resp = await fetch((API_BASE || '') + '/api/proposal', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({
-        accountId: selectedAccountId,
-        symbol,
-        amount: stake,
-        contract_type: contractType,
-        duration,
-        duration_unit,
-        basis
-      })
-    });
-    const j = await resp.json();
-    if(!resp.ok) {
-      qs('#proposalArea').textContent = 'Proposal error: ' + (j.error || JSON.stringify(j));
-      logEvent('proposal error', j);
-      return;
-    }
-    lastProposal = j.proposal || j;
-    qs('#proposalArea').innerHTML = '<pre>' + escapeHtml(JSON.stringify(lastProposal, null, 2)) + '</pre>';
-    qs('#buyBtn').disabled = false;
-    logEvent('proposal', lastProposal);
-  }catch(err){
-    console.error(err);
-    qs('#proposalArea').textContent = 'Proposal failed: ' + (err.message || err);
-    logEvent('proposal catch', err);
-  }
-}
-
-async function executeBuy(){
-  if(!lastProposal) return alert('No proposal to buy.');
-  if(!selectedAccountId) return alert('Choose account.');
-
-  const symbol = qs('#symbolSelect').value;
-  const stake = Number(qs('#stakeInput').value) || 1;
-  const duration = Number(qs('#durationInput').value) || 1;
-  const duration_unit = qs('#durationUnit').value || 'm';
-  const basis = qs('#basisSelect').value || 'stake';
-  qs('#buyBtn').disabled = true;
-  qs('#proposalArea').textContent = 'Executing buy...';
-
-  try{
-    const resp = await fetch((API_BASE || '') + '/api/buy', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({
-        accountId: selectedAccountId,
-        symbol,
-        amount: stake,
-        contract_type: lastProposal.proposal ? (lastProposal.proposal.contract_type || lastProposal.proposal.contract_type) : (lastProposal.contract_type || 'CALL'),
-        duration,
-        duration_unit,
-        basis
-      })
-    });
-    const j = await resp.json();
-    if(!resp.ok){
-      qs('#proposalArea').textContent = 'Buy error: ' + (j.error || JSON.stringify(j));
-      logEvent('buy error', j);
-      qs('#buyBtn').disabled = false;
-      return;
-    }
-    qs('#proposalArea').innerHTML = '<pre>' + escapeHtml(JSON.stringify(j, null, 2)) + '</pre>';
-    logEvent('buy', j);
-    // refresh balances
-    await fetchAccounts();
-    qs('#buyBtn').disabled = false;
-  }catch(err){
-    console.error(err);
-    qs('#proposalArea').textContent = 'Buy failed: ' + (err.message || err);
-    logEvent('buy catch', err);
-    qs('#buyBtn').disabled = false;
-  }
-}
-
-/* ============================
-   Wiring buttons & init
-   ============================ */
-qs('#proposalCALL').addEventListener('click', ()=> requestProposal('CALL'));
-qs('#proposalPUT').addEventListener('click', ()=> requestProposal('PUT'));
-qs('#buyBtn').addEventListener('click', () => executeBuy());
-qs('#refreshSymbols').addEventListener('click', ()=> loadActiveSymbols());
-qs('#btnRefreshAccounts').addEventListener('click', ()=> fetchAccounts());
-
-/* Chart update interval */
-setInterval(()=> updateChart(), Number(qs('#chartInterval').value || 2000));
-
-/* Initialize: load accounts and symbols */
-(async function init(){
-  await fetchAccounts();
-  await loadActiveSymbols();
-  updateChart();
-})();
-
+/* init on load */
+window.onload = () => {
+  renderBots();
+  renderFreeBots();
+  navTo('dashboard');
+  // restore profile pic & loaded bot
+  const sp = localStorage.getItem('userPic'); if(sp) document.getElementById('profilePic').src = sp;
+  if(loadedBot) document.getElementById('loadedBot').textContent = loadedBot;
+  // load trading frames
+  loadTradingView();
+  loadDTraderChart();
+  // if token exists from index.html OAuth redirect, connect
+  if(localStorage.getItem('deriv_token')){ derivToken = localStorage.getItem('deriv_token'); connectDerivWS(); setTimeout(requestBalance, 1000); }
+  // wire modal close on background click
+  document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', (e)=>{ if(e.target === m) m.style.display='none'; }));
+};
 </script>
 </body>
 </html>
