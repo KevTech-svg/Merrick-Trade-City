@@ -8,43 +8,43 @@
 <link rel="icon" type="image/png" href="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-  @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
-  :root{--bg:#0c0f1f;--accent:#7c5cff;--accent2:#6a4bff;--muted:#bfbfcf}
-  *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
-  html,body{height:100%}
-  body{display:flex;min-height:100vh;background:radial-gradient(circle at top,var(--bg),#05060d);color:#fff}
-  .loading-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(6,8,20,0.9), rgba(6,8,20,0.95));z-index:9999;flex-direction:column;transition:opacity .5s,visibility .5s}
-  .loading-hidden{opacity:0;visibility:hidden;pointer-events:none}
-  .brand-glow{font-size:36px;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;color:transparent}
-  .loading-sub{margin-top:12px;color:var(--muted)}
-  .sidebar{width:260px;padding:22px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.06)}
-  .profile-card{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px}
-  .profile-card img{width:64px;height:64px;border-radius:50%;object-fit:cover;cursor:pointer}
-  .menu{display:flex;flex-direction:column;gap:6px}
-  .menu button{background:none;border:none;color:#fff;padding:12px;border-radius:10px;text-align:left;cursor:pointer;font-weight:600}
-  .menu button.active{background:linear-gradient(90deg,var(--accent),var(--accent2))}
-  .main{flex:1;padding:18px;display:flex;flex-direction:column;gap:16px;overflow:auto}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px}
-  .chart-box{height:420px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
-  .bots-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px}
-  .bot-card{background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;text-align:center}
-  .input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff}
-  footer{margin-top:10px;text-align:center;color:var(--muted)}
-  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center}
-  .modal-content{background:#0f0c29;padding:18px;border-radius:12px;width:94%;max-width:520px}
-  .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
-  .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
-  @media(max-width:980px){.sidebar{width:100%;flex-direction:row;overflow:auto}.menu{flex-direction:row}}
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+:root{--bg:#0c0f1f;--accent:#7c5cff;--accent2:#6a4bff;--muted:#bfbfcf}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
+html,body{height:100%}
+body{display:flex;min-height:100vh;background:radial-gradient(circle at top,var(--bg),#05060d);color:#fff}
+.loading-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(6,8,20,0.9), rgba(6,8,20,0.95));z-index:9999;flex-direction:column;transition:opacity .5s,visibility .5s}
+.loading-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.brand-glow{font-size:36px;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;color:transparent}
+.loading-sub{margin-top:12px;color:var(--muted)}
+.sidebar{width:260px;padding:22px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.06)}
+.profile-card{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px}
+.profile-card img{width:64px;height:64px;border-radius:50%;object-fit:cover;cursor:pointer}
+.menu{display:flex;flex-direction:column;gap:6px}
+.menu button{background:none;border:none;color:#fff;padding:12px;border-radius:10px;text-align:left;cursor:pointer;font-weight:600}
+.menu button.active{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.main{flex:1;padding:18px;display:flex;flex-direction:column;gap:16px;overflow:auto}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px}
+.chart-box{height:420px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+.bots-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px}
+.bot-card{background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;text-align:center}
+.input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff}
+footer{margin-top:10px;text-align:center;color:var(--muted)}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center}
+.modal-content{background:#0f0c29;padding:18px;border-radius:12px;width:94%;max-width:520px}
+.btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+@media(max-width:980px){.sidebar{width:100%;flex-direction:row;overflow:auto}.menu{flex-direction:row}}
 </style>
 </head>
-<body><!-- Loading overlay --><div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite">
+<body><div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite">
   <div class="brand-glow">Merrick Trade City</div>
   <div class="loading-sub" id="loadingSub">Connecting… please wait</div>
-</div><!-- Sidebar --><div class="sidebar" role="navigation">
+</div><div class="sidebar" role="navigation">
   <div>
     <h2>User Panel</h2>
     <div class="profile-card card">
-      <img id="profilePic" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="avatar" onclick="onChangeProfilePic()" />
+      <img id="profilePic" src="assets/default-avatar.png" alt="avatar" onclick="onChangeProfilePic()" />
       <div>
         <div id="userName">—</div>
         <small id="userBalance">Balance: —</small>
@@ -62,279 +62,216 @@
 </div>
 
   </div>  <div style="margin-top:14px">
-    <div style="margin-bottom:8px">
-      <button class="btn btn-primary" id="githubLoginBtn">Connect GitHub</button>
-    </div>
     <button class="btn" onclick="openTokenModal()">Deriv Token</button>
     <button class="btn" onclick="logout()">Logout</button>
   </div>
-</div><!-- Main --><div class="main">
-  <div id="dashboardSection" class="card section">
-    <h3>Portfolio Overview</h3>
-    <div class="chart-box">
-      <canvas id="portfolioChart"></canvas>
+</div><div class="main">
+  <div class="welcome card">
+    <div style="display:flex;gap:12px;align-items:center">
+      <img src="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg" class="logo-small" style="width:48px;height:48px;border-radius:10px" alt="logo">
+      <div>
+        <div style="font-weight:700">Welcome back, <span id="displayName">User</span></div>
+        <div class="small-muted">Trade live with your Deriv account inside Merrick Trade City</div>
+      </div>
     </div>
-  </div>  <div id="freebotsSection" class="section card" style="display:none">
-    <h3>Free Bots</h3>
-    <div class="bots-grid" id="freeBotsGrid"></div>
-  </div>  <div id="dtraderSection" class="section card" style="display:none">
-    <h3>D-Trader (Demo)</h3>
-    <p>Coming soon…</p>
-  </div>  <div id="copySection" class="section card" style="display:none">
-    <h3>Copy Trading</h3>
-    <p>Coming soon…</p>
+    <div style="text-align:right">
+      <small class="small-muted">Loaded bot: <strong id="loadedBot">None</strong></small><br>
+      <button class="btn btn-primary" id="runBotBtn">Run Loaded Bot</button>
+    </div>
+  </div>  <section id="dashboardSection" class="card">
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:300px">
+        <small class="small-muted">Quick Tutorial</small>
+        <h3>How to add & run bots</h3>
+        <div style="aspect-ratio:16/9;border-radius:10px;overflow:hidden;">
+          <iframe id="ytTutorial" src="https://www.youtube.com/embed/yup6kew1BBU?si=yNLIy1Fym8RjD9HI" style="width:100%;height:100%;border:0" allowfullscreen></iframe>
+        </div>
+        <div class="small-muted" style="margin-top:8px">Replace this YouTube link any time.</div>
+      </div>  <div style="width:320px">
+    <small class="small-muted">Quick Actions</small>
+    <h4>Add Bot</h4>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <input id="localBotFile" type="file" accept=".xml,.zip" class="input">
+      <button class="btn" onclick="openBotBuilder()">Bot Builder</button>
+      <select id="quickStrategy" class="input">
+        <option value="">Choose Quick Strategy</option>
+        <option value="scalp">Scalp</option>
+        <option value="swing">Swing</option>
+        <option value="trend">Trend</option>
+      </select>
+      <button class="btn btn-primary" onclick="addQuickStrategy()">Use Strategy</button>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:14px">
+  <h3>Available Bots</h3>
+  <div class="bots-grid" id="botsContainer"></div>
+</div>
+
+<div style="margin-top:14px">
+  <h3>Your Portfolio</h3>
+  <div class="chart-box"><canvas id="portfolioChart" style="width:100%;height:100%"></canvas></div>
+</div>
+
+  </section>  <section id="freebotsSection" style="display:none" class="card">
+    <h3>Shared Bots</h3>
+    <div class="bots-grid" id="sharedBotsContainer"></div>
+  </section>  <section id="dtraderSection" style="display:none" class="card">
+    <h3>D-Trader (TradingView)</h3>
+    <div class="chart-box" id="tvFrameWrap"></div>
+  </section>  <section id="chartsSection" style="display:none" class="card">
+    <h3>Charts</h3>
+    <div class="chart-box" id="tvChartWrap"></div>
+  </section>  <section id="smartSection" style="display:none" class="card"><h3>Smart Analysis</h3></section>
+  <section id="analysisSection" style="display:none" class="card"><h3>Analysis Tool</h3></section>
+  <section id="signalsSection" style="display:none" class="card"><h3>Signals</h3></section>
+  <section id="copySection" style="display:none" class="card"><h3>Copy Trading</h3></section>  <footer><small class="small-muted">© 2025 Merrick Trade City — All rights reserved.</small></footer>
+</div><!-- Deriv token modal --><div class="modal" id="tokenModal">
+  <div class="modal-content">
+    <h3>Enter Deriv API Token</h3>
+    <input id="manualDerivToken" class="input" placeholder="1|..." />
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+      <button class="btn" onclick="closeTokenModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDerivToken()">Save</button>
+    </div>
+  </div>
+</div><!-- Bot builder modal --><div class="modal" id="builderModal">
+  <div class="modal-content">
+    <h3>Quick Bot Builder</h3>
+    <input id="builderName" class="input" placeholder="Bot name (e.g. Quick-Scalp)" />
+    <select id="builderStrategy" class="input" style="margin-top:8px">
+      <option value="scalp">Scalp</option><option value="trend">Trend</option><option value="mean">Mean Reversion</option>
+    </select>
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+      <button class="btn" onclick="closeBotBuilder()">Close</button>
+      <button class="btn btn-primary" onclick="createBotFromBuilder()">Create</button>
+    </div>
   </div>
 </div><script>
-/* ====== Config ====== */
-const GITHUB_OWNER = 'KevTech-svg';
-const GITHUB_REPO = 'merrick-data';
-const USERS_PATH = 'users.json';
-const ADMIN_BOTS_PATH = 'admin_bots.json';
+// === Config & state ===
 const DERIV_APP_ID = '109286';
-
-/* ====== Runtime state ====== */
-let githubToken = localStorage.getItem('merrick_github_token') || null;
-let usersData = {};
-let adminBots = [];
-let currentUserEmail = localStorage.getItem('merrick_current_user') || null;
-let currentUser = null;
+const REDIRECT_URI = location.origin + '/Merrick-Trade-City/user.html';
+let currentUser = { name:'Demo User', email:'demo@example.com', balance:1000, bots:[], avatar:'assets/default-avatar.png' };
+let loadedBot = null;
 let portfolioChart = null;
 
-/* ====== Safe query parsing ====== */
-const urlParams = new URLSearchParams(window.location.search);
-const acct1 = urlParams.get('acct1');
-const token1 = urlParams.get('token1');
-const cur1 = urlParams.get('cur1');
+// === Utility ===
+function qs(sel){ return document.querySelector(sel); }
+function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
+function show(el){ if(!el) return; el.style.display='block'; }
+function hide(el){ if(!el) return; el.style.display='none'; }
+function openModal(id){ qs('#'+id).style.display='flex'; }
+function closeModal(id){ qs('#'+id).style.display='none'; }
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ====== Helpers ====== */
-const qs = s => document.querySelector(s);
-const qsa = s => Array.from(document.querySelectorAll(s));
-const show = el => el && (el.style.display='block');
-const hide = el => el && (el.style.display='none');
-const openModal = id => qs('#'+id).style.display='flex';
-const closeModal = id => qs('#'+id).style.display='none';
-
-/* ====== Load & save users on GitHub ====== */
-async function saveUsersToGitHub(){
-  if(!githubToken) return;
-  try{
-    const content = btoa(JSON.stringify(usersData,null,2));
-    await fetch(https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${USERS_PATH},{
-      method:'PUT',
-      headers:{'Authorization':'token '+githubToken,'Content-Type':'application/json'},
-      body:JSON.stringify({message:'Update users',content})
-    });
-  }catch(e){console.error('GitHub save failed',e);}
+// === Profile ===
+function setCurrentUserUI(){
+  qs('#userName').textContent = currentUser.name;
+  qs('#displayName').textContent = currentUser.name;
+  qs('#userBalance').textContent = 'Balance: ' + currentUser.balance;
+  qs('#userEmail').textContent = currentUser.email;
+  qs('#profilePic').src = currentUser.avatar;
 }
-
-async function loadUsersFromGitHub(){
-  try{
-    const res = await fetch(https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${USERS_PATH});
-    usersData = await res.json();
-  }catch(e){console.warn('Could not load users.json, initializing empty'); usersData={};}
-}
-
-/* ====== UI updates ====== */
-function updateProfileUI(){
-  if(!currentUser) return;
-  qs('#userName').textContent = currentUser.name || '—';
-  qs('#userBalance').textContent = 'Balance: ' + (currentUser.balance||'0');
-  qs('#userEmail').textContent = currentUser.email || '—';
-  qs('#profilePic').src = currentUser.avatar || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
-}
-
 function onChangeProfilePic(){
   const url = prompt('Paste image URL for your avatar:','');
   if(!url) return;
   currentUser.avatar = url;
-  updateProfileUI();
-  usersData[currentUser.email] = currentUser;
-  if(githubToken) saveUsersToGitHub();
+  setCurrentUserUI();
 }
+function logout(){ location.reload(); }
 
-/* ====== Section switching ====== */
+// === Sidebar menu ===
 qsa('.menu button').forEach(btn=>{
-  btn.onclick = ()=>{
+  btn.addEventListener('click', ()=> {
     qsa('.menu button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    qsa('.section').forEach(s=>s.style.display='none');
-    const sec = qs(#${btn.dataset.section}Section);
-    show(sec);
-  };
+    const sectionMap = { dashboard:'dashboardSection', freebots:'freebotsSection', dtrader:'dtraderSection', smart:'smartSection', analysis:'analysisSection', signals:'signalsSection', charts:'chartsSection', copy:'copySection' };
+Object.keys(sectionMap).forEach(key=>{
+const sec = qs('#'+sectionMap[key]);
+if(key===btn.dataset.section) show(sec); else hide(sec);
+});
+});
 });
 
-/* ====== Free bots rendering ====== */
-async function loadBots(){
-  try{
-    const res = await fetch(https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${ADMIN_BOTS_PATH});
-    adminBots = await res.json();
-    const grid = qs('#freeBotsGrid');
-    grid.innerHTML = '';
-    adminBots.forEach(bot=>{
-      const div = document.createElement('div');
-      div.className='bot-card';
-      div.innerHTML=<h4>${bot.name}</h4><p>${bot.desc}</p>;
-      grid.appendChild(div);
-    });
-  }catch(e){console.warn('Could not load bots',e);}
+// === Bots management ===
+function addQuickStrategy(){
+const strategy = qs('#quickStrategy').value;
+if(!strategy){ alert('Select a strategy'); return; }
+const bot = { name: strategy+' Bot', strategy, id: Date.now() };
+currentUser.bots.push(bot);
+renderBots();
+}
+function renderBots(){
+const container = qs('#botsContainer');
+container.innerHTML='';
+currentUser.bots.forEach(bot=>{
+const div = document.createElement('div');
+div.className='bot-card';
+div.innerHTML="<strong>${escapeHtml(bot.name)}</strong><br>Strategy: ${escapeHtml(bot.strategy)}<br> <button class="btn btn-primary" onclick="loadBot(${bot.id})">Load</button>";
+container.appendChild(div);
+});
+}
+function loadBot(id){
+loadedBot = currentUser.bots.find(b=>b.id===id);
+qs('#loadedBot').textContent = loadedBot ? loadedBot.name : 'None';
 }
 
-/* ====== Portfolio chart ====== */
-function initChart(){
-  const ctx = qs('#portfolioChart').getContext('2d');
-  const data = {labels:['BTC','ETH','XAU','USD'],datasets:[{label:'Balance',data:[500,300,200,100],backgroundColor:['#7c5cff','#6a4bff','#3e3c9f','#111']}]};
-  portfolioChart = new Chart(ctx,{type:'bar',data,options:{responsive:true,plugins:{legend:{display:false}}}});
+// === Bot Builder Modal ===
+function openBotBuilder(){ openModal('builderModal'); }
+function closeBotBuilder(){ closeModal('builderModal'); }
+function createBotFromBuilder(){
+const name = qs('#builderName').value.trim();
+const strat = qs('#builderStrategy').value;
+if(!name){ alert('Enter bot name'); return; }
+const bot = { name, strategy: strat, id: Date.now() };
+currentUser.bots.push(bot);
+renderBots();
+closeBotBuilder();
 }
 
-/* ====== Deriv token modal ====== */
-function openTokenModal(){alert('Deriv token modal coming soon…');}
-function logout(){localStorage.removeItem('merrick_current_user');location.reload();}
-
-/* ====== Init ====== */
-async function init(){
-  await loadUsersFromGitHub();
-  currentUser = usersData[currentUserEmail] || {name:'Guest',email:'guest@example.com',balance:0,avatar:''};
-  updateProfileUI();
-  await loadBots();
-  initChart();
-  hide(qs('#loadingOverlay'));
+// === Deriv token modal ===
+function openTokenModal(){ openModal('tokenModal'); }
+function closeTokenModal(){ closeModal('tokenModal'); }
+function saveDerivToken(){
+const t = qs('#manualDerivToken').value.trim();
+if(!t){ alert('Enter token'); return; }
+currentUser.derivToken = t;
+alert('Deriv token saved');
+closeTokenModal();
 }
 
-init();
+// === Portfolio Chart ===
+function initPortfolioChart(){
+const ctx = qs('#portfolioChart').getContext('2d');
+portfolioChart = new Chart(ctx,{
+type:'line',
+data:{ labels:['Day1','Day2','Day3','Day4','Day5'], datasets:[{ label:'Balance', data:[1000,1020,1015,1030,1045], borderColor:'#7c5cff', fill:false }]},
+options:{ responsive:true, plugins:{ legend:{display:true,color:'#fff'}}, scales:{ y:{ beginAtZero:false, ticks:{ color:'#fff' }}, x:{ ticks:{ color:'#fff' } } } }
+});
+}
+
+// === TradingView embeds ===
+function initTradingView(){
+qs('#tvFrameWrap').innerHTML='<iframe src="https://s.tradingview.com/embed-widget/tradingview/?symbol=NASDAQ:AAPL" style="width:100%;height:100%;border:0;"></iframe>';
+qs('#tvChartWrap').innerHTML='<iframe src="https://s.tradingview.com/widgetembed/?symbol=NASDAQ:AAPL" style="width:100%;height:100%;border:0;"></iframe>';
+}
+
+// === Run loaded bot ===
+qs('#runBotBtn').addEventListener('click', ()=>{
+if(!loadedBot){ alert('Load a bot first'); return; }
+alert('Bot '+loadedBot.name+' running...');
+});
+
+// === Initialize ===
+document.addEventListener('DOMContentLoaded', ()=>{
+setCurrentUserUI();
+renderBots();
+initPortfolioChart();
+initTradingView();
+setTimeout(()=>qs('#loadingOverlay').classList.add('loading-hidden'),1500);
+});
 </script>
-  <script src="https://cdn.jsdelivr.net/npm/reconnecting-websocket@4.4.0/dist/reconnecting-websocket.min.js"></script><script>
-/* ====== Deriv WebSocket Live Trading ====== */
-const DERIV_APP_ID = 109286; // Your app id
-let ws = null;
-let activeSymbols = ['R_100','R_25','RDBEAR','RDBULL']; // Example tickers
-let tickSubscriptions = {}; // Store active ticks
-let portfolio = {balance:1000, trades:[]}; // Demo portfolio
 
-function connectDeriv() {
-    if(ws) ws.close();
-    ws = new ReconnectingWebSocket('wss://ws.binaryws.com/websockets/v3?app_id='+DERIV_APP_ID);
-
-    ws.onopen = () => console.log('Connected to Deriv WS');
-    ws.onclose = () => console.log('Disconnected from Deriv WS');
-
-    ws.onmessage = (msg) => {
-        const data = JSON.parse(msg.data);
-
-        // Handle tick updates
-        if(data.tick) handleTick(data.tick);
-
-        // Handle purchase response
-        if(data.buy) handleTradeConfirmation(data.buy);
-    };
-}
-
-/* ====== Subscribe to ticks ====== */
-function subscribeTick(symbol) {
-    ws.send(JSON.stringify({ticks:symbol}));
-    tickSubscriptions[symbol] = null;
-}
-
-/* ====== Tick handler ====== */
-function handleTick(tick) {
-    tickSubscriptions[tick.symbol] = tick.quote;
-    updateLivePricesUI();
-}
-
-/* ====== Update UI with live prices ====== */
-function updateLivePricesUI() {
-    const container = document.getElementById('freeBotsGrid');
-    if(!container) return;
-    container.innerHTML = '';
-    Object.keys(tickSubscriptions).forEach(symbol => {
-        const price = tickSubscriptions[symbol] ? tickSubscriptions[symbol].toFixed(2) : '-';
-        const div = document.createElement('div');
-        div.className = 'bot-card';
-        div.innerHTML = `<h4>${symbol}</h4>
-            <p>Price: ${price}</p>
-            <button class="btn btn-primary" onclick="placeTrade('${symbol}','CALL')">Buy CALL</button>
-            <button class="btn btn-primary" style="background:#ff5c5c" onclick="placeTrade('${symbol}','PUT')">Buy PUT</button>`;
-        container.appendChild(div);
-    });
-}
-
-/* ====== Place a demo trade ====== */
-function placeTrade(symbol, direction) {
-    // Simulate trade in front-end portfolio
-    const lastPrice = tickSubscriptions[symbol];
-    if(!lastPrice) return alert('Price not available yet');
-
-    const stake = 10; // Fixed demo stake
-    const trade = {
-        symbol,
-        direction,
-        stake,
-        entryPrice:lastPrice,
-        timestamp:Date.now(),
-        status:'open'
-    };
-    portfolio.trades.push(trade);
-
-    // Mock buy request to Deriv (optional, you can uncomment to use real)
-    /*
-    ws.send(JSON.stringify({
-        buy:{
-            price: stake,
-            symbol: symbol,
-            contract_type: direction,
-            basis:'stake',
-            currency:'USD'
-        }
-    }));
-    */
-
-    updatePortfolioUI();
-}
-
-/* ====== Trade confirmation handler ====== */
-function handleTradeConfirmation(buyResp){
-    console.log('Trade confirmed:', buyResp);
-}
-
-/* ====== Portfolio UI ====== */
-function updatePortfolioUI(){
-    const dashboard = document.getElementById('dashboardSection');
-    if(!dashboard) return;
-
-    const tradesHTML = portfolio.trades.map(t=>{
-        const now = Date.now();
-        const elapsed = ((now-t.timestamp)/1000).toFixed(1);
-        const pnl = t.direction==='CALL'? (tickSubscriptions[t.symbol]-t.entryPrice)*10 : (t.entryPrice-tickSubscriptions[t.symbol])*10;
-        return <p>${t.symbol} ${t.direction} | Stake: $${t.stake} | PnL: $${pnl.toFixed(2)} | Open: ${elapsed}s ago</p>;
-    }).join('');
-    
-    dashboard.querySelector('.card').innerHTML = `<h3>Portfolio Overview</h3>
-        <div class="chart-box"><canvas id="portfolioChart"></canvas></div>
-        <h4>Open Trades</h4>${tradesHTML}`;
-    renderChart();
-}
-
-/* ====== Portfolio Chart ====== */
-function renderChart(){
-    const ctx = document.getElementById('portfolioChart').getContext('2d');
-    const labels = portfolio.trades.map(t=>t.symbol);
-    const data = portfolio.trades.map(t=>{
-        return t.direction==='CALL'? tickSubscriptions[t.symbol]-t.entryPrice : t.entryPrice-tickSubscriptions[t.symbol];
-    });
-    if(window.portfolioChart) window.portfolioChart.destroy();
-    window.portfolioChart = new Chart(ctx,{
-        type:'bar',
-        data:{labels, datasets:[{label:'PnL',data, backgroundColor:'#7c5cff'}]},
-        options:{responsive:true,plugins:{legend:{display:false}}}
-    });
-}
-
-/* ====== Init live trading ====== */
-function initLiveTrading() {
-    connectDeriv();
-    activeSymbols.forEach(subscribeTick);
-}
-
-initLiveTrading();
-</script>
 </body>
 </html>
