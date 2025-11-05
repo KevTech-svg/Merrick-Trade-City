@@ -1,277 +1,442 @@
 <!doctype html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Merrick Trade City — User Panel</title>
+<title>Merrick Trade City — Live</title>
 <link rel="icon" type="image/png" href="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
-:root{--bg:#0c0f1f;--accent:#7c5cff;--accent2:#6a4bff;--muted:#bfbfcf}
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
-html,body{height:100%}
-body{display:flex;min-height:100vh;background:radial-gradient(circle at top,var(--bg),#05060d);color:#fff}
-.loading-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(6,8,20,0.9), rgba(6,8,20,0.95));z-index:9999;flex-direction:column;transition:opacity .5s,visibility .5s}
-.loading-hidden{opacity:0;visibility:hidden;pointer-events:none}
-.brand-glow{font-size:36px;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;color:transparent}
-.loading-sub{margin-top:12px;color:var(--muted)}
-.sidebar{width:260px;padding:22px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.06)}
-.profile-card{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px}
-.profile-card img{width:64px;height:64px;border-radius:50%;object-fit:cover;cursor:pointer}
-.menu{display:flex;flex-direction:column;gap:6px}
-.menu button{background:none;border:none;color:#fff;padding:12px;border-radius:10px;text-align:left;cursor:pointer;font-weight:600}
-.menu button.active{background:linear-gradient(90deg,var(--accent),var(--accent2))}
-.main{flex:1;padding:18px;display:flex;flex-direction:column;gap:16px;overflow:auto}
-.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px}
-.chart-box{height:420px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
-.bots-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px}
-.bot-card{background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;text-align:center}
-.input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff}
-footer{margin-top:10px;text-align:center;color:var(--muted)}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center}
-.modal-content{background:#0f0c29;padding:18px;border-radius:12px;width:94%;max-width:520px}
-.btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
-.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
-@media(max-width:980px){.sidebar{width:100%;flex-direction:row;overflow:auto}.menu{flex-direction:row}}
+  @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+  :root{--bg:#0c0f1f;--accent:#7c5cff;--accent2:#6a4bff;--muted:#bfbfcf}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
+  html,body{height:100%}
+  body{display:flex;min-height:100vh;background:radial-gradient(circle at top,var(--bg),#05060d);color:#fff}
+  .sidebar{width:320px;padding:20px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));border-right:1px solid rgba(255,255,255,0.06)}
+  .main{flex:1;padding:20px;overflow:auto}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;margin-bottom:12px}
+  .input{padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff;width:100%}
+  .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+  .muted{color:var(--muted);font-size:13px}
+  .trade-btn{padding:8px 12px;border-radius:6px;border:none;cursor:pointer;margin-right:4px;}
+  .call-btn{background:#2ecc71;color:#fff;}
+  .put-btn{background:#e74c3c;color:#fff;}
+  .small{font-size:13px;color:var(--muted)}
+  select.input{height:40px}
+  .row{display:flex;gap:8px;align-items:center}
+  .col{display:flex;flex-direction:column;gap:8px}
+  footer{color:var(--muted);font-size:12px;margin-top:12px}
+  pre { white-space: pre-wrap; word-break: break-word; font-size: 12px; color: #ddd }
 </style>
 </head>
-<body><div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite">
-  <div class="brand-glow">Merrick Trade City</div>
-  <div class="loading-sub" id="loadingSub">Connecting… please wait</div>
-</div><div class="sidebar" role="navigation">
-  <div>
-    <h2>User Panel</h2>
-    <div class="profile-card card">
-      <img id="profilePic" src="assets/default-avatar.png" alt="avatar" onclick="onChangeProfilePic()" />
+<body>
+
+<div class="sidebar">
+  <h2>Merrick Trade City</h2>
+
+  <div class="card">
+    <div class="small">Sign in</div>
+    <div style="margin-top:8px">
+      <button id="loginBtn" class="btn">Log in with Deriv (OAuth)</button>
+    </div>
+    <div class="small muted" style="margin-top:8px">After login your accounts will be saved server-side and displayed below.</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Connected accounts</div>
+    <select id="accountSelect" class="input"></select>
+    <div style="margin-top:8px">
+      <button id="btnRefreshAccounts" class="btn" style="background:#444">Refresh Accounts</button>
+    </div>
+    <div class="small muted" style="margin-top:8px">Accounts are stored server-side (encrypted) and never exposed in the browser.</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Symbols</div>
+    <input id="symbolFilter" class="input" placeholder="Filter symbols (e.g. R_100, forex, volatility)" />
+    <select id="symbolSelect" class="input" size="6" style="height:220px;margin-top:8px"></select>
+    <div class="small muted" style="margin-top:8px">Symbols pulled from Deriv public API.</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Settings</div>
+    <label class="small">Chart update interval (ms)</label>
+    <input id="chartInterval" class="input" type="number" value="2000" />
+    <div class="small muted" style="margin-top:8px">Note: server executes trades — tokens are never stored client-side.</div>
+  </div>
+
+  <footer>© 2025 Merrick Trade City — Use responsibly. Live funds: confirm accounts before buying.</footer>
+</div>
+
+<div class="main">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
       <div>
-        <div id="userName">—</div>
-        <small id="userBalance">Balance: —</small>
-        <small id="userEmail">—</small>
+        <h3>Welcome back, <span id="displayName">Trader</span></h3>
+        <div class="small muted">Connected accounts & live trading via the server</div>
       </div>
-    </div><div class="menu" id="menu">
-  <button data-section="dashboard" class="active">Dashboard</button>
-  <button data-section="freebots">Free Bots</button>
-  <button data-section="dtrader">D-Trader</button>
-  <button data-section="smart">Smart Analysis</button>
-  <button data-section="analysis">Analysis Tool</button>
-  <button data-section="signals">Signals</button>
-  <button data-section="charts">Charts</button>
-  <button data-section="copy">Copy Trading</button>
-</div>
 
-  </div>  <div style="margin-top:14px">
-    <button class="btn" onclick="openTokenModal()">Deriv Token</button>
-    <button class="btn" onclick="logout()">Logout</button>
-  </div>
-</div><div class="main">
-  <div class="welcome card">
-    <div style="display:flex;gap:12px;align-items:center">
-      <img src="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg" class="logo-small" style="width:48px;height:48px;border-radius:10px" alt="logo">
-      <div>
-        <div style="font-weight:700">Welcome back, <span id="displayName">User</span></div>
-        <div class="small-muted">Trade live with your Deriv account inside Merrick Trade City</div>
+      <div style="width:360px">
+        <div class="small">Combined Balance</div>
+        <canvas id="portfolioChart" style="height:120px"></canvas>
+        <div class="small" id="combinedBalanceText">Loading...</div>
       </div>
     </div>
-    <div style="text-align:right">
-      <small class="small-muted">Loaded bot: <strong id="loadedBot">None</strong></small><br>
-      <button class="btn btn-primary" id="runBotBtn">Run Loaded Bot</button>
+  </div>
+
+  <div class="card">
+    <h4>Quick Trade (server-side)</h4>
+    <div class="row" style="margin-bottom:8px;align-items:center">
+      <button id="proposalCALL" class="trade-btn call-btn">Proposal CALL</button>
+      <button id="proposalPUT" class="trade-btn put-btn">Proposal PUT</button>
+
+      <div style="width:120px">
+        <input id="stakeInput" class="input" type="number" value="1" />
+      </div>
+      <div style="width:120px">
+        <input id="durationInput" class="input" type="number" value="1" />
+      </div>
+      <div style="width:120px">
+        <select id="durationUnit" class="input"><option value="m">min</option><option value="s">sec</option><option value="t">ticks</option></select>
+      </div>
+      <div style="width:160px">
+        <select id="basisSelect" class="input"><option value="stake">Stake</option><option value="payout">Payout</option></select>
+      </div>
     </div>
-  </div>  <section id="dashboardSection" class="card">
-    <div style="display:flex;gap:12px;flex-wrap:wrap">
-      <div style="flex:1;min-width:300px">
-        <small class="small-muted">Quick Tutorial</small>
-        <h3>How to add & run bots</h3>
-        <div style="aspect-ratio:16/9;border-radius:10px;overflow:hidden;">
-          <iframe id="ytTutorial" src="https://www.youtube.com/embed/yup6kew1BBU?si=yNLIy1Fym8RjD9HI" style="width:100%;height:100%;border:0" allowfullscreen></iframe>
-        </div>
-        <div class="small-muted" style="margin-top:8px">Replace this YouTube link any time.</div>
-      </div>  <div style="width:320px">
-    <small class="small-muted">Quick Actions</small>
-    <h4>Add Bot</h4>
-    <div style="display:flex;flex-direction:column;gap:8px">
-      <input id="localBotFile" type="file" accept=".xml,.zip" class="input">
-      <button class="btn" onclick="openBotBuilder()">Bot Builder</button>
-      <select id="quickStrategy" class="input">
-        <option value="">Choose Quick Strategy</option>
-        <option value="scalp">Scalp</option>
-        <option value="swing">Swing</option>
-        <option value="trend">Trend</option>
-      </select>
-      <button class="btn btn-primary" onclick="addQuickStrategy()">Use Strategy</button>
+
+    <div id="proposalArea" class="small">No proposal requested</div>
+
+    <div style="margin-top:12px">
+      <button id="buyBtn" class="btn" disabled>Buy / Execute</button>
+      <button id="refreshSymbols" class="btn" style="background:#666">Refresh symbols</button>
     </div>
+  </div>
+
+  <div class="card">
+    <h4>Events log</h4>
+    <div id="eventsLog" style="max-height:360px;overflow:auto"></div>
   </div>
 </div>
 
-<div style="margin-top:14px">
-  <h3>Available Bots</h3>
-  <div class="bots-grid" id="botsContainer"></div>
-</div>
+<script>
+/* ============================
+   Frontend config & helpers
+   ============================ */
 
-<div style="margin-top:14px">
-  <h3>Your Portfolio</h3>
-  <div class="chart-box"><canvas id="portfolioChart" style="width:100%;height:100%"></canvas></div>
-</div>
-
-  </section>  <section id="freebotsSection" style="display:none" class="card">
-    <h3>Shared Bots</h3>
-    <div class="bots-grid" id="sharedBotsContainer"></div>
-  </section>  <section id="dtraderSection" style="display:none" class="card">
-    <h3>D-Trader (TradingView)</h3>
-    <div class="chart-box" id="tvFrameWrap"></div>
-  </section>  <section id="chartsSection" style="display:none" class="card">
-    <h3>Charts</h3>
-    <div class="chart-box" id="tvChartWrap"></div>
-  </section>  <section id="smartSection" style="display:none" class="card"><h3>Smart Analysis</h3></section>
-  <section id="analysisSection" style="display:none" class="card"><h3>Analysis Tool</h3></section>
-  <section id="signalsSection" style="display:none" class="card"><h3>Signals</h3></section>
-  <section id="copySection" style="display:none" class="card"><h3>Copy Trading</h3></section>  <footer><small class="small-muted">© 2025 Merrick Trade City — All rights reserved.</small></footer>
-</div><!-- Deriv token modal --><div class="modal" id="tokenModal">
-  <div class="modal-content">
-    <h3>Enter Deriv API Token</h3>
-    <input id="manualDerivToken" class="input" placeholder="1|..." />
-    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-      <button class="btn" onclick="closeTokenModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveDerivToken()">Save</button>
-    </div>
-  </div>
-</div><!-- Bot builder modal --><div class="modal" id="builderModal">
-  <div class="modal-content">
-    <h3>Quick Bot Builder</h3>
-    <input id="builderName" class="input" placeholder="Bot name (e.g. Quick-Scalp)" />
-    <select id="builderStrategy" class="input" style="margin-top:8px">
-      <option value="scalp">Scalp</option><option value="trend">Trend</option><option value="mean">Mean Reversion</option>
-    </select>
-    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-      <button class="btn" onclick="closeBotBuilder()">Close</button>
-      <button class="btn btn-primary" onclick="createBotFromBuilder()">Create</button>
-    </div>
-  </div>
-</div><script>
-// === Config & state ===
-const DERIV_APP_ID = '109286';
-const REDIRECT_URI = location.origin + '/Merrick-Trade-City/user.html';
-let currentUser = { name:'Demo User', email:'demo@example.com', balance:1000, bots:[], avatar:'assets/default-avatar.png' };
-let loadedBot = null;
-let portfolioChart = null;
-
-// === Utility ===
-function qs(sel){ return document.querySelector(sel); }
-function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
-function show(el){ if(!el) return; el.style.display='block'; }
-function hide(el){ if(!el) return; el.style.display='none'; }
-function openModal(id){ qs('#'+id).style.display='flex'; }
-function closeModal(id){ qs('#'+id).style.display='none'; }
+/*
+  API_BASE:
+  - assumes your server (backend) is the same origin that serves this file and exposes:
+    /auth/start  (redirects to Deriv OAuth)
+    /api/accounts/detailed
+    /api/balance/:accountId
+    /api/proposal
+    /api/buy
+  If your server is on another origin (e.g. https://api.mydomain.com), change API_BASE accordingly.
+*/
+const API_BASE = ''; // empty string means same origin, otherwise e.g. 'https://api.mydomain.com'
+const qs = s => document.querySelector(s);
+const qsa = s => Array.from(document.querySelectorAll(s));
+function logEvent(title, obj){
+  const el = qs('#eventsLog');
+  const t = new Date().toLocaleTimeString();
+  el.insertAdjacentHTML('afterbegin', <div><strong>[${t}] ${escapeHtml(title)}</strong><pre>${escapeHtml(JSON.stringify(obj, null, 2))}</pre></div>);
+}
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-// === Profile ===
-function setCurrentUserUI(){
-  qs('#userName').textContent = currentUser.name;
-  qs('#displayName').textContent = currentUser.name;
-  qs('#userBalance').textContent = 'Balance: ' + currentUser.balance;
-  qs('#userEmail').textContent = currentUser.email;
-  qs('#profilePic').src = currentUser.avatar;
-}
-function onChangeProfilePic(){
-  const url = prompt('Paste image URL for your avatar:','');
-  if(!url) return;
-  currentUser.avatar = url;
-  setCurrentUserUI();
-}
-function logout(){ location.reload(); }
+/* ============================
+   UI state
+   ============================ */
+let accounts = []; // from /api/accounts/detailed -> [{id, login_id, currency}]
+let activeSymbols = []; // array of {symbol,display,market}
+let selectedAccountId = null;
+let lastProposal = null;
+let chart = null;
 
-// === Sidebar menu ===
-qsa('.menu button').forEach(btn=>{
-  btn.addEventListener('click', ()=> {
-    qsa('.menu button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const sectionMap = { dashboard:'dashboardSection', freebots:'freebotsSection', dtrader:'dtraderSection', smart:'smartSection', analysis:'analysisSection', signals:'signalsSection', charts:'chartsSection', copy:'copySection' };
-Object.keys(sectionMap).forEach(key=>{
-const sec = qs('#'+sectionMap[key]);
-if(key===btn.dataset.section) show(sec); else hide(sec);
-});
-});
+/* ============================
+   OAuth / Accounts
+   ============================ */
+qs('#loginBtn').addEventListener('click', ()=> {
+  // Redirect to server endpoint - server should forward to Deriv OAuth
+  window.location.href = (API_BASE || '') + '/auth/start';
 });
 
-// === Bots management ===
-function addQuickStrategy(){
-const strategy = qs('#quickStrategy').value;
-if(!strategy){ alert('Select a strategy'); return; }
-const bot = { name: strategy+' Bot', strategy, id: Date.now() };
-currentUser.bots.push(bot);
-renderBots();
+async function fetchAccounts(){
+  try{
+    const res = await fetch((API_BASE || '') + '/api/accounts/detailed', { credentials: 'include' });
+    if(!res.ok) throw new Error('Failed to fetch accounts');
+    const data = await res.json();
+    accounts = data.accounts || [];
+    renderAccounts();
+    logEvent('accounts', accounts);
+    // after loading accounts, fetch balances for each
+    for(const a of accounts){
+      fetchBalanceForAccount(a.id);
+    }
+    return accounts;
+  }catch(err){
+    console.error(err);
+    logEvent('fetchAccounts error', err.message || err);
+    accounts = [];
+    renderAccounts();
+  }
 }
-function renderBots(){
-const container = qs('#botsContainer');
-container.innerHTML='';
-currentUser.bots.forEach(bot=>{
-const div = document.createElement('div');
-div.className='bot-card';
-div.innerHTML="<strong>${escapeHtml(bot.name)}</strong><br>Strategy: ${escapeHtml(bot.strategy)}<br> <button class="btn btn-primary" onclick="loadBot(${bot.id})">Load</button>";
-container.appendChild(div);
+
+function renderAccounts(){
+  const sel = qs('#accountSelect');
+  sel.innerHTML = '';
+  if(accounts.length === 0){
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = 'No accounts (Log in)';
+    sel.appendChild(opt);
+    selectedAccountId = null;
+    return;
+  }
+  accounts.forEach((a, idx) => {
+    const opt = document.createElement('option');
+    opt.value = a.id;
+    opt.textContent = ${a.login_id} (${a.currency});
+    sel.appendChild(opt);
+  });
+  sel.selectedIndex = 0;
+  selectedAccountId = sel.value;
+  sel.addEventListener('change', ()=> {
+    selectedAccountId = sel.value;
+  });
+}
+
+/* ============================
+   Balances & Chart
+   ============================ */
+async function fetchBalanceForAccount(accountId){
+  try{
+    const r = await fetch((API_BASE || '') + /api/balance/${accountId}, { credentials: 'include' });
+    if(!r.ok) throw new Error('Balance fetch failed');
+    const j = await r.json();
+    // j.resp likely contains a balance object from server
+    // store locally on accounts list
+    const idx = accounts.findIndex(a=>a.id===accountId);
+    if(idx>=0){
+      // try to parse balance from j.resp
+      let b = 0;
+      if(j.resp && j.resp.balance){
+        const balObj = Array.isArray(j.resp.balance) ? j.resp.balance[0] : j.resp.balance;
+        b = Number(balObj.balance || 0);
+      }
+      accounts[idx].balance = b;
+      updateChart();
+      updateCombinedText();
+      logEvent('balance', { accountId, balance: b });
+    }
+  }catch(err){
+    console.error(err);
+    logEvent('balance error', err.message || err);
+  }
+}
+
+function updateCombinedText(){
+  const combined = accounts.reduce((s,a)=> s + (Number(a.balance) || 0), 0);
+  qs('#combinedBalanceText').textContent = 'Combined: ' + combined.toFixed(2);
+}
+
+/* Chart */
+function setupChart(){
+  const ctx = qs('#portfolioChart').getContext('2d');
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: accounts.map(a=>a.login_id || 'acct'),
+      datasets: [{ label:'Balance', data: accounts.map(a=>Number(a.balance||0)), backgroundColor: ['#7c5cff','#6a4bff','#4bc0c0'] }]
+    },
+    options: { responsive:true, scales:{ y:{ beginAtZero:true } } }
+  });
+}
+function updateChart(){
+  if(!chart){ setupChart(); return; }
+  chart.data.labels = accounts.map(a=>a.login_id || 'acct');
+  chart.data.datasets[0].data = accounts.map(a=>Number(a.balance || 0));
+  chart.update();
+}
+
+/* ============================
+   Symbols & Ticks (public)
+   ============================ */
+const PUBLIC_ACTIVE_SYMBOLS_ENDPOINT = (API_BASE || '') + '/api/public/active_symbols'; // optional: you can implement server endpoint that proxies Deriv activeSymbols
+// We'll call a public server endpoint if available; otherwise we fetch directly from Deriv public WS via a lightweight approach below
+
+async function loadActiveSymbols(){
+  // Try to fetch from server proxy first (recommended)
+  try{
+    const res = await fetch((API_BASE || '') + '/api/active_symbols', { credentials: 'include' });
+    if(res.ok){
+      const j = await res.json();
+      activeSymbols = j.active_symbols || j || [];
+      populateSymbolSelect();
+      logEvent('symbols (from server)', activeSymbols.length);
+      return;
+    }
+  }catch(e){
+    // ignore and fallback to client public WS below
+  }
+
+  // Fallback: use Deriv public API via WebSocket to fetch active symbols
+  try{
+    const ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=109286');
+    ws.addEventListener('open', ()=> ws.send(JSON.stringify({ active_symbols: 'brief' })));
+    ws.addEventListener('message', (evt)=>{
+      try{
+        const d = JSON.parse(evt.data);
+        if(d.active_symbols){
+          activeSymbols = d.active_symbols.map(s => ({ symbol: s.symbol, display: s.display_name || s.symbol, market: s.market }));
+          populateSymbolSelect();
+          logEvent('symbols', activeSymbols.length);
+          ws.close();
+        }
+      }catch(e){}
+    });
+  }catch(e){
+    console.error('active symbols error', e);
+  }
+}
+
+function populateSymbolSelect(){
+  const sel = qs('#symbolSelect');
+  sel.innerHTML = '';
+  activeSymbols.forEach(s=>{
+    const opt = document.createElement('option');
+    opt.value = s.symbol;
+    opt.textContent = ${s.symbol} — ${s.display || s.symbol} [${s.market||''}];
+    sel.appendChild(opt);
+  });
+}
+
+/* Symbol filter */
+qs('#symbolFilter').addEventListener('input', (e)=>{
+  const q = e.target.value.trim().toLowerCase();
+  if(!q) return populateSymbolSelect();
+  const filtered = activeSymbols.filter(s => s.symbol.toLowerCase().includes(q) || (s.display||'').toLowerCase().includes(q) || (s.market||'').toLowerCase().includes(q));
+  const sel = qs('#symbolSelect');
+  sel.innerHTML = '';
+  filtered.forEach(s=>{
+    const opt = document.createElement('option');
+    opt.value = s.symbol;
+    opt.textContent = ${s.symbol} — ${s.display || s.symbol} [${s.market||''}];
+    sel.appendChild(opt);
+  });
 });
-}
-function loadBot(id){
-loadedBot = currentUser.bots.find(b=>b.id===id);
-qs('#loadedBot').textContent = loadedBot ? loadedBot.name : 'None';
+
+/* ============================
+   Proposal & Buy (via server)
+   ============================ */
+async function requestProposal(contractType){
+  if(!selectedAccountId) return alert('Choose an account first');
+  const symbol = qs('#symbolSelect').value;
+  if(!symbol) return alert('Choose a symbol');
+  const stake = Number(qs('#stakeInput').value) || 1;
+  const duration = Number(qs('#durationInput').value) || 1;
+  const duration_unit = qs('#durationUnit').value || 'm';
+  const basis = qs('#basisSelect').value || 'stake';
+
+  qs('#proposalArea').textContent = 'Requesting proposal...';
+
+  try{
+    const resp = await fetch((API_BASE || '') + '/api/proposal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        accountId: selectedAccountId,
+        symbol,
+        amount: stake,
+        contract_type: contractType,
+        duration,
+        duration_unit,
+        basis
+      })
+    });
+    const j = await resp.json();
+    if(!resp.ok) {
+      qs('#proposalArea').textContent = 'Proposal error: ' + (j.error || JSON.stringify(j));
+      logEvent('proposal error', j);
+      return;
+    }
+    lastProposal = j.proposal || j;
+    qs('#proposalArea').innerHTML = '<pre>' + escapeHtml(JSON.stringify(lastProposal, null, 2)) + '</pre>';
+    qs('#buyBtn').disabled = false;
+    logEvent('proposal', lastProposal);
+  }catch(err){
+    console.error(err);
+    qs('#proposalArea').textContent = 'Proposal failed: ' + (err.message || err);
+    logEvent('proposal catch', err);
+  }
 }
 
-// === Bot Builder Modal ===
-function openBotBuilder(){ openModal('builderModal'); }
-function closeBotBuilder(){ closeModal('builderModal'); }
-function createBotFromBuilder(){
-const name = qs('#builderName').value.trim();
-const strat = qs('#builderStrategy').value;
-if(!name){ alert('Enter bot name'); return; }
-const bot = { name, strategy: strat, id: Date.now() };
-currentUser.bots.push(bot);
-renderBots();
-closeBotBuilder();
+async function executeBuy(){
+  if(!lastProposal) return alert('No proposal to buy.');
+  if(!selectedAccountId) return alert('Choose account.');
+
+  const symbol = qs('#symbolSelect').value;
+  const stake = Number(qs('#stakeInput').value) || 1;
+  const duration = Number(qs('#durationInput').value) || 1;
+  const duration_unit = qs('#durationUnit').value || 'm';
+  const basis = qs('#basisSelect').value || 'stake';
+  qs('#buyBtn').disabled = true;
+  qs('#proposalArea').textContent = 'Executing buy...';
+
+  try{
+    const resp = await fetch((API_BASE || '') + '/api/buy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        accountId: selectedAccountId,
+        symbol,
+        amount: stake,
+        contract_type: lastProposal.proposal ? (lastProposal.proposal.contract_type || lastProposal.proposal.contract_type) : (lastProposal.contract_type || 'CALL'),
+        duration,
+        duration_unit,
+        basis
+      })
+    });
+    const j = await resp.json();
+    if(!resp.ok){
+      qs('#proposalArea').textContent = 'Buy error: ' + (j.error || JSON.stringify(j));
+      logEvent('buy error', j);
+      qs('#buyBtn').disabled = false;
+      return;
+    }
+    qs('#proposalArea').innerHTML = '<pre>' + escapeHtml(JSON.stringify(j, null, 2)) + '</pre>';
+    logEvent('buy', j);
+    // refresh balances
+    await fetchAccounts();
+    qs('#buyBtn').disabled = false;
+  }catch(err){
+    console.error(err);
+    qs('#proposalArea').textContent = 'Buy failed: ' + (err.message || err);
+    logEvent('buy catch', err);
+    qs('#buyBtn').disabled = false;
+  }
 }
 
-// === Deriv token modal ===
-function openTokenModal(){ openModal('tokenModal'); }
-function closeTokenModal(){ closeModal('tokenModal'); }
-function saveDerivToken(){
-const t = qs('#manualDerivToken').value.trim();
-if(!t){ alert('Enter token'); return; }
-currentUser.derivToken = t;
-alert('Deriv token saved');
-closeTokenModal();
-}
+/* ============================
+   Wiring buttons & init
+   ============================ */
+qs('#proposalCALL').addEventListener('click', ()=> requestProposal('CALL'));
+qs('#proposalPUT').addEventListener('click', ()=> requestProposal('PUT'));
+qs('#buyBtn').addEventListener('click', () => executeBuy());
+qs('#refreshSymbols').addEventListener('click', ()=> loadActiveSymbols());
+qs('#btnRefreshAccounts').addEventListener('click', ()=> fetchAccounts());
 
-// === Portfolio Chart ===
-function initPortfolioChart(){
-const ctx = qs('#portfolioChart').getContext('2d');
-portfolioChart = new Chart(ctx,{
-type:'line',
-data:{ labels:['Day1','Day2','Day3','Day4','Day5'], datasets:[{ label:'Balance', data:[1000,1020,1015,1030,1045], borderColor:'#7c5cff', fill:false }]},
-options:{ responsive:true, plugins:{ legend:{display:true,color:'#fff'}}, scales:{ y:{ beginAtZero:false, ticks:{ color:'#fff' }}, x:{ ticks:{ color:'#fff' } } } }
-});
-}
+/* Chart update interval */
+setInterval(()=> updateChart(), Number(qs('#chartInterval').value || 2000));
 
-// === TradingView embeds ===
-function initTradingView(){
-qs('#tvFrameWrap').innerHTML='<iframe src="https://s.tradingview.com/embed-widget/tradingview/?symbol=NASDAQ:AAPL" style="width:100%;height:100%;border:0;"></iframe>';
-qs('#tvChartWrap').innerHTML='<iframe src="https://s.tradingview.com/widgetembed/?symbol=NASDAQ:AAPL" style="width:100%;height:100%;border:0;"></iframe>';
-}
+/* Initialize: load accounts and symbols */
+(async function init(){
+  await fetchAccounts();
+  await loadActiveSymbols();
+  updateChart();
+})();
 
-// === Run loaded bot ===
-qs('#runBotBtn').addEventListener('click', ()=>{
-if(!loadedBot){ alert('Load a bot first'); return; }
-alert('Bot '+loadedBot.name+' running...');
-});
-
-// === Initialize ===
-document.addEventListener('DOMContentLoaded', ()=>{
-setCurrentUserUI();
-renderBots();
-initPortfolioChart();
-initTradingView();
-setTimeout(()=>qs('#loadingOverlay').classList.add('loading-hidden'),1500);
-});
 </script>
-
 </body>
 </html>
