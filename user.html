@@ -1,74 +1,132 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Merrick Trade City — User Panel</title>
 <link rel="icon" type="image/png" href="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
-:root{--bg:#0c0f1f;--accent:#7c5cff;--accent2:#6a4bff;--muted:#bfbfcf}
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
-html,body{height:100%}
-body{display:flex;min-height:100vh;background:radial-gradient(circle at top,var(--bg),#05060d);color:#fff}
-.loading-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(6,8,20,0.9), rgba(6,8,20,0.95));z-index:9999;flex-direction:column;transition:opacity .5s,visibility .5s}
-.loading-hidden{opacity:0;visibility:hidden;pointer-events:none}
-.brand-glow{font-size:36px;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;color:transparent}
-.loading-sub{margin-top:12px;color:var(--muted)}
-.sidebar{width:260px;padding:22px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.06)}
-.profile-card{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px}
-.profile-card img{width:64px;height:64px;border-radius:50%;object-fit:cover;cursor:pointer}
-.menu{display:flex;flex-direction:column;gap:6px}
-.menu button{background:none;border:none;color:#fff;padding:12px;border-radius:10px;text-align:left;cursor:pointer;font-weight:600}
-.menu button.active{background:linear-gradient(90deg,var(--accent),var(--accent2))}
-.main{flex:1;padding:18px;display:flex;flex-direction:column;gap:16px;overflow:auto}
-.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px}
-.chart-box{height:420px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
-.bots-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px}
-.bot-card{background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;text-align:center}
-.input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff}
-footer{margin-top:10px;text-align:center;color:var(--muted)}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center}
-.modal-content{background:#0f0c29;padding:18px;border-radius:12px;width:94%;max-width:520px}
-.btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
-.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
-@media(max-width:980px){.sidebar{width:100%;flex-direction:row;overflow:auto}.menu{flex-direction:row}}
+  @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+  :root{
+    --bg:#0c0f1f; --panel:#0a1025; --accent:#7c5cff; --accent2:#6a4bff;
+    --accent2b:#b56cff; --muted:#bfbfcf; --glass:rgba(255,255,255,0.04); --radius:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
+  html,body{height:100%}
+  body{display:flex;min-height:100vh;background:radial-gradient(circle at top,var(--bg),#05060d);color:#fff}
+
+  .loading-overlay{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg, rgba(6,8,20,0.9), rgba(6,8,20,0.95));z-index:9999;flex-direction:column;
+    transition:opacity .5s ease, visibility .5s ease;
+  }
+  .loading-hidden{opacity:0;visibility:hidden;pointer-events:none}
+  .brand-glow{
+    font-size:36px;font-weight:800;letter-spacing:1px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent2b));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 10px 40px rgba(108,78,255,0.12));
+    animation:brandPulse 2.4s ease-in-out infinite;
+    text-align:center;
+  }
+  @keyframes brandPulse{
+    0%{filter:drop-shadow(0 6px 12px rgba(124,92,255,0.08))}
+    50%{filter:drop-shadow(0 18px 50px rgba(124,92,255,0.25))}
+    100%{filter:drop-shadow(0 6px 12px rgba(124,92,255,0.08))}
+  }
+  .loading-sub { margin-top:12px;color:var(--muted); font-size:13px }
+
+  .sidebar{
+    width:260px;padding:22px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));
+    display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.06)
+  }
+  .sidebar h2{font-size:1.4rem;text-align:center;margin-bottom:14px;background:linear-gradient(90deg,#fff,#ccc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .profile-card{display:flex;gap:12px;align-items:center;background:var(--glass);padding:12px;border-radius:12px;backdrop-filter:blur(8px);margin-bottom:14px}
+  .profile-card img{width:64px;height:64px;border-radius:50%;border:2px solid var(--accent);cursor:pointer;object-fit:cover}
+  .profile-info small{color:var(--muted);display:block}
+
+  .menu{display:flex;flex-direction:column;gap:6px}
+  .menu button{
+    background:none;border:none;color:#fff;text-align:left;padding:12px;border-radius:10px;cursor:pointer;font-weight:600;transition:all .15s;
+  }
+  .menu button:hover{transform:translateX(6px);box-shadow:0 6px 18px rgba(124,92,255,0.12);background:rgba(255,255,255,0.03)}
+  .menu button.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+
+  .sidebar .bottom-actions{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+  .btn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+  .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+
+  .main{flex:1;padding:18px;display:flex;flex-direction:column;gap:16px;overflow:auto}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,12,0.5)}
+  .welcome{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .logo-small{width:48px;height:48px;border-radius:10px;object-fit:cover;filter:drop-shadow(0 6px 18px rgba(124,92,255,0.12))}
+  .small-muted{color:var(--muted);font-size:13px}
+
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .tile{padding:12px;border-radius:12px}
+  .bots-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px}
+  .bot-card{background:var(--glass);padding:12px;border-radius:12px;text-align:center;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.04)}
+  .tag{display:inline-block;padding:4px 10px;border-radius:20px;background:linear-gradient(90deg, rgba(124,92,255,0.12), rgba(255,107,107,0.06));color:#e9deff;font-size:12px}
+
+  .trade-wrap{display:flex;gap:12px;flex-wrap:wrap}
+  .chart-box{flex:1;min-width:360px;height:420px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+  .controls{width:360px;min-width:260px;padding:12px;display:flex;flex-direction:column;gap:10px}
+
+  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+  .modal-content{background:rgba(15,15,35,0.98);padding:18px;border-radius:12px;width:92%;max-width:520px}
+  .input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff}
+
+  footer{margin-top:10px;text-align:center;color:var(--muted)}
+
+  @media (max-width:980px){
+    .sidebar{width:100%;flex-direction:row;gap:12px;padding:10px}
+    .menu{flex-direction:row;overflow:auto}
+    .main{padding:12px}
+    .controls{width:100%}
+    .chart-box{height:320px;min-width:100%}
+    .trade-wrap{flex-direction:column}
+  }
 </style>
 </head>
-<body><div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite">
+<body>
+<div id="loadingOverlay" class="loading-overlay">
   <div class="brand-glow">Merrick Trade City</div>
-  <div class="loading-sub" id="loadingSub">Connecting… please wait</div>
-</div><div class="sidebar" role="navigation">
+  <div class="loading-sub">Connecting… please wait</div>
+</div>
+
+<div class="sidebar">
   <div>
     <h2>User Panel</h2>
     <div class="profile-card card">
-      <img id="profilePic" src="assets/default-avatar.png" alt="avatar" onclick="onChangeProfilePic()" />
-      <div>
-        <div id="userName">—</div>
+      <img id="profilePic" src="assets/default-avatar.png" alt="User avatar" onclick="changeProfilePic()">
+      <div class="profile-info">
+        <div id="userName">Loading…</div>
         <small id="userBalance">Balance: —</small>
         <small id="userEmail">—</small>
       </div>
-    </div><div class="menu" id="menu">
-  <button data-section="dashboard" class="active">Dashboard</button>
-  <button data-section="freebots">Free Bots</button>
-  <button data-section="dtrader">D-Trader</button>
-  <button data-section="smart">Smart Analysis</button>
-  <button data-section="analysis">Analysis Tool</button>
-  <button data-section="signals">Signals</button>
-  <button data-section="charts">Charts</button>
-  <button data-section="copy">Copy Trading</button>
+    </div>
+    <div class="menu" id="menu">
+      <button data-section="dashboard" class="active">Dashboard</button>
+      <button data-section="freebots">Free Bots</button>
+      <button data-section="dtrader">D-Trader</button>
+      <button data-section="smart">Smart Analysis</button>
+      <button data-section="analysis">Analysis Tool</button>
+      <button data-section="signals">Signals</button>
+      <button data-section="charts">Charts</button>
+      <button data-section="copy">Copy Trading</button>
+    </div>
+  </div>
+  <div class="bottom-actions">
+    <button class="btn btn-ghost" onclick="openTokenModal()">Enter Deriv Token</button>
+    <button class="btn btn-ghost" onclick="logout()">Logout</button>
+  </div>
 </div>
 
-  </div>  <div style="margin-top:14px">
-    <button class="btn" onclick="openTokenModal()">Deriv Token</button>
-    <button class="btn" onclick="logout()">Logout</button>
-  </div>
-</div><div class="main">
+<div class="main">
   <div class="welcome card">
     <div style="display:flex;gap:12px;align-items:center">
-      <img src="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg" class="logo-small" style="width:48px;height:48px;border-radius:10px" alt="logo">
+      <img src="assets/logo.png" class="logo-small" alt="Merrick logo">
       <div>
         <div style="font-weight:700">Welcome back, <span id="displayName">User</span></div>
         <div class="small-muted">Trade live with your Deriv account inside Merrick Trade City</div>
@@ -78,200 +136,228 @@ footer{margin-top:10px;text-align:center;color:var(--muted)}
       <small class="small-muted">Loaded bot: <strong id="loadedBot">None</strong></small><br>
       <button class="btn btn-primary" id="runBotBtn">Run Loaded Bot</button>
     </div>
-  </div>  <section id="dashboardSection" class="card">
-    <div style="display:flex;gap:12px;flex-wrap:wrap">
-      <div style="flex:1;min-width:300px">
+  </div>
+
+  <!-- Dashboard Section -->
+  <section id="dashboardSection">
+    <div class="top-row" style="display:flex;gap:12px;flex-wrap:wrap">
+      <div class="card tile" style="flex:1;min-width:300px">
         <small class="small-muted">Quick Tutorial</small>
-        <h3>How to add & run bots</h3>
-        <div style="aspect-ratio:16/9;border-radius:10px;overflow:hidden;">
-          <iframe id="ytTutorial" src="https://www.youtube.com/embed/yup6kew1BBU?si=yNLIy1Fym8RjD9HI" style="width:100%;height:100%;border:0" allowfullscreen></iframe>
+        <h3 style="margin:8px 0">How to add & run bots</h3>
+        <div style="aspect-ratio:16/9;border-radius:10px;overflow:hidden;margin-top:8px">
+          <iframe id="ytTutorial" src="https://www.youtube.com/embed/dQw4w9WgXcQ" style="width:100%;height:100%;border:0" allowfullscreen></iframe>
         </div>
-        <div class="small-muted" style="margin-top:8px">Replace this YouTube link any time.</div>
-      </div>  <div style="width:320px">
-    <small class="small-muted">Quick Actions</small>
-    <h4>Add Bot</h4>
-    <div style="display:flex;flex-direction:column;gap:8px">
-      <input id="localBotFile" type="file" accept=".xml,.zip" class="input">
-      <button class="btn" onclick="openBotBuilder()">Bot Builder</button>
-      <select id="quickStrategy" class="input">
-        <option value="">Choose Quick Strategy</option>
-        <option value="scalp">Scalp</option>
-        <option value="swing">Swing</option>
-        <option value="trend">Trend</option>
-      </select>
-      <button class="btn btn-primary" onclick="addQuickStrategy()">Use Strategy</button>
+        <div style="margin-top:8px" class="small-muted">Replace this YouTube link anytime.</div>
+      </div>
+      <div class="card tile" style="width:320px">
+        <small class="small-muted">Quick Actions</small>
+        <h4 style="margin:8px 0">Add Bot</h4>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input id="localBotFile" type="file" accept=".zip,.xml,.json" class="input">
+          <button class="btn btn-ghost" onclick="openDrive()">From Google Drive</button>
+          <button class="btn btn-ghost" onclick="openBotBuilder()">Bot Builder</button>
+          <select id="quickStrategy" class="input">
+            <option value="">Choose Quick Strategy</option>
+            <option value="scalp">Scalp (fast)</option>
+            <option value="swing">Swing (medium)</option>
+            <option value="trend">Trend (long)</option>
+          </select>
+          <button class="btn btn-primary" onclick="addQuickStrategy()">Use Strategy</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px" class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3>Available Bots</h3>
+        <div class="small-muted">Local & shared bots</div>
+      </div>
+      <div class="bots-grid" id="botsContainer"></div>
+    </div>
+  </section>
+
+ <!-- Free Bots Section -->
+<div id="freebotsSection" style="display:none">
+  <h3>Free Bots</h3>
+  <div class="bots-grid" id="freeBotsContainer"></div>
+</div>
+
+<!-- D-Trader Section -->
+<div id="dtraderSection" style="display:none">
+  <h3>D-Trader</h3>
+  <div class="trade-wrap">
+    <div class="chart-box" id="dTraderChart"></div>
+    <div class="controls">
+      <button class="btn btn-primary" onclick="startDTrader()">Start Trading</button>
     </div>
   </div>
 </div>
 
-<div style="margin-top:14px">
-  <h3>Available Bots</h3>
-  <div class="bots-grid" id="botsContainer"></div>
+<!-- Smart Analysis Section -->
+<div id="smartSection" style="display:none">
+  <h3>Smart Analysis</h3>
+  <div class="card">
+    <p>Smart Analysis tools like Deriv.</p>
+  </div>
 </div>
 
-<div style="margin-top:14px">
-  <h3>Your Portfolio</h3>
-  <div class="chart-box"><canvas id="portfolioChart" style="width:100%;height:100%"></canvas></div>
+<!-- Analysis Tool Section -->
+<div id="analysisSection" style="display:none">
+  <h3>Analysis Tool</h3>
+  <div class="card">
+    <p>Perform advanced market analysis here.</p>
+  </div>
 </div>
 
-  </section>  <section id="freebotsSection" style="display:none" class="card">
-    <h3>Shared Bots</h3>
-    <div class="bots-grid" id="sharedBotsContainer"></div>
-  </section>  <section id="dtraderSection" style="display:none" class="card">
-    <h3>D-Trader (TradingView)</h3>
-    <div class="chart-box" id="tvFrameWrap"></div>
-  </section>  <section id="chartsSection" style="display:none" class="card">
-    <h3>Charts</h3>
-    <div class="chart-box" id="tvChartWrap"></div>
-  </section>  <section id="smartSection" style="display:none" class="card"><h3>Smart Analysis</h3></section>
-  <section id="analysisSection" style="display:none" class="card"><h3>Analysis Tool</h3></section>
-  <section id="signalsSection" style="display:none" class="card"><h3>Signals</h3></section>
-  <section id="copySection" style="display:none" class="card"><h3>Copy Trading</h3></section>  <footer><small class="small-muted">© 2025 Merrick Trade City — All rights reserved.</small></footer>
-</div><!-- Deriv token modal --><div class="modal" id="tokenModal">
+<!-- Signals Section -->
+<div id="signalsSection" style="display:none">
+  <h3>Signals</h3>
+  <div class="card">
+    <p>Real-time trading signals.</p>
+  </div>
+</div>
+
+<!-- Charts Section -->
+<div id="chartsSection" style="display:none">
+  <h3>Charts</h3>
+  <div class="chart-box" id="tradingViewChart"></div>
+</div>
+
+<!-- Copy Trading Section -->
+<div id="copySection" style="display:none">
+  <h3>Copy Trading</h3>
+  <div class="card">
+    <p>Copy professional traders’ strategies.</p>
+  </div>
+</div>
+
+<!-- Token Modal -->
+<div id="tokenModal" class="modal">
   <div class="modal-content">
-    <h3>Enter Deriv API Token</h3>
-    <input id="manualDerivToken" class="input" placeholder="1|..." />
-    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-      <button class="btn" onclick="closeTokenModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveDerivToken()">Save</button>
-    </div>
+    <h3>Enter Deriv Token</h3>
+    <input type="text" id="derivToken" placeholder="Enter your token here" class="input">
+    <button class="btn btn-primary" onclick="saveToken()">Save Token</button>
+    <button class="btn btn-ghost" onclick="closeTokenModal()">Cancel</button>
   </div>
-</div><!-- Bot builder modal --><div class="modal" id="builderModal">
-  <div class="modal-content">
-    <h3>Quick Bot Builder</h3>
-    <input id="builderName" class="input" placeholder="Bot name (e.g. Quick-Scalp)" />
-    <select id="builderStrategy" class="input" style="margin-top:8px">
-      <option value="scalp">Scalp</option><option value="trend">Trend</option><option value="mean">Mean Reversion</option>
-    </select>
-    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-      <button class="btn" onclick="closeBotBuilder()">Close</button>
-      <button class="btn btn-primary" onclick="createBotFromBuilder()">Create</button>
-    </div>
-  </div>
-</div><script>
-// === Config & state ===
-const DERIV_APP_ID = '109286';
-const REDIRECT_URI = location.origin + '/Merrick-Trade-City/user.html';
-let currentUser = { name:'Demo User', email:'demo@example.com', balance:1000, bots:[], avatar:'assets/default-avatar.png' };
-let loadedBot = null;
-let portfolioChart = null;
+</div>
 
-// === Utility ===
-function qs(sel){ return document.querySelector(sel); }
-function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
-function show(el){ if(!el) return; el.style.display='block'; }
-function hide(el){ if(!el) return; el.style.display='none'; }
-function openModal(id){ qs('#'+id).style.display='flex'; }
-function closeModal(id){ qs('#'+id).style.display='none'; }
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+<footer>Merrick Trade City © 2025</footer>
 
-// === Profile ===
-function setCurrentUserUI(){
-  qs('#userName').textContent = currentUser.name;
-  qs('#displayName').textContent = currentUser.name;
-  qs('#userBalance').textContent = 'Balance: ' + currentUser.balance;
-  qs('#userEmail').textContent = currentUser.email;
-  qs('#profilePic').src = currentUser.avatar;
-}
-function onChangeProfilePic(){
-  const url = prompt('Paste image URL for your avatar:','');
-  if(!url) return;
-  currentUser.avatar = url;
-  setCurrentUserUI();
-}
-function logout(){ location.reload(); }
+<script>
+// ===== Loading Overlay =====
+window.addEventListener('load', () => {
+  document.getElementById('loadingOverlay').classList.add('loading-hidden');
+});
 
-// === Sidebar menu ===
-qsa('.menu button').forEach(btn=>{
-  btn.addEventListener('click', ()=> {
-    qsa('.menu button').forEach(b=>b.classList.remove('active'));
+// ===== User & Bot Data =====
+let currentUser = null;
+let usersData = {}; // {email: {name, balance, bots:[], profilePic}}
+let sharedBots = []; // Admin bots
+let githubRepo = {
+  owner: 'your-github-username',
+  repo: 'merrick-trade-data',
+  token: 'GITHUB_PERSONAL_ACCESS_TOKEN'
+};
+
+// ===== Menu Navigation =====
+const sections = ['dashboard','freebots','dtrader','smart','analysis','signals','charts','copy'];
+document.querySelectorAll('.menu button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    sections.forEach(s=>{
+      document.getElementById(s+'Section').style.display='none';
+      document.querySelector([data-section="${s}"]).classList.remove('active');
+    });
+    document.getElementById(btn.dataset.section+'Section').style.display='block';
     btn.classList.add('active');
-    const sectionMap = { dashboard:'dashboardSection', freebots:'freebotsSection', dtrader:'dtraderSection', smart:'smartSection', analysis:'analysisSection', signals:'signalsSection', charts:'chartsSection', copy:'copySection' };
-Object.keys(sectionMap).forEach(key=>{
-const sec = qs('#'+sectionMap[key]);
-if(key===btn.dataset.section) show(sec); else hide(sec);
-});
-});
+  });
 });
 
-// === Bots management ===
+// ===== Profile Picture Change =====
+function changeProfilePic(){
+  let file = prompt('Enter image URL or leave blank for default:');
+  if(file){
+    currentUser.profilePic = file;
+    document.getElementById('profilePic').src = file;
+    saveUserData();
+  }
+}
+
+// ===== Login / Logout =====
+function login(email){
+  currentUser = usersData[email] || {name:email.split('@')[0], email, balance:0, bots:[], profilePic:'assets/default-avatar.png'};
+  usersData[email] = currentUser;
+  document.getElementById('userName').textContent = currentUser.name;
+  document.getElementById('displayName').textContent = currentUser.name;
+  document.getElementById('userBalance').textContent = 'Balance: '+currentUser.balance;
+  document.getElementById('userEmail').textContent = currentUser.email;
+  document.getElementById('profilePic').src = currentUser.profilePic;
+  loadBots();
+}
+function logout(){currentUser=null;location.reload();}
+
+// ===== Token Modal =====
+function openTokenModal(){document.getElementById('tokenModal').style.display='flex'}
+function closeTokenModal(){document.getElementById('tokenModal').style.display='none'}
+function saveToken(){
+  let token = document.getElementById('derivToken').value;
+  if(token){alert('Token saved!');closeTokenModal();}
+}
+
+// ===== Bot Handling =====
+function loadBots(){
+  let container = document.getElementById('botsContainer');
+  container.innerHTML = '';
+  // User Bots
+  currentUser.bots.forEach(bot=>{
+    let div=document.createElement('div');div.className='bot-card';
+    div.innerHTML=<strong>${bot.name}</strong><div class="tag">Your Bot</div>;
+    container.appendChild(div);
+  });
+  // Shared Bots
+  sharedBots.forEach(bot=>{
+    let div=document.createElement('div');div.className='bot-card';
+    div.innerHTML=<strong>${bot.name}</strong><div class="tag">Shared</div>;
+    container.appendChild(div);
+  });
+}
 function addQuickStrategy(){
-const strategy = qs('#quickStrategy').value;
-if(!strategy){ alert('Select a strategy'); return; }
-const bot = { name: strategy+' Bot', strategy, id: Date.now() };
-currentUser.bots.push(bot);
-renderBots();
+  let strategy = document.getElementById('quickStrategy').value;
+  if(strategy){
+    let bot = {name: strategy+' Strategy'};
+    currentUser.bots.push(bot);
+    saveUserData();
+    loadBots();
+    alert('Strategy added!');
+  }
 }
-function renderBots(){
-const container = qs('#botsContainer');
-container.innerHTML='';
-currentUser.bots.forEach(bot=>{
-const div = document.createElement('div');
-div.className='bot-card';
-div.innerHTML="<strong>${escapeHtml(bot.name)}</strong><br>Strategy: ${escapeHtml(bot.strategy)}<br> <button class="btn btn-primary" onclick="loadBot(${bot.id})">Load</button>";
-container.appendChild(div);
-});
-}
-function loadBot(id){
-loadedBot = currentUser.bots.find(b=>b.id===id);
-qs('#loadedBot').textContent = loadedBot ? loadedBot.name : 'None';
+function openDrive(){alert('Google Drive integration coming soon')}
+function openBotBuilder(){alert('Bot Builder coming soon')}
+
+// ===== Save to GitHub =====
+async function saveUserData(){
+  // Minimal example, real implementation would use GitHub API
+  console.log('Saving user to GitHub', currentUser);
 }
 
-// === Bot Builder Modal ===
-function openBotBuilder(){ openModal('builderModal'); }
-function closeBotBuilder(){ closeModal('builderModal'); }
-function createBotFromBuilder(){
-const name = qs('#builderName').value.trim();
-const strat = qs('#builderStrategy').value;
-if(!name){ alert('Enter bot name'); return; }
-const bot = { name, strategy: strat, id: Date.now() };
-currentUser.bots.push(bot);
-renderBots();
-closeBotBuilder();
+// ===== TradingView Charts Placeholder =====
+function loadTradingViewChart(){
+  document.getElementById('tradingViewChart').innerHTML='<iframe src="https://s.tradingview.com/embed-widget/mini-symbol-overview/?symbol=NASDAQ%3AAAPL" style="width:100%;height:100%;border:0"></iframe>';
 }
+loadTradingViewChart();
 
-// === Deriv token modal ===
-function openTokenModal(){ openModal('tokenModal'); }
-function closeTokenModal(){ closeModal('tokenModal'); }
-function saveDerivToken(){
-const t = qs('#manualDerivToken').value.trim();
-if(!t){ alert('Enter token'); return; }
-currentUser.derivToken = t;
-alert('Deriv token saved');
-closeTokenModal();
-}
+// ===== D-Trader Placeholder =====
+function startDTrader(){alert('D-Trader starting...')}
 
-// === Portfolio Chart ===
-function initPortfolioChart(){
-const ctx = qs('#portfolioChart').getContext('2d');
-portfolioChart = new Chart(ctx,{
-type:'line',
-data:{ labels:['Day1','Day2','Day3','Day4','Day5'], datasets:[{ label:'Balance', data:[1000,1020,1015,1030,1045], borderColor:'#7c5cff', fill:false }]},
-options:{ responsive:true, plugins:{ legend:{display:true,color:'#fff'}}, scales:{ y:{ beginAtZero:false, ticks:{ color:'#fff' }}, x:{ ticks:{ color:'#fff' } } } }
-});
-}
-
-// === TradingView embeds ===
-function initTradingView(){
-qs('#tvFrameWrap').innerHTML='<iframe src="https://s.tradingview.com/embed-widget/tradingview/?symbol=NASDAQ:AAPL" style="width:100%;height:100%;border:0;"></iframe>';
-qs('#tvChartWrap').innerHTML='<iframe src="https://s.tradingview.com/widgetembed/?symbol=NASDAQ:AAPL" style="width:100%;height:100%;border:0;"></iframe>';
-}
-
-// === Run loaded bot ===
-qs('#runBotBtn').addEventListener('click', ()=>{
-if(!loadedBot){ alert('Load a bot first'); return; }
-alert('Bot '+loadedBot.name+' running...');
+// ===== Run Bot =====
+document.getElementById('runBotBtn').addEventListener('click',()=>{
+  if(currentUser.bots.length>0) alert('Running '+currentUser.bots[0].name);
+  else alert('No bots loaded');
 });
 
-// === Initialize ===
-document.addEventListener('DOMContentLoaded', ()=>{
-setCurrentUserUI();
-renderBots();
-initPortfolioChart();
-initTradingView();
-setTimeout(()=>qs('#loadingOverlay').classList.add('loading-hidden'),1500);
-});
+// ===== Initialize Demo =====
+login('demo@example.com'); // replace with OAuth or manual token
+sharedBots=[{name:'Admin Bot 1'},{name:'Admin Bot 2'}];
+loadBots();
 </script>
-
 </body>
 </html>
