@@ -297,16 +297,19 @@ async function getJsonFromGitHub(path){
   const text = atob(file.content.replace(/\n/g,''));
   try { return JSON.parse(text); } catch(e){ console.warn('Invalid JSON in', path); return null; }
 }
-async function putJsonToGitHub(path, obj, sha = null){
-  if(!githubToken) throw new Error('No GitHub token available for write');
+async function putJsonToGitHub(path, obj, sha = null) {
+  if (!githubToken) throw new Error('No GitHub token available for write');
   const url = https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)};
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2))));
   const payload = { message: Update ${path} via Merrick UI, content };
-  if(sha) payload.sha = sha;
+  if (sha) payload.sha = sha;
   const res = await fetch(url, {
     method: 'PUT',
-    headers: Object.assign({'Content-Type':'application/json'}, githubApiHeaders()),
+    headers: Object.assign({ 'Content-Type': 'application/json' }, githubApiHeaders()),
     body: JSON.stringify(payload)
+  });
+  return await res.json();
+}
   });
   if(!res.ok) throw new Error('GitHub write error: ' + res.status);
   return await res.json();
@@ -636,6 +639,7 @@ init();
 </script>
 </body>
 </html>
+
 
 
 
