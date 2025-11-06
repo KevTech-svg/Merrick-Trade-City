@@ -299,7 +299,7 @@ async function getJsonFromGitHub(path){
 }
 async function putJsonToGitHub(path, obj, sha = null){
   if(!githubToken) throw new Error('No GitHub token available for write');
-  const url = 'https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)}';
+  const url = https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)};
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2))));
   const payload = { message: Update ${path} via Merrick UI, content };
   if(sha) payload.sha = sha;
@@ -636,5 +636,6 @@ init();
 </script>
 </body>
 </html>
+
 
 
