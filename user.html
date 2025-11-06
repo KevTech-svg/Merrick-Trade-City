@@ -8,7 +8,7 @@
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+ @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
 :root {
   --bg:#0c0f1f; --panel:#0a1025; --accent:#7c5cff; --accent2:#6a4bff;
   --muted:#bfbfcf;
@@ -363,7 +363,7 @@ function githubApiHeaders(){
 }
 
 async function fetchGitHubFile(path){
-  const url = https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)};
+  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
   const res = await fetch(url, { headers: githubApiHeaders() });
   if(res.status === 404) return null;
   if(!res.ok) throw new Error('GitHub fetch error: ' + res.status);
@@ -379,9 +379,9 @@ async function getJsonFromGitHub(path){
 
 async function putJsonToGitHub(path, obj, sha = null){
   if(!githubToken) throw new Error('No GitHub token available for write');
-  const url = https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)};
+  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2))));
-  const payload = { message: Update ${path} via Merrick UI, content };
+  const payload = { message: `Update ${path} via Merrick UI`, content };
   if(sha) payload.sha = sha;
   const res = await fetch(url, {
     method: 'PUT',
@@ -395,7 +395,7 @@ async function putJsonToGitHub(path, obj, sha = null){
 /* Read admin bots from public raw when no token available */
 async function loadAdminBotsFromGitHubReadOnly(){
   try{
-    const url = https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${ADMIN_BOTS_PATH};
+    const url = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${ADMIN_BOTS_PATH}`;
     const res = await fetch(url);
     if(res.ok){
       adminBots = await res.json();
@@ -513,7 +513,7 @@ function buildBotsUI(){
   // shared bots container
   const sharedContainer = qs('#sharedBotsContainer');
   if(sharedContainer){
-    sharedContainer.innerHTML = adminBots.map(b => <div class="bot-card"><h4>${escapeHtml(b.name)}</h4></div>).join('');
+    sharedContainer.innerHTML = adminBots.map(b => `<div class="bot-card"><h4>${escapeHtml(b.name)}</h4></div>`).join('');
   }
 }
 
@@ -587,7 +587,7 @@ function generatePastDaysLabels(n){
   const out=[];
   for(let i=n-1;i>=0;i--){
     const d=new Date(); d.setDate(d.getDate()-i);
-    out.push(${d.getMonth()+1}/${d.getDate()});
+    out.push(`${d.getMonth()+1}/${d.getDate()}`);
   }
   return out;
 }
@@ -789,4 +789,3 @@ window.addEventListener('load', init);
 </script>
 </body>
 </html>
-
