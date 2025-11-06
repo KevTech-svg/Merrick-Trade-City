@@ -1,33 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Merrick Trade City — User Panel</title>
 <link rel="icon" type="image/png" href="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg">
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
-  :root{
-    --bg:#0c0f1f; --panel:#0a1025; --accent:#7c5cff; --accent2:#6a4bff;
-    --muted:#bfbfcf;
-  }
+  :root{--bg:#0c0f1f;--panel:#0a1025;--accent:#7c5cff;--accent2:#6a4bff;--muted:#bfbfcf}
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
   html,body{height:100%}
   body{display:flex;min-height:100vh;background:radial-gradient(circle at top,var(--bg),#05060d);color:#fff}
 
+  /* Loading overlay */
   .loading-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(6,8,20,0.9), rgba(6,8,20,0.95));z-index:9999;flex-direction:column;transition:opacity .5s ease, visibility .5s ease}
   .loading-hidden{opacity:0;visibility:hidden;pointer-events:none}
-  .brand-glow{font-size:36px;font-weight:800;letter-spacing:1px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;color:transparent}
+  .brand-glow{font-size:28px;font-weight:800;letter-spacing:1px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;color:transparent}
   .loading-sub{margin-top:12px;color:var(--muted);font-size:13px}
 
-  .sidebar{width:260px;padding:22px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.06)}
+  /* Layout */
+  .sidebar{width:260px;padding:18px;background:linear-gradient(180deg, rgba(124,92,255,0.92), rgba(15,12,41,0.95));display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(255,255,255,0.06)}
   .profile-card{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px}
   .profile-card img{width:64px;height:64px;border-radius:50%;object-fit:cover;cursor:pointer}
-  .menu{display:flex;flex-direction:column;gap:6px}
-  .menu button{background:none;border:none;color:#fff;padding:12px;border-radius:10px;text-align:left;cursor:pointer;font-weight:600;transition:all .15s}
-  .menu button:hover{transform:translateX(6px)}
+  .menu{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .menu button{background:none;border:none;color:#fff;padding:10px;border-radius:10px;text-align:left;cursor:pointer;font-weight:600;transition:all .15s}
   .menu button.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
 
   .btn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
@@ -36,20 +34,26 @@
 
   .main{flex:1;padding:18px;display:flex;flex-direction:column;gap:16px;overflow:auto}
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px}
-  .logo-small{width:48px;height:48px;border-radius:10px;object-fit:cover}
+  .logo-small{width:44px;height:44px;border-radius:10px;object-fit:cover}
   .small-muted{color:var(--muted);font-size:13px}
 
   .bots-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px}
   .bot-card{background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;text-align:center}
-  .chart-box{height:420px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+  .chart-box{height:360px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
 
   .input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff}
+  .muted{color:var(--muted);font-size:13px}
 
   footer{margin-top:10px;text-align:center;color:var(--muted)}
 
-  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center}
-  .modal-content{background:#0f0c29;padding:18px;border-radius:12px;width:92%;max-width:520px}
-  @media (max-width:980px){.sidebar{width:100%;flex-direction:row;gap:12px;padding:10px}.menu{flex-direction:row;overflow:auto}.chart-box{height:320px}}
+  /* Responsive adjustments */
+  @media (max-width:980px){
+    body{flex-direction:column}
+    .sidebar{width:100%;flex-direction:row;gap:12px;padding:10px;align-items:center}
+    .menu{flex-direction:row;overflow:auto}
+    .chart-box{height:260px}
+    .profile-card img{width:48px;height:48px}
+  }
 </style>
 </head>
 <body>
@@ -63,13 +67,14 @@
 <!-- Sidebar -->
 <div class="sidebar" role="navigation" aria-label="Main sidebar">
   <div>
-    <h2>User Panel</h2>
-    <div class="profile-card card">
-      <!-- Inline SVG placeholder avatar avoids 404s -->
+    <h2 style="margin:0 0 8px 0">User Panel</h2>
+
+    <!-- Inline SVG avatar avoids 404 -->
+    <div class="profile-card card" style="margin-bottom:8px">
       <img id="profilePic" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'><rect width='100%' height='100%' fill='%237c5cff'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-family='Poppins,Arial' font-size='56' fill='white'>M</text></svg>" alt="User avatar" onclick="onChangeProfilePic()" title="Change profile picture">
       <div>
         <div id="userName">Loading…</div>
-        <small id="userBalance">Balance: —</small>
+        <small id="userBalance">Balance: —</small><br>
         <small id="userEmail">—</small>
       </div>
     </div>
@@ -86,18 +91,18 @@
     </div>
   </div>
 
-  <div style="margin-top:14px">
+  <div style="margin-top:12px">
     <div style="margin-bottom:8px">
-      <button class="btn btn-primary" id="githubStatusBtn">Connect GitHub (auto)</button>
+      <button class="btn btn-primary" id="githubStatusBtn">GitHub: auto</button>
     </div>
     <button class="btn" onclick="openTokenModal()">Deriv Token</button>
-    <button class="btn" onclick="logout()">Logout</button>
+    <button class="btn" onclick="promptLogin()">Switch User</button>
   </div>
 </div>
 
 <!-- Main -->
 <div class="main" role="main">
-  <div class="welcome card">
+  <div class="welcome card" style="display:flex;justify-content:space-between;align-items:center">
     <div style="display:flex;gap:12px;align-items:center">
       <img src="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg" class="logo-small" alt="Merrick logo">
       <div>
@@ -105,16 +110,34 @@
         <div class="small-muted">Trade live with your Deriv account inside Merrick Trade City</div>
       </div>
     </div>
-    <div style="text-align:right">
-      <small class="small-muted">Loaded bot: <strong id="loadedBot">None</strong></small><br>
-      <button class="btn btn-primary" id="runBotBtn">Run Loaded Bot</button>
+
+    <div style="text-align:right;min-width:260px">
+      <div style="margin-bottom:8px">
+        <small class="muted">Loaded bot: <strong id="loadedBot">None</strong></small>
+      </div>
+
+      <!-- Quick Deriv controls: connect, get balance, choose symbol -->
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-ghost" id="connectDerivBtn">Connect Deriv</button>
+        <button class="btn btn-primary" id="getBalanceBtn">Get Balance</button>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+        <select id="symbolSelect" class="input" style="width:140px">
+          <option value="R_100">R_100</option>
+          <option value="R_50">R_50</option>
+          <option value="FRXUSDJPY">USD/JPY</option>
+          <option value="R_10">R_10</option>
+          <option value="XAUSD">XAUUSD</option>
+        </select>
+        <button class="btn btn-ghost" id="subTicksBtn">Subscribe Ticks</button>
+      </div>
     </div>
   </div>
 
   <!-- Dashboard -->
   <section id="dashboardSection" class="card">
     <div style="display:flex;gap:12px;flex-wrap:wrap">
-      <div style="flex:1;min-width:300px">
+      <div style="flex:1;min-width:260px">
         <small class="small-muted">Quick Tutorial</small>
         <h3 style="margin:8px 0">How to add & run bots</h3>
         <div style="aspect-ratio:16/9;border-radius:10px;overflow:hidden;margin-top:8px">
@@ -123,20 +146,36 @@
         <div style="margin-top:8px" class="small-muted">Replace this YouTube link any time.</div>
       </div>
 
-      <div style="width:320px">
-        <small class="small-muted">Quick Actions</small>
-        <h4 style="margin:8px 0">Add Bot</h4>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <input id="localBotFile" type="file" accept=".xml,.zip" class="input">
-          <button class="btn" onclick="openDrive()">From Google Drive</button>
-          <button class="btn" onclick="openBotBuilder()">Bot Builder</button>
-          <select id="quickStrategy" class="input">
-            <option value="">Choose Quick Strategy</option>
-            <option value="scalp">Scalp</option>
-            <option value="swing">Swing</option>
-            <option value="trend">Trend</option>
-          </select>
-          <button class="btn btn-primary" onclick="addQuickStrategy()">Use Strategy</button>
+      <div style="width:360px">
+        <small class="small-muted">Live Ticks & Trading</small>
+        <div class="card" style="margin-top:8px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <div>Symbol:</div>
+            <div id="liveSymbol" class="muted">—</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+            <div>Last Price:</div>
+            <div id="lastTick" style="font-weight:700">—</div>
+          </div>
+
+          <hr style="margin:10px 0;border-color:rgba(255,255,255,0.04)">
+
+          <div>
+            <label class="muted">Amount (stake)</label>
+            <input id="tradeAmount" class="input" placeholder="Amount (e.g., 1)" value="1">
+            <label class="muted" style="margin-top:8px">Duration (seconds)</label>
+            <input id="tradeDuration" class="input" placeholder="Duration in seconds" value="60" type="number">
+            <label class="muted" style="margin-top:8px">Direction</label>
+            <select id="tradeDirection" class="input">
+              <option value="CALL">Rise / CALL</option>
+              <option value="PUT">Fall / PUT</option>
+            </select>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn btn-ghost" id="proposalBtn">Request Proposal</button>
+              <button class="btn btn-primary" id="buyBtn">Buy Proposal</button>
+            </div>
+            <div id="proposalInfo" class="muted" style="margin-top:8px">No proposal requested.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -152,24 +191,10 @@
     </div>
   </section>
 
-  <!-- Free Bots -->
-  <section id="freebotsSection" style="display:none" class="card">
-    <h3>Shared Bots</h3>
-    <div class="bots-grid" id="sharedBotsContainer"></div>
-  </section>
-
-  <!-- D-Trader -->
-  <section id="dtraderSection" style="display:none" class="card">
-    <h3>D-Trader (TradingView)</h3>
-    <div class="chart-box" id="tvFrameWrap"></div>
-  </section>
-
-  <!-- Charts -->
-  <section id="chartsSection" style="display:none" class="card">
-    <h3>Charts</h3>
-    <div class="chart-box" id="tvChartWrap"></div>
-  </section>
-
+  <!-- sections kept for navigation; initially hidden -->
+  <section id="freebotsSection" style="display:none" class="card"><h3>Shared Bots</h3><div id="sharedBotsContainer" class="bots-grid"></div></section>
+  <section id="dtraderSection" style="display:none" class="card"><h3>D-Trader (TradingView)</h3><div id="tvFrameWrap" class="chart-box"></div></section>
+  <section id="chartsSection" style="display:none" class="card"><h3>Charts</h3><div id="tvChartWrap" class="chart-box"></div></section>
   <section id="smartSection" style="display:none" class="card"><h3>Smart Analysis</h3></section>
   <section id="analysisSection" style="display:none" class="card"><h3>Analysis Tool</h3></section>
   <section id="signalsSection" style="display:none" class="card"><h3>Signals</h3></section>
@@ -178,77 +203,52 @@
   <footer><small class="small-muted">© 2025 Merrick Trade City — All rights reserved.</small></footer>
 </div>
 
-<!-- GitHub (optional) modal -->
-<div class="modal" id="githubModal">
-  <div class="modal-content">
-    <h3>Connect to GitHub (optional)</h3>
-    <p>To let this page write users & bots directly to your repo (<strong>KevTech-svg/merrick-data</strong>), paste a GitHub Personal Access Token (repo scope).</p>
-    <input id="githubTokenInput" class="input" placeholder="ghp_..." />
-    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-      <button class="btn" onclick="closeGithubModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveGithubToken()">Save & Connect</button>
-    </div>
-    <p style="font-size:12px;margin-top:10px;color:var(--muted)">If you don't provide a token, admin bots will load from the public repo (read-only).</p>
-  </div>
-</div>
-
-<!-- Deriv token modal -->
+<!-- Deriv Token Modal -->
 <div class="modal" id="tokenModal">
   <div class="modal-content">
-    <h3>Enter Deriv API Token</h3>
+    <h3>Deriv Token / OAuth</h3>
+    <p class="muted">Paste a Deriv API token (starts with <code>1|</code>) for client-side live trading, or use OAuth redirect from Deriv.</p>
     <input id="manualDerivToken" class="input" placeholder="1|..." />
     <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
       <button class="btn" onclick="closeTokenModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveDerivToken()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- Bot builder modal -->
-<div class="modal" id="builderModal">
-  <div class="modal-content">
-    <h3>Quick Bot Builder</h3>
-    <input id="builderName" class="input" placeholder="Bot name (e.g. Quick-Scalp)" />
-    <select id="builderStrategy" class="input" style="margin-top:8px">
-      <option value="scalp">Scalp</option><option value="trend">Trend</option><option value="mean">Mean Reversion</option>
-    </select>
-    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-      <button class="btn" onclick="closeBotBuilder()">Close</button>
-      <button class="btn btn-primary" onclick="createBotFromBuilder()">Create</button>
+      <button class="btn btn-primary" onclick="saveDerivToken()">Save Token</button>
     </div>
   </div>
 </div>
 
 <script>
-/* ====== Config ====== */
+/* ========== Config ========== */
 const GITHUB_OWNER = 'KevTech-svg';
-const GITHUB_REPO = 'merrick-data'; // ensure this repo exists
-const USERS_PATH = 'users.json';
+const GITHUB_REPO  = 'merrick-data'; // your repo
+const USERS_PATH   = 'users.json';
 const ADMIN_BOTS_PATH = 'admin_bots.json';
 
-const DERIV_APP_ID = '109286';
+const DERIV_APP_ID = '109286'; // you gave this
 const REDIRECT_URI = location.origin + '/Merrick-Trade-City/user.html';
 
-/* ====== State ====== */
+/* ========== Runtime state ========== */
 let githubToken = localStorage.getItem('merrick_github_token') || null;
-let usersData = {};          // { email: { name, email, balance, bots:[], avatar } }
-let adminBots = [];          // admin/shared bots
+let usersData = {};          // { email: {...} }
+let adminBots = [];          // array of {name,...}
 let currentUserEmail = localStorage.getItem('merrick_current_user') || null;
 let currentUser = null;
 let portfolioChart = null;
 let pollingInterval = null;
-let derivWS = null;
 
-/* ====== Helpers ====== */
+/* Deriv ws */
+let derivWS = null;
+let lastProposal = null; // hold latest proposal response
+
+/* ========== Small helpers ========== */
 function qs(sel){ return document.querySelector(sel); }
 function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
-function openModal(id){ qs('#'+id).style.display = 'flex'; }
-function closeModal(id){ qs('#'+id).style.display = 'none'; }
+function openModal(id){ const m = qs('#'+id); if(m) m.style.display='flex'; }
+function closeModal(id){ const m = qs('#'+id); if(m) m.style.display='none'; }
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ====== Menu wiring ====== */
+/* ========== Menu wiring ========== */
 qsa('.menu button').forEach(btn=>{
-  btn.addEventListener('click', ()=> {
+  btn.addEventListener('click', ()=>{
     qsa('.menu button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     const section = btn.dataset.section;
@@ -268,13 +268,12 @@ qsa('.menu button').forEach(btn=>{
   });
 });
 
-/* ====== GitHub helpers ====== */
+/* ========== GitHub helpers (read admin bots + optionally users) ========== */
 function githubApiHeaders(){
   const headers = { 'Accept': 'application/vnd.github.v3+json' };
   if(githubToken) headers['Authorization'] = 'token ' + githubToken;
   return headers;
 }
-
 async function fetchGitHubFile(path){
   const url = https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)};
   const res = await fetch(url, { headers: githubApiHeaders() });
@@ -282,84 +281,38 @@ async function fetchGitHubFile(path){
   if(!res.ok) throw new Error('GitHub fetch error: ' + res.status);
   return await res.json();
 }
-
 async function getJsonFromGitHub(path){
   const file = await fetchGitHubFile(path);
   if(!file) return null;
   const text = atob(file.content.replace(/\n/g,''));
   try { return JSON.parse(text); } catch(e){ console.warn('Invalid JSON in', path); return null; }
 }
-
-async function putJsonToGitHub(path, obj, sha = null){
-  if(!githubToken) throw new Error('No GitHub token available for write');
-  const url = https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)};
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2))));
-  const payload = { message: Update ${path} via Merrick UI, content };
-  if(sha) payload.sha = sha;
-  const res = await fetch(url, {
-    method: 'PUT',
-    headers: Object.assign({'Content-Type':'application/json'}, githubApiHeaders()),
-    body: JSON.stringify(payload)
-  });
-  if(!res.ok) throw new Error('GitHub write error: ' + res.status);
-  return await res.json();
-}
-
-/* Read admin bots from public raw when no token available */
+/* read-only fallback for admin bots - loads raw */
 async function loadAdminBotsFromGitHubReadOnly(){
   try{
     const url = https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${ADMIN_BOTS_PATH};
     const res = await fetch(url);
     if(res.ok){
       adminBots = await res.json();
-      console.info('Loaded admin bots (read-only) from raw.githubusercontent');
     } else {
       adminBots = [{ name:'Admin Bot 1' }, { name:'Admin Bot 2' }];
     }
   } catch(e){
-    console.warn('Could not load admin bots read-only', e);
     adminBots = [{ name:'Admin Bot 1' }, { name:'Admin Bot 2' }];
   }
 }
-
 async function loadAllDataFromGitHub(){
   try{
-    const usersJson = await getJsonFromGitHub(USERS_PATH);
-    if(usersJson) usersData = usersJson;
-    const adminJson = await getJsonFromGitHub(ADMIN_BOTS_PATH);
-    if(adminJson) adminBots = adminJson;
-  } catch(err){
-    console.warn('loadAllDataFromGitHub error', err);
+    const users = await getJsonFromGitHub(USERS_PATH);
+    if(users) usersData = users;
+    const admin = await getJsonFromGitHub(ADMIN_BOTS_PATH);
+    if(admin) adminBots = admin;
+  } catch(e){
+    console.warn('loadAllDataFromGitHub error', e);
   }
 }
 
-/* Save helpers */
-async function saveUsersToGitHub(){
-  if(!githubToken) return console.warn('No token; cannot save to GitHub.');
-  try{
-    const existing = await fetchGitHubFile(USERS_PATH);
-    const sha = existing ? existing.sha : null;
-    await putJsonToGitHub(USERS_PATH, usersData, sha);
-    console.info('users.json saved');
-  } catch(err){
-    console.error('saveUsersToGitHub failed', err);
-    alert('Failed to save users to GitHub. Check token and repo permissions.');
-  }
-}
-async function saveAdminBotsToGitHub(){
-  if(!githubToken) return console.warn('No token; cannot save admin bots.');
-  try{
-    const existing = await fetchGitHubFile(ADMIN_BOTS_PATH);
-    const sha = existing ? existing.sha : null;
-    await putJsonToGitHub(ADMIN_BOTS_PATH, adminBots, sha);
-    console.info('admin_bots.json saved');
-  } catch(err){
-    console.error('saveAdminBotsToGitHub failed', err);
-    alert('Failed to save admin bots to GitHub. Check token and repo permissions.');
-  }
-}
-
-/* ====== User management ====== */
+/* ========== User management ========== */
 function setCurrentUser(email, fallback){
   currentUserEmail = email;
   localStorage.setItem('merrick_current_user', email);
@@ -369,122 +322,52 @@ function setCurrentUser(email, fallback){
     usersData[email] = { name: email.split('@')[0], email, balance: 0, bots: [], avatar: '' };
     currentUser = usersData[email];
   }
-
   qs('#userName').textContent = currentUser.name || currentUser.email;
   qs('#displayName').textContent = currentUser.name || currentUser.email;
   qs('#userBalance').textContent = 'Balance: ' + (currentUser.balance !== undefined ? currentUser.balance : 0);
   qs('#userEmail').textContent = currentUser.email;
-  qs('#profilePic').src = currentUser.avatar || qs('#profilePic').src;
+  if(currentUser.avatar) qs('#profilePic').src = currentUser.avatar;
   buildBotsUI();
   setupPortfolioChart();
 }
-
-/* Basic prompt login for demo (you can replace with real OAuth) */
 async function promptLogin(){
   const email = prompt('Enter your email to sign in:');
   if(!email) return;
   if(!usersData[email]) {
     usersData[email] = { name: email.split('@')[0], email, balance: 0, bots: [], avatar: '' };
-    if(githubToken) await saveUsersToGitHub();
+    // optionally save to GitHub if token available (not automatic here)
   }
   setCurrentUser(email);
 }
 
-/* ====== Bots UI & handling ====== */
+/* ========== Bots UI ========== */
 function buildBotsUI(){
-  const container = qs('#botsContainer');
-  container.innerHTML = '';
-
+  const container = qs('#botsContainer'); if(!container) return; container.innerHTML = '';
   if(currentUser && Array.isArray(currentUser.bots)){
     currentUser.bots.forEach((bot, idx)=>{
-      const d = document.createElement('div');
-      d.className = 'bot-card';
-      d.innerHTML = `
-        <h4>${escapeHtml(bot.name)}</h4>
-        <div class="small-muted">Your Bot</div>
-        <div style="margin-top:8px">
-          <button class="btn btn-primary" onclick="runUserBot('${encodeURIComponent(bot.name)}')">Run</button>
-          <button class="btn btn-ghost" onclick="removeUserBot(${idx})">Remove</button>
-        </div>
-      `;
+      const d = document.createElement('div'); d.className = 'bot-card';
+      d.innerHTML = `<h4>${escapeHtml(bot.name)}</h4><div class="muted">Your Bot</div>
+        <div style="margin-top:8px"><button class="btn btn-primary" onclick="alert('Run: ${escapeHtml(bot.name)}')">Run</button>
+        <button class="btn btn-ghost" onclick="removeUserBot(${idx})">Remove</button></div>`;
       container.appendChild(d);
     });
   }
-
-  // Admin/shared bots
+  // admin/shared bots
+  const sharedContainer = qs('#sharedBotsContainer'); if(!sharedContainer) sharedContainer.innerHTML = '';
   adminBots.forEach(bot=>{
-    const d = document.createElement('div');
-    d.className = 'bot-card';
-    d.innerHTML = `
-      <h4>${escapeHtml(bot.name)}</h4>
-      <div class="small-muted">Shared</div>
-      <div style="margin-top:8px"><button class="btn" onclick="loadSharedBot('${escapeHtml(bot.name)}')">Load</button></div>
-    `;
+    const d = document.createElement('div'); d.className = 'bot-card';
+    d.innerHTML = <h4>${escapeHtml(bot.name)}</h4><div class="muted">Shared</div><div style="margin-top:8px"><button class="btn" onclick="loadSharedBot('${escapeHtml(bot.name)}')">Load</button></div>;
     container.appendChild(d);
+    if(sharedContainer) sharedContainer.insertAdjacentHTML('beforeend', <div class="bot-card"><h4>${escapeHtml(bot.name)}</h4></div>);
   });
-
-  // shared bots container
-  const sharedContainer = qs('#sharedBotsContainer');
-  if(sharedContainer){
-    sharedContainer.innerHTML = adminBots.map(b => <div class="bot-card"><h4>${escapeHtml(b.name)}</h4></div>).join('');
-  }
 }
+function removeUserBot(idx){ if(!confirm('Remove this bot?')) return; currentUser.bots.splice(idx,1); usersData[currentUser.email] = currentUser; buildBotsUI(); }
+function loadSharedBot(name){ qs('#loadedBot').textContent = name; alert('Loaded shared bot: ' + name); }
 
-function runUserBot(encodedName){
-  const name = decodeURIComponent(encodedName);
-  alert('Running your bot: ' + name + ' (placeholder: implement bot runtime).');
-  // Implement actual bot runtime / calls to Deriv here
-}
-function removeUserBot(idx){
-  if(!confirm('Remove this bot from your account?')) return;
-  currentUser.bots.splice(idx,1);
-  usersData[currentUser.email] = currentUser;
-  buildBotsUI();
-  if(githubToken) saveUsersToGitHub();
-}
-
-/* local upload: store metadata and optionally save users.json */
-qs('#localBotFile').addEventListener('change', async (e) => {
-  if(!e.target.files || e.target.files.length === 0) return;
-  const f = e.target.files[0];
-  const bot = { name: f.name.replace(/\.[^/.]+$/, ''), filename: f.name, uploadedAt: new Date().toISOString() };
-  currentUser.bots.push(bot);
-  usersData[currentUser.email] = currentUser;
-  buildBotsUI();
-  if(githubToken) await saveUsersToGitHub();
-  alert('Bot metadata saved to your account. To execute XML bots, you will need a parser/runtime.');
-});
-
-/* Builder modal helpers */
-function openBotBuilder(){ openModal('builderModal'); }
-function closeBotBuilder(){ closeModal('builderModal'); }
-function createBotFromBuilder(){
-  const name = qs('#builderName').value.trim() || (qs('#builderStrategy').value + ' Bot');
-  const bot = { name, createdAt: new Date().toISOString(), fromBuilder: true };
-  currentUser.bots.push(bot);
-  usersData[currentUser.email] = currentUser;
-  closeBotBuilder();
-  buildBotsUI();
-  if(githubToken) saveUsersToGitHub();
-  alert('Bot created: ' + name);
-}
-
-/* quick strategy */
-function addQuickStrategy(){
-  const val = qs('#quickStrategy').value;
-  if(!val) return alert('Choose a strategy');
-  const bot = { name: 'Quick-' + val, createdAt: new Date().toISOString() };
-  currentUser.bots.push(bot);
-  usersData[currentUser.email] = currentUser;
-  buildBotsUI();
-  if(githubToken) saveUsersToGitHub();
-  alert('Quick strategy added: ' + bot.name);
-}
-
-/* ====== Portfolio chart (Chart.js) ====== */
+/* ========== Portfolio chart ========== */
+let portfolioChart = null;
 function setupPortfolioChart(){
-  const el = qs('#portfolioChart');
-  if(!el) return;
+  const el = qs('#portfolioChart'); if(!el) return;
   const ctx = el.getContext('2d');
   if(portfolioChart) portfolioChart.destroy();
   const labels = generatePastDaysLabels(7);
@@ -495,132 +378,195 @@ function setupPortfolioChart(){
     options: { responsive:true, scales:{ y:{ beginAtZero:true } } }
   });
 }
-
 function generatePastDaysLabels(n){
-  const out=[];
-  for(let i=n-1;i>=0;i--){
-    const d=new Date(); d.setDate(d.getDate()-i);
-    out.push(${d.getMonth()+1}/${d.getDate()});
-  }
-  return out;
+  const out=[]; for(let i=n-1;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); out.push(${d.getMonth()+1}/${d.getDate()}); } return out;
 }
 function generateDemoBalances(n, latest){
   if(!latest && latest !== 0) latest = Math.floor(Math.random()*1000)+100;
-  const arr = [];
-  for(let i=0;i<n;i++){
-    arr.push(Math.max(0, Math.floor(latest - (n-i-1)*Math.random()*200)));
-  }
-  return arr;
+  const arr = []; for(let i=0;i<n;i++){ arr.push(Math.max(0, Math.floor(latest - (n-i-1)*Math.random()*200))); } return arr;
 }
 
-/* ====== Polling for live updates ====== */
+/* ========== Polling for live updates (GitHub) ========== */
 async function startPolling(){
   if(pollingInterval) clearInterval(pollingInterval);
   pollingInterval = setInterval(async ()=>{
     try{
       if(githubToken){
         await loadAllDataFromGitHub();
-        if(currentUserEmail && usersData[currentUserEmail]) {
-          currentUser = usersData[currentUserEmail];
-          setCurrentUser(currentUserEmail);
-        }
+        if(currentUserEmail && usersData[currentUserEmail]) setCurrentUser(currentUserEmail);
         buildBotsUI();
         if(portfolioChart && currentUser && currentUser.balance !== undefined){
           const last = portfolioChart.data.datasets[0].data;
           last[last.length - 1] = currentUser.balance;
           portfolioChart.update();
         }
+      } else {
+        // nothing to poll without token
       }
-    } catch(e){
-      console.warn('poll error', e);
-    }
+    } catch(e){ console.warn('poll error', e); }
   }, 10000);
 }
 
-/* ====== GitHub modal logic ====== */
+/* ========== GitHub modal logic ========== */
 function openGithubModal(){ openModal('githubModal'); }
 function closeGithubModal(){ closeModal('githubModal'); }
-function saveGithubToken(){
-  const t = qs('#githubTokenInput').value.trim();
-  if(!t) return alert('Paste a GitHub token first');
-  githubToken = t;
-  localStorage.setItem('merrick_github_token', t);
-  closeGithubModal();
-  // attempt to load and save
-  loadAllDataFromGitHub().then(()=>{ alert('Connected to GitHub (read/write).'); buildBotsUI(); saveUsersToGitHub(); }).catch(err=>{ alert('GitHub connection failed: '+err.message); console.error(err); });
-}
-qs('#githubStatusBtn').addEventListener('click', ()=> {
-  // open modal only if token not present
-  if(!githubToken) openGithubModal();
-  else alert('GitHub token present (auto-connected).');
-});
+function saveGithubToken(){ const t = qs('#githubTokenInput')?.value?.trim(); if(!t) return alert('Paste a GitHub token first'); githubToken = t; localStorage.setItem('merrick_github_token', t); closeGithubModal(); loadAllDataFromGitHub().then(()=>{ alert('Connected to GitHub (read/write).'); buildBotsUI(); }).catch(err=>{ alert('Failed: '+err.message); }); }
+qs('#githubStatusBtn')?.addEventListener('click', ()=> { if(!githubToken) openGithubModal(); else alert('GitHub token set (auto).'); });
 
-/* ====== Deriv token & OAuth ====== */
+/* ========== Deriv WebSocket - Connect / Authorize / Balance / Ticks / Buy ========== */
+/* Basic flow:
+   - connectDerivWS() opens connection and authorizes (with token from localStorage)
+   - when authorized, we request balance.
+   - subscribeTicks(symbol) subscribes to live ticks and updates UI.
+   - requestProposal() sends a 'proposal' request (basic params).
+   - buyProposal() purchases the last proposal (if present).
+   Notes: This is a minimal in-browser implementation. For production move tokens & buy ops server-side.
+*/
+function connectDerivWS(){
+  const token = localStorage.getItem('deriv_token');
+  if(!token) { alert('No Deriv token found. Add one via "Deriv Token" button.'); return; }
+
+  const wsUrl = 'wss://ws.binaryws.com/websockets/v3?app_id=' + encodeURIComponent(DERIV_APP_ID);
+  if(derivWS){ try{ derivWS.close(); }catch(e){} derivWS = null; }
+
+  derivWS = new WebSocket(wsUrl);
+  derivWS.onopen = () => {
+    console.log('Deriv WS open — sending authorize');
+    derivWS.send(JSON.stringify({ authorize: token }));
+  };
+  derivWS.onmessage = (evt) => {
+    try{
+      const data = JSON.parse(evt.data);
+      // handle different messages
+      if(data.msg_type === 'authorize'){
+        console.log('Authorized:', data.authorize);
+        if(data.authorize && data.authorize.email) {
+          // switch to that user if exists
+          if(usersData[data.authorize.email]) setCurrentUser(data.authorize.email);
+        }
+        qs('#githubStatusBtn').textContent = 'Deriv: authorized';
+        // request balance
+        requestDerivBalance();
+      }
+      if(data.msg_type === 'balance'){
+        const b = Array.isArray(data.balance) ? data.balance[0] : data.balance;
+        if(b && currentUser){
+          currentUser.balance = b.balance;
+          qs('#userBalance').textContent = 'Balance: ' + b.balance + (b.currency ? ' ' + b.currency : '');
+          // optionally persist to GitHub if you want (requires token)
+        }
+      }
+      if(data.msg_type === 'tick'){
+        // tick: { tick: {symbol, quote, epoch} }
+        const t = data.tick;
+        qs('#lastTick').textContent = t.quote;
+        qs('#liveSymbol').textContent = t.symbol;
+      }
+      if(data.msg_type === 'proposal'){
+        // proposal object -> store it
+        lastProposal = data.proposal;
+        qs('#proposalInfo').textContent = Proposal ask: ${lastProposal.ask_price} | id: ${lastProposal.id};
+      }
+      if(data.msg_type === 'buy'){
+        // buy response -> contract info
+        qs('#proposalInfo').textContent = Bought contract id: ${data.buy.contract_id} — status: ${data.buy.contract_type || 'N/A'};
+        console.log('buy result', data.buy);
+      }
+    }catch(err){ console.warn('Deriv parse error', err); }
+  };
+  derivWS.onerror = (e) => { console.error('Deriv WS error', e); alert('Deriv WS error (check console).'); };
+  derivWS.onclose = () => { console.warn('Deriv WS closed'); qs('#githubStatusBtn').textContent = 'Deriv: disconnected'; };
+}
+
+/* Request balance */
+function requestDerivBalance(){ if(!derivWS || derivWS.readyState !== WebSocket.OPEN) return; derivWS.send(JSON.stringify({ balance: 1 })); }
+
+/* Subscribe to ticks for a symbol (live price updates) */
+function subscribeTicks(symbol){
+  if(!derivWS || derivWS.readyState !== WebSocket.OPEN) return alert('Connect to Deriv first.');
+  // unsubscribe previous ticks (forget all tick subscriptions)
+  // (for simplicity we don't track subscription ids; this is a minimal approach)
+  derivWS.send(JSON.stringify({ forget: 'ticks' })); // best-effort (ignore failure)
+  derivWS.send(JSON.stringify({ ticks: symbol }));
+}
+
+/* Request a proposal — minimal parameters for short binary contract */
+function requestProposal(){
+  if(!derivWS || derivWS.readyState !== WebSocket.OPEN) return alert('Connect to Deriv first.');
+  const symbol = qs('#symbolSelect').value;
+  const amount = qs('#tradeAmount').value || '1';
+  const duration = Number(qs('#tradeDuration').value || 60);
+  const direction = qs('#tradeDirection').value; // CALL / PUT
+  // Basic proposal payload — note: many contract types exist; this uses simple rise/fall contract
+  const payload = {
+    proposal: 1,
+    amount: String(amount),
+    basis: 'stake',
+    contract_type: direction === 'CALL' ? 'CALL' : 'PUT',
+    currency: 'USD',
+    duration: duration,
+    duration_unit: 's',
+    symbol
+  };
+  // send proposal
+  derivWS.send(JSON.stringify(payload));
+  qs('#proposalInfo').textContent = 'Requesting proposal...';
+}
+
+/* Buy latest proposal (if any) */
+function buyProposal(){
+  if(!derivWS || derivWS.readyState !== WebSocket.OPEN) return alert('Connect to Deriv first.');
+  if(!lastProposal || !lastProposal.id) return alert('No proposal available. Request a proposal first.');
+  // buy expects { buy: proposal_id, price: ask_price }
+  const buyPayload = {
+    buy: lastProposal.id,
+    price: lastProposal.ask_price
+  };
+  derivWS.send(JSON.stringify(buyPayload));
+  qs('#proposalInfo').textContent = 'Buying...';
+}
+
+/* ========== UI wiring for Deriv controls ========== */
+qs('#connectDerivBtn').addEventListener('click', ()=>{
+  // if token present in localStorage -> connect; else prompt user to add one
+  const t = localStorage.getItem('deriv_token');
+  if(!t){
+    openModal('tokenModal');
+    return;
+  }
+  connectDerivWS();
+});
+qs('#getBalanceBtn').addEventListener('click', ()=> requestDerivBalance());
+qs('#subTicksBtn').addEventListener('click', ()=> subscribeTicks(qs('#symbolSelect').value));
+qs('#proposalBtn').addEventListener('click', ()=> requestProposal());
+qs('#buyBtn').addEventListener('click', ()=> buyProposal());
+
+/* Token modal actions */
 function openTokenModal(){ openModal('tokenModal'); }
 function closeTokenModal(){ closeModal('tokenModal'); }
 function saveDerivToken(){
-  const t = qs('#manualDerivToken').value.trim();
+  const t = qs('#manualDerivToken').value?.trim();
   if(!t) return alert('Paste a Deriv token (starts with 1|...)');
   localStorage.setItem('deriv_token', t);
   closeTokenModal();
-  connectDerivWS();
-  alert('Deriv token saved (manual).');
+  alert('Deriv token saved to localStorage. Click "Connect Deriv" to authorize.');
 }
 
+/* Parse token from OAuth redirect (if Deriv redirected back with #access_token=... ) */
 function grabDerivTokenFromUrl(){
   const hash = window.location.hash || '';
   if(!hash) return null;
   const params = new URLSearchParams(hash.replace('#','?'));
-  const token = params.get('access_token') || params.get('access_token'); // safe-check
+  const token = params.get('access_token');
   if(token){
     localStorage.setItem('deriv_token', token);
-    try{ history.replaceState(null, '', window.location.pathname + window.location.search); }catch(e){}
+    try{ history.replaceState(null,'',window.location.pathname+window.location.search); }catch(e){}
     return token;
   }
   return null;
 }
 
-function connectDerivWS(){
-  const token = localStorage.getItem('deriv_token');
-  if(!token) {
-    console.warn('No Deriv token found.');
-    return;
-  }
-  const wsUrl = 'wss://ws.binaryws.com/websockets/v3?app_id=' + encodeURIComponent(DERIV_APP_ID);
-  if(derivWS) try{ derivWS.close(); }catch(e){}
-  derivWS = new WebSocket(wsUrl);
-  derivWS.onopen = ()=> {
-    derivWS.send(JSON.stringify({ authorize: token }));
-    console.log('Deriv WS open; authorizing...');
-  };
-  derivWS.onmessage = (evt) => {
-    try{
-      const data = JSON.parse(evt.data);
-      if(data.authorize){
-        const auth = data.authorize;
-        if(auth.display_name) qs('#displayName').textContent = auth.display_name;
-        if(auth.email){
-          // switch to that user if exists
-          if(usersData[auth.email]) setCurrentUser(auth.email);
-        }
-        requestDerivBalance();
-      }
-      if(data.balance){
-        const b = Array.isArray(data.balance) ? data.balance[0] : data.balance;
-        if(b && currentUser){
-          currentUser.balance = b.balance;
-          qs('#userBalance').textContent = 'Balance: ' + b.balance + (b.currency ? ' ' + b.currency : '');
-          if(githubToken) saveUsersToGitHub(); // persist balance if desired
-        }
-      }
-    } catch(err){ console.warn('Deriv ws parse error', err); }
-  };
-  derivWS.onerror = (e)=> console.error('Deriv WS error', e);
-  derivWS.onclose = ()=> console.warn('Deriv WS closed');
-}
-function requestDerivBalance(){ if(!derivWS || derivWS.readyState !== WebSocket.OPEN) return; derivWS.send(JSON.stringify({ balance: 1 })); }
-
-/* ====== TradingView embed ====== */
+/* ========== TradingView embed helpers (keeps layout consistent) ========== */
 function embedTradingView(targetId, symbol='OANDA:XAUUSD'){
   const w = qs('#' + targetId);
   if(!w) return;
@@ -635,69 +581,37 @@ function embedTradingView(targetId, symbol='OANDA:XAUUSD'){
 embedTradingView('tvFrameWrap', 'OANDA:XAUUSD');
 embedTradingView('tvChartWrap', 'OANDA:XAUUSD');
 
-/* ====== Utility UI functions ====== */
-function onChangeProfilePic(){
-  const url = prompt('Paste image URL for your avatar:','');
-  if(!url) return;
-  currentUser.avatar = url;
-  qs('#profilePic').src = url;
-  usersData[currentUser.email] = currentUser;
-  if(githubToken) saveUsersToGitHub();
-}
-function openDrive(){ alert('Google Drive integration requires OAuth and API keys — placeholder'); }
-function logout(){ localStorage.removeItem('merrick_current_user'); location.reload(); }
-
-/* Run loaded bot button */
-qs('#runBotBtn').addEventListener('click', ()=>{
-  const lb = qs('#loadedBot').textContent || 'None';
-  if(lb === 'None') return alert('Load a bot first');
-  alert('Running bot: ' + lb + ' (placeholder).');
-});
-
-/* ====== Initialization ====== */
+/* ========== Initialization ========== */
 async function init(){
   try{
-    // attempt to auto-load GitHub token from localStorage (auto-connect)
+    // If GitHub token stored, auto attempt to load (silent)
     if(githubToken){
-      try{
-        await loadAllDataFromGitHub();
-        qs('#githubStatusBtn').textContent = 'GitHub: connected (auto)';
-      } catch(e){
-        console.warn('Auto GitHub load failed', e);
-        // fallback to read-only admin bots
-        await loadAdminBotsFromGitHubReadOnly();
-        qs('#githubStatusBtn').textContent = 'GitHub: read-only';
-      }
+      try{ await loadAllDataFromGitHub(); } catch(e){ console.warn('auto load GH failed', e); await loadAdminBotsFromGitHubReadOnly(); }
     } else {
-      // no token: try read-only admin bots
+      // try to load shared bots from public repo raw automatically (no UI text)
       await loadAdminBotsFromGitHubReadOnly();
-      qs('#githubStatusBtn').textContent = 'GitHub: read-only';
     }
 
     // restore current user or create demo
-    if(currentUserEmail && usersData[currentUserEmail]){
-      setCurrentUser(currentUserEmail);
-    } else {
-      // fallback demo user
-      setCurrentUser('demo@example.com', { name: 'Demo User', email: 'demo@example.com', balance: 1200, bots: [], avatar: '' });
-    }
+    if(currentUserEmail && usersData[currentUserEmail]) setCurrentUser(currentUserEmail);
+    else setCurrentUser('demo@example.com', { name:'Demo User', email:'demo@example.com', balance:1200, bots:[], avatar:'' });
 
     buildBotsUI();
     setupPortfolioChart();
     startPolling();
 
-    // parse deriv token if returning from OAuth
+    // If Deriv OAuth redirected back with token, grab it
     const maybeDeriv = grabDerivTokenFromUrl();
-    if(maybeDeriv) connectDerivWS();
+    if(maybeDeriv){
+      connectDerivWS();
+    }
   } catch(err){
-    console.error('Init error', err);
+    console.error('init error', err);
   } finally {
     qs('#loadingOverlay').classList.add('loading-hidden');
     setTimeout(()=> { qs('#loadingOverlay').style.display='none'; }, 600);
   }
 }
-
-/* Start */
 window.addEventListener('load', init);
 </script>
 </body>
