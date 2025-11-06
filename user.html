@@ -299,15 +299,24 @@ async function getJsonFromGitHub(path){
 }
 async function putJsonToGitHub(path, obj, sha = null) {
   if (!githubToken) throw new Error('No GitHub token available for write');
+  
+  // ✅ Use backticks so ${} works correctly
   const url = https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)};
+  
+  // ✅ Encode the file content safely
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2))));
+  
+  // ✅ Message must be in backticks too
   const payload = { message: Update ${path} via Merrick UI, content };
+  
   if (sha) payload.sha = sha;
+  
   const res = await fetch(url, {
     method: 'PUT',
     headers: Object.assign({ 'Content-Type': 'application/json' }, githubApiHeaders()),
     body: JSON.stringify(payload)
   });
+  
   return await res.json();
 }
   });
@@ -639,6 +648,7 @@ init();
 </script>
 </body>
 </html>
+
 
 
 
