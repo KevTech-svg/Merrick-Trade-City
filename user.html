@@ -80,6 +80,861 @@ body {
 .input { width:100%; padding:10px; border-radius:8px; border:none; background:rgba(255,255,255,0.03); color:#fff; }
 footer { margin-top:10px; text-align:center; color:var(--muted); }
 
+/* small badge */
+.badge { display:inline-block; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,0.04); color:var(--muted); font-size:12px; }
+
+/* ===== Modal ===== */
+.modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000; }
+.modal-content { background:#0f0c29; padding:18px; border-radius:12px; width:92%; max-width:520px; }
+
+/* ===== Responsive Design ===== */
+
+/* Tablet (≤980px) */
+@media (max-width:980px) {
+  body { flex-direction:column; }
+  .sidebar {
+    width:100%;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 14px;
+    border-right:none;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+    overflow-x:auto;
+  }
+  .menu {
+    flex-direction:row;
+    overflow-x:auto;
+    gap:10px;
+  }
+  .menu button {
+    flex:0 0 auto;
+    font-size:14px;
+    white-space:nowrap;
+  }
+  .chart-box { height:320px; }
+}
+
+/* Mobile (≤700px) */
+@media (max-width:700px) {
+  body { flex-direction:column; }
+  .sidebar {
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+    padding:14px;
+  }
+  .profile-card img { width:50px; height:50px; }
+  .main { padding:12px; }
+  .card { padding:10px; }
+  .bots-grid { grid-template-columns:1fr; }
+  .chart-box { height:260px; }
+  h2, h3, h4 { font-size:1.1rem; }
+}
+
+/* Small phones (≤480px) */
+@media (max-width:480px) {
+  .brand-glow { font-size:28px; }
+  .menu button { padding:8px; font-size:13px; }
+  .input { font-size:14px; }
+  .btn { font-size:13px; padding:6px 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite">
+  <div class="brand-glow">Merrick Trade City</div>
+  <div class="loading-sub" id="loadingSub">Connecting… please wait</div>
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar" role="navigation" aria-label="Main sidebar">
+  <div>
+    <h2>User Panel</h2>
+    <div class="profile-card card">
+      <!-- Inline SVG placeholder avatar avoids 404s -->
+      <img id="profilePic" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'><rect width='100%' height='100%' fill='%237c5cff'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-family='Poppins,Arial' font-size='56' fill='white'>M</text></svg>" alt="User avatar" onclick="onChangeProfilePic()" title="Change profile picture">
+      <div>
+        <div id="userName">Loading…</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+          <small id="userBalance">Balance: —</small>
+          <span id="accountType" class="badge">—</span>
+        </div>
+        <small id="userEmail">—</small>
+      </div>
+    </div>
+
+    <div class="menu" id="menu">
+      <button data-section="dashboard" class="active">Dashboard</button>
+      <button data-section="freebots">Free Bots</button>
+      <button data-section="dtrader">D-Trader</button>
+      <button data-section="smart">Smart Analysis</button>
+      <button data-section="analysis">Analysis Tool</button>
+      <button data-section="signals">Signals</button>
+      <button data-section="charts">Charts</button>
+      <button data-section="copy">Copy Trading</button>
+    </div>
+  </div>
+
+  <div style="margin-top:14px">
+    <div style="margin-bottom:8px">
+      <button class="btn btn-primary" id="githubStatusBtn">Connect GitHub (auto)</button>
+    </div>
+    <button class="btn" onclick="openTokenModal()">Deriv Token</button>
+    <button class="btn" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main" role="main">
+  <div class="welcome card">
+    <div style="display:flex;gap:12px;align-items:center">
+      <img src="A_logo_for_Merrick_Trade_City_is_displayed_against.png.jpg" class="logo-small" alt="Merrick logo">
+      <div>
+        <div style="font-weight:700">Welcome back, <span id="displayName">User</span></div>
+        <div class="small-muted">Trade live with your Deriv account inside Merrick Trade City</div>
+      </div>
+    </div>
+    <div style="text-align:right">
+      <small class="small-muted">Loaded bot: <strong id="loadedBot">None</strong></small><br>
+      <button class="btn btn-primary" id="runBotBtn">Run Loaded Bot</button>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <section id="dashboardSection" class="card">
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:300px">
+        <small class="small-muted">Quick Tutorial</small>
+        <h3 style="margin:8px 0">How to add & run bots</h3>
+        <div style="aspect-ratio:16/9;border-radius:10px;overflow:hidden;margin-top:8px">
+          <iframe id="ytTutorial" src="https://www.youtube.com/embed/yup6kew1BBU?si=yNLIy1Fym8RjD9HI" style="width:100%;height:100%;border:0" allowfullscreen></iframe>
+        </div>
+        <div style="margin-top:8px" class="small-muted">Replace this YouTube link any time.</div>
+      </div>
+
+      <div style="width:320px">
+        <small class="small-muted">Quick Actions</small>
+        <h4 style="margin:8px 0">Add Bot</h4>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input id="localBotFile" type="file" accept=".xml,.zip" class="input">
+          <button class="btn" onclick="openDrive()">From Google Drive</button>
+          <button class="btn" onclick="openBotBuilder()">Bot Builder</button>
+          <select id="quickStrategy" class="input">
+            <option value="">Choose Quick Strategy</option>
+            <option value="scalp">Scalp</option>
+            <option value="swing">Swing</option>
+            <option value="trend">Trend</option>
+          </select>
+          <button class="btn btn-primary" onclick="addQuickStrategy()">Use Strategy</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px">
+      <h3>Available Bots</h3>
+      <div class="bots-grid" id="botsContainer"></div>
+    </div>
+
+    <div style="margin-top:14px">
+      <h3>Your Portfolio</h3>
+      <div class="chart-box"><canvas id="portfolioChart" style="width:100%;height:100%"></canvas></div>
+
+      <!-- New: Selectable asset chart (TradingView) placed below portfolio as requested -->
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+        <label class="small-muted" for="assetSelect">View asset:</label>
+        <select id="assetSelect" class="input" style="max-width:220px">
+          <option value="OANDA:XAUUSD">XAUUSD (Gold)</option>
+          <option value="OANDA:EURUSD">EURUSD (FX)</option>
+          <option value="BITSTAMP:BTCUSD">BTCUSD (Crypto)</option>
+          <option value="OANDA:GBPUSD">GBPUSD</option>
+          <option value="OANDA:US30USD">US30 (Indices)</option>
+        </select>
+        <button class="btn btn-primary" id="loadAssetBtn">Load Chart</button>
+      </div>
+
+      <div id="assetChartWrap" class="chart-box" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <!-- Free Bots -->
+  <section id="freebotsSection" style="display:none" class="card">
+    <h3>Shared Bots</h3>
+    <div class="bots-grid" id="sharedBotsContainer"></div>
+  </section>
+
+  <!-- D-Trader -->
+  <section id="dtraderSection" style="display:none" class="card">
+    <h3>D-Trader (TradingView)</h3>
+    <div class="chart-box" id="tvFrameWrap"></div>
+  </section>
+
+  <!-- Charts -->
+  <section id="chartsSection" style="display:none" class="card">
+    <h3>Charts</h3>
+    <div class="chart-box" id="tvChartWrap"></div>
+  </section>
+
+  <section id="smartSection" style="display:none" class="card"><h3>Smart Analysis</h3></section>
+  <section id="analysisSection" style="display:none" class="card"><h3>Analysis Tool</h3></section>
+  <section id="signalsSection" style="display:none" class="card"><h3>Signals</h3></section>
+  <section id="copySection" style="display:none" class="card"><h3>Copy Trading</h3></section>
+
+  <footer><small class="small-muted">© 2025 Merrick Trade City — All rights reserved.</small></footer>
+</div>
+
+<!-- GitHub (optional) modal -->
+<div class="modal" id="githubModal">
+  <div class="modal-content">
+    <h3>Connect to GitHub (optional)</h3>
+    <p>To let this page write users & bots directly to your repo (<strong>KevTech-svg/merrick-data</strong>), paste a GitHub Personal Access Token (repo scope).</p>
+    <input id="githubTokenInput" class="input" placeholder="ghp_..." />
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+      <button class="btn" onclick="closeGithubModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveGithubToken()">Save & Connect</button>
+    </div>
+    <p style="font-size:12px;margin-top:10px;color:var(--muted)">If you don't provide a token, admin bots will load from the public repo (read-only).</p>
+  </div>
+</div>
+
+<!-- Deriv token modal -->
+<div class="modal" id="tokenModal">
+  <div class="modal-content">
+    <h3>Enter Deriv API Token</h3>
+    <input id="manualDerivToken" class="input" placeholder="1|..." />
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+      <button class="btn" onclick="closeTokenModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDerivToken()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bot builder modal -->
+<div class="modal" id="builderModal">
+  <div class="modal-content">
+    <h3>Quick Bot Builder</h3>
+    <input id="builderName" class="input" placeholder="Bot name (e.g. Quick-Scalp)" />
+    <select id="builderStrategy" class="input" style="margin-top:8px">
+      <option value="scalp">Scalp</option><option value="trend">Trend</option><option value="mean">Mean Reversion</option>
+    </select>
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+      <button class="btn" onclick="closeBotBuilder()">Close</button>
+      <button class="btn btn-primary" onclick="createBotFromBuilder()">Create</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ====== Config ====== */
+const GITHUB_OWNER = 'KevTech-svg';
+const GITHUB_REPO = 'merrick-data'; // ensure this repo exists
+const USERS_PATH = 'users.json';
+const ADMIN_BOTS_PATH = 'admin_bots.json';
+
+const DERIV_APP_ID = '109286';
+const REDIRECT_URI = location.origin + '/Merrick-Trade-City/user.html';
+
+/* ====== State ====== */
+let githubToken = localStorage.getItem('merrick_github_token') || null;
+let usersData = {};          // { email: { name, email, balance, bots:[], avatar } }
+let adminBots = [];          // admin/shared bots
+let currentUserEmail = localStorage.getItem('merrick_current_user') || null;
+let currentUser = null;
+let portfolioChart = null;
+let pollingInterval = null;
+let derivWS = null;
+
+/* ====== Helpers ====== */
+function qs(sel){ return document.querySelector(sel); }
+function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
+function openModal(id){ qs('#'+id).style.display = 'flex'; }
+function closeModal(id){ qs('#'+id).style.display = 'none'; }
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ====== Menu wiring ====== */
+qsa('.menu button').forEach(btn=>{
+  btn.addEventListener('click', ()=> {
+    qsa('.menu button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const section = btn.dataset.section;
+    const map = {
+      dashboard: 'dashboardSection',
+      freebots: 'freebotsSection',
+      dtrader: 'dtraderSection',
+      smart: 'smartSection',
+      analysis: 'analysisSection',
+      signals: 'signalsSection',
+      charts: 'chartsSection',
+      copy: 'copySection'
+    };
+    Object.values(map).forEach(id => { const el = qs('#'+id); if(el) el.style.display = 'none'; });
+    const showId = map[section];
+    if(showId){ const el = qs('#'+showId); if(el) el.style.display = 'block'; }
+  });
+});
+
+/* ====== GitHub helpers ====== */
+function githubApiHeaders(){
+  const headers = { 'Accept': 'application/vnd.github.v3+json' };
+  if(githubToken) headers['Authorization'] = 'token ' + githubToken;
+  return headers;
+}
+
+async function fetchGitHubFile(path){
+  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
+  const res = await fetch(url, { headers: githubApiHeaders() });
+  if(res.status === 404) return null;
+  if(!res.ok) throw new Error('GitHub fetch error: ' + res.status);
+  return await res.json();
+}
+
+async function getJsonFromGitHub(path){
+  const file = await fetchGitHubFile(path);
+  if(!file) return null;
+  const text = atob(file.content.replace(/\n/g,''));
+  try { return JSON.parse(text); } catch(e){ console.warn('Invalid JSON in', path); return null; }
+}
+
+async function putJsonToGitHub(path, obj, sha = null){
+  if(!githubToken) throw new Error('No GitHub token available for write');
+  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2))));
+  const payload = { message: `Update ${path} via Merrick UI`, content };
+  if(sha) payload.sha = sha;
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: Object.assign({'Content-Type':'application/json'}, githubApiHeaders()),
+    body: JSON.stringify(payload)
+  });
+  if(!res.ok) throw new Error('GitHub write error: ' + res.status);
+  return await res.json();
+}
+
+/* Read admin bots from public raw when no token available */
+async function loadAdminBotsFromGitHubReadOnly(){
+  try{
+    const url = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${ADMIN_BOTS_PATH}`;
+    const res = await fetch(url);
+    if(res.ok){
+      adminBots = await res.json();
+      console.info('Loaded admin bots (read-only) from raw.githubusercontent');
+    } else {
+      adminBots = [{ name:'Admin Bot 1' }, { name:'Admin Bot 2' }];
+    }
+  } catch(e){
+    console.warn('Could not load admin bots read-only', e);
+    adminBots = [{ name:'Admin Bot 1' }, { name:'Admin Bot 2' }];
+  }
+}
+
+async function loadAllDataFromGitHub(){
+  try{
+    const usersJson = await getJsonFromGitHub(USERS_PATH);
+    if(usersJson) usersData = usersJson;
+    const adminJson = await getJsonFromGitHub(ADMIN_BOTS_PATH);
+    if(adminJson) adminBots = adminJson;
+  } catch(err){
+    console.warn('loadAllDataFromGitHub error', err);
+  }
+}
+
+/* Save helpers */
+async function saveUsersToGitHub(){
+  if(!githubToken) return console.warn('No token; cannot save to GitHub.');
+  try{
+    const existing = await fetchGitHubFile(USERS_PATH);
+    const sha = existing ? existing.sha : null;
+    await putJsonToGitHub(USERS_PATH, usersData, sha);
+    console.info('users.json saved');
+  } catch(err){
+    console.error('saveUsersToGitHub failed', err);
+    alert('Failed to save users to GitHub. Check token and repo permissions.');
+  }
+}
+async function saveAdminBotsToGitHub(){
+  if(!githubToken) return console.warn('No token; cannot save admin bots.');
+  try{
+    const existing = await fetchGitHubFile(ADMIN_BOTS_PATH);
+    const sha = existing ? existing.sha : null;
+    await putJsonToGitHub(ADMIN_BOTS_PATH, adminBots, sha);
+    console.info('admin_bots.json saved');
+  } catch(err){
+    console.error('saveAdminBotsToGitHub failed', err);
+    alert('Failed to save admin bots to GitHub. Check token and repo permissions.');
+  }
+}
+
+/* ====== User management ====== */
+function setCurrentUser(email, fallback){
+  currentUserEmail = email;
+  localStorage.setItem('merrick_current_user', email);
+  if(!usersData[email] && fallback) usersData[email] = fallback;
+  currentUser = usersData[email];
+  if(!currentUser){
+    usersData[email] = { name: email.split('@')[0], email, balance: 0, bots: [], avatar: '' };
+    currentUser = usersData[email];
+  }
+
+  qs('#userName').textContent = currentUser.name || currentUser.email;
+  qs('#displayName').textContent = currentUser.name || currentUser.email;
+  qs('#userBalance').textContent = 'Balance: ' + (currentUser.balance !== undefined ? currentUser.balance : 0);
+  qs('#userEmail').textContent = currentUser.email;
+  qs('#profilePic').src = currentUser.avatar || qs('#profilePic').src;
+  buildBotsUI();
+  setupPortfolioChart();
+}
+
+/* Basic prompt login for demo (you can replace with real OAuth) */
+async function promptLogin(){
+  const email = prompt('Enter your email to sign in:');
+  if(!email) return;
+  if(!usersData[email]) {
+    usersData[email] = { name: email.split('@')[0], email, balance: 0, bots: [], avatar: '' };
+    if(githubToken) await saveUsersToGitHub();
+  }
+  setCurrentUser(email);
+}
+
+/* ====== Bots UI & handling ====== */
+function buildBotsUI(){
+  const container = qs('#botsContainer');
+  container.innerHTML = '';
+
+  if(currentUser && Array.isArray(currentUser.bots)){
+    currentUser.bots.forEach((bot, idx)=>{
+      const d = document.createElement('div');
+      d.className = 'bot-card';
+      d.innerHTML = `
+        <h4>${escapeHtml(bot.name)}</h4>
+        <div class="small-muted">Your Bot</div>
+        <div style="margin-top:8px">
+          <button class="btn btn-primary" onclick="runUserBot('${encodeURIComponent(bot.name)}')">Run</button>
+          <button class="btn btn-ghost" onclick="removeUserBot(${idx})">Remove</button>
+        </div>
+      `;
+      container.appendChild(d);
+    });
+  }
+
+  // Admin/shared bots
+  adminBots.forEach(bot=>{
+    const d = document.createElement('div');
+    d.className = 'bot-card';
+    d.innerHTML = `
+      <h4>${escapeHtml(bot.name)}</h4>
+      <div class="small-muted">Shared</div>
+      <div style="margin-top:8px"><button class="btn" onclick="loadSharedBot('${escapeHtml(bot.name)}')">Load</button></div>
+    `;
+    container.appendChild(d);
+  });
+
+  // shared bots container
+  const sharedContainer = qs('#sharedBotsContainer');
+  if(sharedContainer){
+    sharedContainer.innerHTML = adminBots.map(b => `<div class="bot-card"><h4>${escapeHtml(b.name)}</h4></div>`).join('');
+  }
+}
+
+function runUserBot(encodedName){
+  const name = decodeURIComponent(encodedName);
+  alert('Running your bot: ' + name + ' (placeholder: implement bot runtime).');
+  // Implement actual bot runtime / calls to Deriv here
+}
+function removeUserBot(idx){
+  if(!confirm('Remove this bot from your account?')) return;
+  currentUser.bots.splice(idx,1);
+  usersData[currentUser.email] = currentUser;
+  buildBotsUI();
+  if(githubToken) saveUsersToGitHub();
+}
+
+/* local upload: store metadata and optionally save users.json */
+qs('#localBotFile').addEventListener('change', async (e) => {
+  if(!e.target.files || e.target.files.length === 0) return;
+  const f = e.target.files[0];
+  const bot = { name: f.name.replace(/\.[^/.]+$/, ''), filename: f.name, uploadedAt: new Date().toISOString() };
+  currentUser.bots.push(bot);
+  usersData[currentUser.email] = currentUser;
+  buildBotsUI();
+  if(githubToken) await saveUsersToGitHub();
+  alert('Bot metadata saved to your account. To execute XML bots, you will need a parser/runtime.');
+});
+
+/* Builder modal helpers */
+function openBotBuilder(){ openModal('builderModal'); }
+function closeBotBuilder(){ closeModal('builderModal'); }
+function createBotFromBuilder(){
+  const name = qs('#builderName').value.trim() || (qs('#builderStrategy').value + ' Bot');
+  const bot = { name, createdAt: new Date().toISOString(), fromBuilder: true };
+  currentUser.bots.push(bot);
+  usersData[currentUser.email] = currentUser;
+  closeBotBuilder();
+  buildBotsUI();
+  if(githubToken) saveUsersToGitHub();
+  alert('Bot created: ' + name);
+}
+
+/* quick strategy */
+function addQuickStrategy(){
+  const val = qs('#quickStrategy').value;
+  if(!val) return alert('Choose a strategy');
+  const bot = { name: 'Quick-' + val, createdAt: new Date().toISOString() };
+  currentUser.bots.push(bot);
+  usersData[currentUser.email] = currentUser;
+  buildBotsUI();
+  if(githubToken) saveUsersToGitHub();
+  alert('Quick strategy added: ' + bot.name);
+}
+
+/* ====== Portfolio chart (Chart.js) ====== */
+function setupPortfolioChart(){
+  const el = qs('#portfolioChart');
+  if(!el) return;
+  const ctx = el.getContext('2d');
+  if(portfolioChart) portfolioChart.destroy();
+  const labels = generatePastDaysLabels(7);
+  const balances = generateDemoBalances(labels.length, currentUser ? currentUser.balance : 0);
+  portfolioChart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Balance (Ksh)', data: balances }] },
+    options: { responsive:true, scales:{ y:{ beginAtZero:true } } }
+  });
+}
+
+function generatePastDaysLabels(n){
+  const out=[];
+  for(let i=n-1;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    out.push(`${d.getMonth()+1}/${d.getDate()}`);
+  }
+  return out;
+}
+function generateDemoBalances(n, latest){
+  if(!latest && latest !== 0) latest = Math.floor(Math.random()*1000)+100;
+  const arr = [];
+  for(let i=0;i<n;i++){
+    arr.push(Math.max(0, Math.floor(latest - (n-i-1)*Math.random()*200)));
+  }
+  return arr;
+}
+
+/* ====== Polling for live updates ====== */
+async function startPolling(){
+  if(pollingInterval) clearInterval(pollingInterval);
+  pollingInterval = setInterval(async ()=>{
+    try{
+      if(githubToken){
+        await loadAllDataFromGitHub();
+        if(currentUserEmail && usersData[currentUserEmail]) {
+          currentUser = usersData[currentUserEmail];
+          setCurrentUser(currentUserEmail);
+        }
+        buildBotsUI();
+        if(portfolioChart && currentUser && currentUser.balance !== undefined){
+          const last = portfolioChart.data.datasets[0].data;
+          last[last.length - 1] = currentUser.balance;
+          portfolioChart.update();
+        }
+      }
+    } catch(e){
+      console.warn('poll error', e);
+    }
+  }, 10000);
+}
+
+/* ====== GitHub modal logic ====== */
+function openGithubModal(){ openModal('githubModal'); }
+function closeGithubModal(){ closeModal('githubModal'); }
+function saveGithubToken(){
+  const t = qs('#githubTokenInput').value.trim();
+  if(!t) return alert('Paste a GitHub token first');
+  githubToken = t;
+  localStorage.setItem('merrick_github_token', t);
+  closeGithubModal();
+  // attempt to load and save
+  loadAllDataFromGitHub().then(()=>{ alert('Connected to GitHub (read/write).'); buildBotsUI(); saveUsersToGitHub(); }).catch(err=>{ alert('GitHub connection failed: '+err.message); console.error(err); });
+}
+qs('#githubStatusBtn').addEventListener('click', ()=> {
+  // open modal only if token not present
+  if(!githubToken) openGithubModal();
+  else alert('GitHub token present (auto-connected).');
+});
+
+/* ====== Deriv token & OAuth ====== */
+
+/**
+ * Read token from URL (fragment or query) and persist to localStorage.
+ * - Deriv implicit flow commonly returns in fragment: #access_token=...
+ * - Some flows may use ?token=... or ?access_token=...
+ */
+function grabDerivTokenFromUrl(){
+  // check fragment first
+  const hash = window.location.hash || '';
+  if(hash && (hash.includes('access_token') || hash.includes('token'))) {
+    const params = new URLSearchParams(hash.replace('#','?'));
+    const token = params.get('access_token') || params.get('token') || params.get('accessToken');
+    if(token){
+      localStorage.setItem('deriv_token', token);
+      // clean URL so token not visible
+      try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+      return token;
+    }
+  }
+  // check query string fallback
+  const qsParams = new URLSearchParams(window.location.search);
+  const qtoken = qsParams.get('access_token') || qsParams.get('token') || qsParams.get('t');
+  if(qtoken){
+    localStorage.setItem('deriv_token', qtoken);
+    try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+    return qtoken;
+  }
+  return null;
+}
+
+function openTokenModal(){ openModal('tokenModal'); }
+function closeTokenModal(){ closeModal('tokenModal'); }
+function saveDerivToken(){
+  const t = qs('#manualDerivToken').value.trim();
+  if(!t) return alert('Paste a Deriv token (starts with 1|...)');
+  localStorage.setItem('deriv_token', t);
+  closeTokenModal();
+  connectDerivWS();
+  alert('Deriv token saved (manual).');
+}
+
+/* Connect to Deriv WebSocket, authorize, and subscribe to balance updates */
+function connectDerivWS(){
+  const token = localStorage.getItem('deriv_token');
+  if(!token) {
+    console.warn('No Deriv token found.');
+    // leave UI as demo fallback
+    return;
+  }
+
+  const wsUrl = 'wss://ws.binaryws.com/websockets/v3?app_id=' + encodeURIComponent(DERIV_APP_ID);
+  if(derivWS) try{ derivWS.close(); }catch(e){}
+  derivWS = new WebSocket(wsUrl);
+
+  derivWS.onopen = ()=> {
+    derivWS.send(JSON.stringify({ authorize: token }));
+    console.log('Deriv WS open; authorizing...');
+  };
+
+  derivWS.onmessage = (evt) => {
+    try{
+      const data = JSON.parse(evt.data);
+
+      // Successful authorization response
+      if(data.authorize){
+        const auth = data.authorize;
+        // Primary: use loginid for display
+        if(auth.loginid) {
+          qs('#displayName').textContent = auth.loginid;
+          qs('#userName').textContent = auth.loginid;
+        }
+        // Email if present
+        if(auth.email) qs('#userEmail').textContent = auth.email;
+
+        // Detect demo vs real if Deriv sends is_virtual
+        if(typeof auth.is_virtual !== 'undefined'){
+          qs('#accountType').textContent = auth.is_virtual ? 'Demo' : 'Real';
+        } else {
+          // fallback heuristic: loginid often contains "CR" for real/virtual? (not guaranteed)
+          const lid = (auth.loginid || '').toLowerCase();
+          const guess = lid.includes('demo') || lid.includes('virtual') || lid.startsWith('v') ? 'Demo' : 'Real';
+          qs('#accountType').textContent = guess;
+        }
+
+        // If authorize gave a balance field, set it
+        if(typeof auth.balance !== 'undefined'){
+          const b = auth.balance;
+          qs('#userBalance').textContent = 'Balance: ' + b + (auth.currency ? ' ' + auth.currency : '');
+          // update currentUser data if mapped
+          if(currentUser) currentUser.balance = b;
+        }
+
+        // store some user metadata locally (optional)
+        if(auth.email) {
+          // merge into usersData if exists; do NOT store sensitive tokens here
+          if(!usersData[auth.email]) usersData[auth.email] = { name: auth.loginid || auth.email.split('@')[0], email: auth.email, balance: auth.balance || 0, bots: [], avatar: '' };
+          setCurrentUser(auth.email);
+        }
+
+        // Subscribe to live balance updates
+        requestDerivBalance(true);
+      }
+
+      // Live balance message may come as msg_type 'balance' or 'balance' key
+      if(data.msg_type === 'balance' || data.balance){
+        const bObj = data.balance || (data.msg_type === 'balance' ? data : null);
+        if(bObj){
+          const b = bObj.balance !== undefined ? bObj.balance : (Array.isArray(bObj) ? (bObj[0] && bObj[0].balance) : undefined);
+          const cur = bObj.currency || (data.authorize && data.authorize.currency) || '';
+          if(typeof b !== 'undefined'){
+            qs('#userBalance').textContent = 'Balance: ' + Number(b).toLocaleString() + (cur ? ' ' + cur : '');
+            // update portfolioChart latest point if exists
+            if(currentUser) currentUser.balance = b;
+            if(portfolioChart && portfolioChart.data && portfolioChart.data.datasets && portfolioChart.data.datasets[0]) {
+              const ds = portfolioChart.data.datasets[0].data;
+              ds[ds.length - 1] = Math.round(b);
+              portfolioChart.update();
+            }
+          }
+        }
+      }
+
+      if(data.error) {
+        console.warn('Deriv error', data.error);
+      }
+    } catch(err){
+      console.warn('Deriv ws parse error', err);
+    }
+  };
+
+  derivWS.onerror = (e)=> console.error('Deriv WS error', e);
+  derivWS.onclose = ()=> console.warn('Deriv WS closed');
+}
+
+function requestDerivBalance(subscribe = false){
+  if(!derivWS || derivWS.readyState !== WebSocket.OPEN) return;
+  // subscribe parameter will let deriv send balance updates regularly
+  const payload = { balance: 1 };
+  if(subscribe) payload.subscribe = 1;
+  derivWS.send(JSON.stringify(payload));
+}
+
+/* Helper: log out from Deriv (clear token & reset UI) */
+function derivLogout(){
+  try{ if(derivWS) derivWS.close(); }catch(e){}
+  localStorage.removeItem('deriv_token');
+  // optional: keep demo mapping
+  qs('#displayName').textContent = 'User';
+  qs('#userName').textContent = 'User';
+  qs('#userBalance').textContent = 'Balance: —';
+  qs('#userEmail').textContent = '—';
+  qs('#accountType').textContent = '—';
+  // remove stored current user mapping if you want:
+  // localStorage.removeItem('merrick_current_user');
+}
+
+/* ====== TradingView embed helpers (asset selector) ====== */
+function embedTradingViewInto(elId, symbol){
+  const wrap = qs('#' + elId);
+  if(!wrap) return;
+  // Clear current content
+  wrap.innerHTML = '';
+  // Use TradingView widget embed URL
+  const iframe = document.createElement('iframe');
+  iframe.style.width = '100%';
+  iframe.style.height = '100%';
+  iframe.style.border = '0';
+  iframe.src = 'https://s.tradingview.com/widgetembed/?frameElementId=' + encodeURIComponent(elId) + '&symbol=' + encodeURIComponent(symbol) + '&interval=60&hidesidetoolbar=1&theme=dark';
+  wrap.appendChild(iframe);
+}
+
+/* Wire up asset selector */
+qs('#loadAssetBtn')?.addEventListener('click', ()=>{
+  const sym = qs('#assetSelect').value;
+  embedTradingViewInto('assetChartWrap', sym);
+});
+
+/* initialise default asset chart */
+embedTradingViewInto('assetChartWrap', qs('#assetSelect') ? qs('#assetSelect').value : 'OANDA:XAUUSD');
+
+/* ====== Utility UI functions ====== */
+function onChangeProfilePic(){
+  const url = prompt('Paste image URL for your avatar:','');
+  if(!url) return;
+  currentUser.avatar = url;
+  qs('#profilePic').src = url;
+  usersData[currentUser.email] = currentUser;
+  if(githubToken) saveUsersToGitHub();
+}
+function openDrive(){ alert('Google Drive integration requires OAuth and API keys — placeholder'); }
+function logout(){ 
+  // clear local session and reload
+  localStorage.removeItem('merrick_current_user');
+  derivLogout();
+  location.reload(); 
+}
+
+/* Run loaded bot button */
+qs('#runBotBtn').addEventListener('click', ()=>{
+  const lb = qs('#loadedBot').textContent || 'None';
+  if(lb === 'None') return alert('Load a bot first');
+  alert('Running bot: ' + lb + ' (placeholder).');
+});
+
+/* ====== Initialization ====== */
+async function init(){
+  try{
+    // attempt to auto-load GitHub token from localStorage (auto-connect)
+    if(githubToken){
+      try{
+        await loadAllDataFromGitHub();
+        qs('#githubStatusBtn').textContent = 'GitHub: connected (auto)';
+      } catch(e){
+        console.warn('Auto GitHub load failed', e);
+        // fallback to read-only admin bots
+        await loadAdminBotsFromGitHubReadOnly();
+        qs('#githubStatusBtn').textContent = 'GitHub: read-only';
+      }
+    } else {
+      // no token: try read-only admin bots
+      await loadAdminBotsFromGitHubReadOnly();
+      qs('#githubStatusBtn').textContent = 'GitHub: read-only';
+    }
+
+    // restore current user or create demo
+    if(currentUserEmail && usersData[currentUserEmail]){
+      setCurrentUser(currentUserEmail);
+    } else {
+      // fallback demo user
+      setCurrentUser('demo@example.com', { name: 'Demo User', email: 'demo@example.com', balance: 1200, bots: [], avatar: '' });
+    }
+
+    buildBotsUI();
+    setupPortfolioChart();
+    startPolling();
+
+    // parse deriv token if returning from OAuth or query
+    const maybeToken = grabDerivTokenFromUrl() || localStorage.getItem('deriv_token');
+    if(maybeToken) {
+      // ensure token stored then connect WS
+      localStorage.setItem('deriv_token', maybeToken);
+      connectDerivWS();
+    }
+  } catch(err){
+    console.error('Init error', err);
+  } finally {
+    qs('#loadingOverlay').classList.add('loading-hidden');
+    setTimeout(()=> { qs('#loadingOverlay').style.display='none'; }, 600);
+  }
+}
+
+/* Start */
+window.addEventListener('load', init);
+</script>
+</body>
+</html>.menu button:hover { transform:translateX(6px); }
+.menu button.active { background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#fff; }
+
+.btn { padding:8px 12px; border-radius:10px; border:none; cursor:pointer; font-weight:700; }
+.btn-ghost { background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); }
+.btn-primary { background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#fff; }
+
+.bots-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:12px; margin-top:8px;
+}
+.bot-card { background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; text-align:center; }
+.chart-box { height:420px; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.03); }
+.input { width:100%; padding:10px; border-radius:8px; border:none; background:rgba(255,255,255,0.03); color:#fff; }
+footer { margin-top:10px; text-align:center; color:var(--muted); }
+
 /* ===== Modal ===== */
 .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000; }
 .modal-content { background:#0f0c29; padding:18px; border-radius:12px; width:92%; max-width:520px; }
@@ -789,4 +1644,5 @@ window.addEventListener('load', init);
 </script>
 </body>
 </html>
+
 
