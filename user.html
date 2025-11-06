@@ -52,7 +52,7 @@
   @media (max-width:980px){
     body{flex-direction:column}
     .sidebar{width:100%;flex-direction:row;gap:12px;padding:10px;align-items:center}
-    .menu{flex-direction:row;overflow:auto}
+    .menu{flex-direction:row;Overflow:auto}
     .chart-box{height:320px}
     .profile-card{display:flex;align-items:center}
   }
@@ -94,7 +94,7 @@
 
   <div style="margin-top:14px">
     <div style="margin-bottom:8px">
-      <button class="btn btn-primary" id="githubStatusBtn">Connect GitHub</button>
+      <!-- Connect GitHub button removed per request -->
     </div>
     <button class="btn" onclick="openTokenModal()">Deriv Token</button>
     <button class="btn" onclick="logout()">Logout</button>
@@ -420,7 +420,7 @@ function buildBotsUI(){
     d.innerHTML = `
       <h4>${escapeHtml(bot.name)}</h4>
       <div class="small-muted">Shared</div>
-      <div style="margin-top:8px"><button class="btn" onclick="loadSharedBot('${escapeHtml(bot.name)}')">Load</button></div>
+      <div style="margin-top:8px"><button class="btn" onclick="loadSharedBot('${encodeURIComponent(bot.name)}')">Load</button></div>
     `;
     container.appendChild(d);
   });
