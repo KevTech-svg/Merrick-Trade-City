@@ -918,5 +918,99 @@ async function init(){
 /* Start */
 window.addEventListener('load', init);
 </script>
+ <script>
+/* ====== Deriv OAuth Live Connection ====== */
+const APP_ID = 109286;
+const WS_URL = wss://ws.derivws.com/websockets/v3?app_id=${APP_ID};
+const statusEl = document.getElementById("status") || null;
+const loadingOverlay = document.getElementById("loadingOverlay");
+
+function redirectToDerivOAuth() {
+  const redirect_uri = encodeURIComponent(window.location.origin + window.location.pathname);
+  const oauth_url = https://oauth.deriv.com/oauth2/authorize?app_id=${APP_ID}&redirect_uri=${redirect_uri}&response_type=token;
+  window.location.href = oauth_url;
+}
+
+function getTokenFromURL() {
+  const hash = window.location.hash;
+  if (!hash) return null;
+  const params = new URLSearchParams(hash.substring(1));
+  const token = params.get("access_token");
+  if (token) {
+    localStorage.setItem("deriv_token", token);
+    history.replaceState(null, "", window.location.pathname);
+    return token;
+  }
+  return null;
+}
+
+function connectToDeriv(token) {
+  const ws = new WebSocket(WS_URL);
+  if (statusEl) statusEl.textContent = "Connecting to Deriv…";
+
+  ws.onopen = () => {
+    ws.send(JSON.stringify({ authorize: token }));
+  };
+
+  ws.onmessage = (msg) => {
+    const data = JSON.parse(msg.data);
+
+    if (data.error) {
+      console.error("Deriv Error:", data.error.message);
+      if (statusEl) statusEl.textContent = "Authorization failed: " + data.error.message;
+      if (loadingOverlay) loadingOverlay.style.display = "none";
+      return;
+    }
+
+    if (data.authorize) {
+      const a = data.authorize;
+      const acct = a.loginid;
+      const cur = a.currency || "—";
+      const bal = (a.balance ?? 0).toFixed(2);
+
+      // Update dashboard header
+      const nameField = document.querySelector("#username, .user-name");
+      if (nameField) nameField.textContent = acct;
+
+      const balanceField = document.querySelector("#balance, .user-balance");
+      if (balanceField) balanceField.textContent = ${bal} ${cur};
+
+      if (statusEl) statusEl.textContent = "Connected ✅";
+      if (loadingOverlay) loadingOverlay.style.display = "none";
+
+      // Subscribe for live balance updates
+      ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
+    }
+
+    if (data.msg_type === "balance" && data.balance) {
+      const bal = parseFloat(data.balance.balance).toFixed(2);
+      const cur = data.balance.currency || "USD";
+      const balanceField = document.querySelector("#balance, .user-balance");
+      if (balanceField) balanceField.textContent = ${bal} ${cur};
+    }
+  };
+
+  ws.onerror = () => {
+    if (statusEl) statusEl.textContent = "Connection error.";
+    if (loadingOverlay) loadingOverlay.style.display = "none";
+  };
+
+  ws.onclose = () => {
+    if (statusEl) statusEl.textContent = "Disconnected from Deriv.";
+  };
+}
+
+const urlToken = getTokenFromURL();
+const savedToken = localStorage.getItem("deriv_token");
+
+if (urlToken) {
+  connectToDeriv(urlToken);
+} else if (savedToken) {
+  connectToDeriv(savedToken);
+} else {
+  redirectToDerivOAuth();
+}
+</script>
 </body>
 </html>
+
