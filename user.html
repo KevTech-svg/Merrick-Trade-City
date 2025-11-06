@@ -275,7 +275,7 @@ function githubApiHeaders(){
   return headers;
 }
 async function fetchGitHubFile(path){
-  const url = https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(path)};
+const url = https://api.github.com/repos/KevTech-svg/Merrick-Trade-City/contents/admin-bots.json?ref=main;
   const res = await fetch(url, { headers: githubApiHeaders() });
   if(res.status === 404) return null;
   if(!res.ok) throw new Error('GitHub fetch error: ' + res.status);
@@ -616,3 +616,4 @@ window.addEventListener('load', init);
 </script>
 </body>
 </html>
+
