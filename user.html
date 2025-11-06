@@ -932,16 +932,25 @@ function redirectToDerivOAuth() {
 }
 
 function getTokenFromURL() {
-  const hash = window.location.hash;
-  if (!hash) return null;
-  const params = new URLSearchParams(hash.substring(1));
-  const token = params.get("access_token");
+  // handle both #access_token and ?acct1/token1 style redirects
+  let token = null;
+
+  if (window.location.hash.includes("access_token")) {
+    const params = new URLSearchParams(window.location.hash.substring(1));
+    token = params.get("access_token");
+  } else if (window.location.search.includes("token1")) {
+    const params = new URLSearchParams(window.location.search);
+    token = params.get("token1"); // pick the first token (real or demo)
+  }
+
   if (token) {
     localStorage.setItem("deriv_token", token);
+    // clean up URL to avoid re-parsing tokens
     history.replaceState(null, "", window.location.pathname);
     return token;
   }
   return null;
+}
 }
 
 function connectToDeriv(token) {
@@ -1013,4 +1022,5 @@ if (urlToken) {
 </script>
 </body>
 </html>
+
 
