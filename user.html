@@ -80,9 +80,6 @@ body {
 .input { width:100%; padding:10px; border-radius:8px; border:none; background:rgba(255,255,255,0.03); color:#fff; }
 footer { margin-top:10px; text-align:center; color:var(--muted); }
 
-/* small badge */
-.badge { display:inline-block; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,0.04); color:var(--muted); font-size:12px; }
-
 /* ===== Modal ===== */
 .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000; }
 .modal-content { background:#0f0c29; padding:18px; border-radius:12px; width:92%; max-width:520px; }
@@ -159,10 +156,7 @@ footer { margin-top:10px; text-align:center; color:var(--muted); }
       <img id="profilePic" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'><rect width='100%' height='100%' fill='%237c5cff'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-family='Poppins,Arial' font-size='56' fill='white'>M</text></svg>" alt="User avatar" onclick="onChangeProfilePic()" title="Change profile picture">
       <div>
         <div id="userName">Loading…</div>
-        <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
-          <small id="userBalance">Balance: —</small>
-          <span id="accountType" class="badge">—</span>
-        </div>
+        <small id="userBalance">Balance: —</small>
         <small id="userEmail">—</small>
       </div>
     </div>
@@ -242,21 +236,6 @@ footer { margin-top:10px; text-align:center; color:var(--muted); }
     <div style="margin-top:14px">
       <h3>Your Portfolio</h3>
       <div class="chart-box"><canvas id="portfolioChart" style="width:100%;height:100%"></canvas></div>
-
-      <!-- New: Selectable asset chart (TradingView) placed below portfolio as requested -->
-      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-        <label class="small-muted" for="assetSelect">View asset:</label>
-        <select id="assetSelect" class="input" style="max-width:220px">
-          <option value="OANDA:XAUUSD">XAUUSD (Gold)</option>
-          <option value="OANDA:EURUSD">EURUSD (FX)</option>
-          <option value="BITSTAMP:BTCUSD">BTCUSD (Crypto)</option>
-          <option value="OANDA:GBPUSD">GBPUSD</option>
-          <option value="OANDA:US30USD">US30 (Indices)</option>
-        </select>
-        <button class="btn btn-primary" id="loadAssetBtn">Load Chart</button>
-      </div>
-
-      <div id="assetChartWrap" class="chart-box" style="margin-top:12px"></div>
     </div>
   </section>
 
@@ -664,36 +643,6 @@ qs('#githubStatusBtn').addEventListener('click', ()=> {
 });
 
 /* ====== Deriv token & OAuth ====== */
-
-/**
- * Read token from URL (fragment or query) and persist to localStorage.
- * - Deriv implicit flow commonly returns in fragment: #access_token=...
- * - Some flows may use ?token=... or ?access_token=...
- */
-function grabDerivTokenFromUrl(){
-  // check fragment first
-  const hash = window.location.hash || '';
-  if(hash && (hash.includes('access_token') || hash.includes('token'))) {
-    const params = new URLSearchParams(hash.replace('#','?'));
-    const token = params.get('access_token') || params.get('token') || params.get('accessToken');
-    if(token){
-      localStorage.setItem('deriv_token', token);
-      // clean URL so token not visible
-      try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
-      return token;
-    }
-  }
-  // check query string fallback
-  const qsParams = new URLSearchParams(window.location.search);
-  const qtoken = qsParams.get('access_token') || qsParams.get('token') || qsParams.get('t');
-  if(qtoken){
-    localStorage.setItem('deriv_token', qtoken);
-    try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
-    return qtoken;
-  }
-  return null;
-}
-
 function openTokenModal(){ openModal('tokenModal'); }
 function closeTokenModal(){ closeModal('tokenModal'); }
 function saveDerivToken(){
@@ -705,144 +654,73 @@ function saveDerivToken(){
   alert('Deriv token saved (manual).');
 }
 
-/* Connect to Deriv WebSocket, authorize, and subscribe to balance updates */
+function grabDerivTokenFromUrl(){
+  const hash = window.location.hash || '';
+  if(!hash) return null;
+  const params = new URLSearchParams(hash.replace('#','?'));
+  const token = params.get('access_token') || params.get('access_token'); // safe-check
+  if(token){
+    localStorage.setItem('deriv_token', token);
+    try{ history.replaceState(null, '', window.location.pathname + window.location.search); }catch(e){}
+    return token;
+  }
+  return null;
+}
+
 function connectDerivWS(){
   const token = localStorage.getItem('deriv_token');
   if(!token) {
     console.warn('No Deriv token found.');
-    // leave UI as demo fallback
     return;
   }
-
   const wsUrl = 'wss://ws.binaryws.com/websockets/v3?app_id=' + encodeURIComponent(DERIV_APP_ID);
   if(derivWS) try{ derivWS.close(); }catch(e){}
   derivWS = new WebSocket(wsUrl);
-
   derivWS.onopen = ()=> {
     derivWS.send(JSON.stringify({ authorize: token }));
     console.log('Deriv WS open; authorizing...');
   };
-
   derivWS.onmessage = (evt) => {
     try{
       const data = JSON.parse(evt.data);
-
-      // Successful authorization response
       if(data.authorize){
         const auth = data.authorize;
-        // Primary: use loginid for display
-        if(auth.loginid) {
-          qs('#displayName').textContent = auth.loginid;
-          qs('#userName').textContent = auth.loginid;
+        if(auth.display_name) qs('#displayName').textContent = auth.display_name;
+        if(auth.email){
+          // switch to that user if exists
+          if(usersData[auth.email]) setCurrentUser(auth.email);
         }
-        // Email if present
-        if(auth.email) qs('#userEmail').textContent = auth.email;
-
-        // Detect demo vs real if Deriv sends is_virtual
-        if(typeof auth.is_virtual !== 'undefined'){
-          qs('#accountType').textContent = auth.is_virtual ? 'Demo' : 'Real';
-        } else {
-          // fallback heuristic: loginid often contains "CR" for real/virtual? (not guaranteed)
-          const lid = (auth.loginid || '').toLowerCase();
-          const guess = lid.includes('demo') || lid.includes('virtual') || lid.startsWith('v') ? 'Demo' : 'Real';
-          qs('#accountType').textContent = guess;
-        }
-
-        // If authorize gave a balance field, set it
-        if(typeof auth.balance !== 'undefined'){
-          const b = auth.balance;
-          qs('#userBalance').textContent = 'Balance: ' + b + (auth.currency ? ' ' + auth.currency : '');
-          // update currentUser data if mapped
-          if(currentUser) currentUser.balance = b;
-        }
-
-        // store some user metadata locally (optional)
-        if(auth.email) {
-          // merge into usersData if exists; do NOT store sensitive tokens here
-          if(!usersData[auth.email]) usersData[auth.email] = { name: auth.loginid || auth.email.split('@')[0], email: auth.email, balance: auth.balance || 0, bots: [], avatar: '' };
-          setCurrentUser(auth.email);
-        }
-
-        // Subscribe to live balance updates
-        requestDerivBalance(true);
+        requestDerivBalance();
       }
-
-      // Live balance message may come as msg_type 'balance' or 'balance' key
-      if(data.msg_type === 'balance' || data.balance){
-        const bObj = data.balance || (data.msg_type === 'balance' ? data : null);
-        if(bObj){
-          const b = bObj.balance !== undefined ? bObj.balance : (Array.isArray(bObj) ? (bObj[0] && bObj[0].balance) : undefined);
-          const cur = bObj.currency || (data.authorize && data.authorize.currency) || '';
-          if(typeof b !== 'undefined'){
-            qs('#userBalance').textContent = 'Balance: ' + Number(b).toLocaleString() + (cur ? ' ' + cur : '');
-            // update portfolioChart latest point if exists
-            if(currentUser) currentUser.balance = b;
-            if(portfolioChart && portfolioChart.data && portfolioChart.data.datasets && portfolioChart.data.datasets[0]) {
-              const ds = portfolioChart.data.datasets[0].data;
-              ds[ds.length - 1] = Math.round(b);
-              portfolioChart.update();
-            }
-          }
+      if(data.balance){
+        const b = Array.isArray(data.balance) ? data.balance[0] : data.balance;
+        if(b && currentUser){
+          currentUser.balance = b.balance;
+          qs('#userBalance').textContent = 'Balance: ' + b.balance + (b.currency ? ' ' + b.currency : '');
+          if(githubToken) saveUsersToGitHub(); // persist balance if desired
         }
       }
-
-      if(data.error) {
-        console.warn('Deriv error', data.error);
-      }
-    } catch(err){
-      console.warn('Deriv ws parse error', err);
-    }
+    } catch(err){ console.warn('Deriv ws parse error', err); }
   };
-
   derivWS.onerror = (e)=> console.error('Deriv WS error', e);
   derivWS.onclose = ()=> console.warn('Deriv WS closed');
 }
+function requestDerivBalance(){ if(!derivWS || derivWS.readyState !== WebSocket.OPEN) return; derivWS.send(JSON.stringify({ balance: 1 })); }
 
-function requestDerivBalance(subscribe = false){
-  if(!derivWS || derivWS.readyState !== WebSocket.OPEN) return;
-  // subscribe parameter will let deriv send balance updates regularly
-  const payload = { balance: 1 };
-  if(subscribe) payload.subscribe = 1;
-  derivWS.send(JSON.stringify(payload));
+/* ====== TradingView embed ====== */
+function embedTradingView(targetId, symbol='OANDA:XAUUSD'){
+  const w = qs('#' + targetId);
+  if(!w) return;
+  const frame = document.createElement('iframe');
+  frame.style.width = '100%';
+  frame.style.height = '100%';
+  frame.style.border = 0;
+  frame.src = 'https://s.tradingview.com/widgetembed/?frameElementId=' + encodeURIComponent(targetId) + '&symbol=' + encodeURIComponent(symbol) + '&interval=60&hidesidetoolbar=1&theme=dark';
+  w.innerHTML = '';
+  w.appendChild(frame);
 }
-
-/* Helper: log out from Deriv (clear token & reset UI) */
-function derivLogout(){
-  try{ if(derivWS) derivWS.close(); }catch(e){}
-  localStorage.removeItem('deriv_token');
-  // optional: keep demo mapping
-  qs('#displayName').textContent = 'User';
-  qs('#userName').textContent = 'User';
-  qs('#userBalance').textContent = 'Balance: —';
-  qs('#userEmail').textContent = '—';
-  qs('#accountType').textContent = '—';
-  // remove stored current user mapping if you want:
-  // localStorage.removeItem('merrick_current_user');
-}
-
-/* ====== TradingView embed helpers (asset selector) ====== */
-function embedTradingViewInto(elId, symbol){
-  const wrap = qs('#' + elId);
-  if(!wrap) return;
-  // Clear current content
-  wrap.innerHTML = '';
-  // Use TradingView widget embed URL
-  const iframe = document.createElement('iframe');
-  iframe.style.width = '100%';
-  iframe.style.height = '100%';
-  iframe.style.border = '0';
-  iframe.src = 'https://s.tradingview.com/widgetembed/?frameElementId=' + encodeURIComponent(elId) + '&symbol=' + encodeURIComponent(symbol) + '&interval=60&hidesidetoolbar=1&theme=dark';
-  wrap.appendChild(iframe);
-}
-
-/* Wire up asset selector */
-qs('#loadAssetBtn')?.addEventListener('click', ()=>{
-  const sym = qs('#assetSelect').value;
-  embedTradingViewInto('assetChartWrap', sym);
-});
-
-/* initialise default asset chart */
-embedTradingViewInto('assetChartWrap', qs('#assetSelect') ? qs('#assetSelect').value : 'OANDA:XAUUSD');
+embedTradingView('tvFrameWrap', 'OANDA:XAUUSD');
+embedTradingView('tvChartWrap', 'OANDA:XAUUSD');
 
 /* ====== Utility UI functions ====== */
 function onChangeProfilePic(){
@@ -854,12 +732,7 @@ function onChangeProfilePic(){
   if(githubToken) saveUsersToGitHub();
 }
 function openDrive(){ alert('Google Drive integration requires OAuth and API keys — placeholder'); }
-function logout(){ 
-  // clear local session and reload
-  localStorage.removeItem('merrick_current_user');
-  derivLogout();
-  location.reload(); 
-}
+function logout(){ localStorage.removeItem('merrick_current_user'); location.reload(); }
 
 /* Run loaded bot button */
 qs('#runBotBtn').addEventListener('click', ()=>{
@@ -900,13 +773,9 @@ async function init(){
     setupPortfolioChart();
     startPolling();
 
-    // parse deriv token if returning from OAuth or query
-    const maybeToken = grabDerivTokenFromUrl() || localStorage.getItem('deriv_token');
-    if(maybeToken) {
-      // ensure token stored then connect WS
-      localStorage.setItem('deriv_token', maybeToken);
-      connectDerivWS();
-    }
+    // parse deriv token if returning from OAuth
+    const maybeDeriv = grabDerivTokenFromUrl();
+    if(maybeDeriv) connectDerivWS();
   } catch(err){
     console.error('Init error', err);
   } finally {
@@ -918,109 +787,5 @@ async function init(){
 /* Start */
 window.addEventListener('load', init);
 </script>
- <script>
-/* ====== Deriv OAuth Live Connection ====== */
-const APP_ID = 109286;
-const WS_URL = wss://ws.derivws.com/websockets/v3?app_id=${APP_ID};
-const statusEl = document.getElementById("status") || null;
-const loadingOverlay = document.getElementById("loadingOverlay");
-
-function redirectToDerivOAuth() {
-  const redirect_uri = encodeURIComponent(window.location.origin + window.location.pathname);
-  const oauth_url = https://oauth.deriv.com/oauth2/authorize?app_id=${APP_ID}&redirect_uri=${redirect_uri}&response_type=token;
-  window.location.href = oauth_url;
-}
-
-function getTokenFromURL() {
-  // handle both #access_token and ?acct1/token1 style redirects
-  let token = null;
-
-  if (window.location.hash.includes("access_token")) {
-    const params = new URLSearchParams(window.location.hash.substring(1));
-    token = params.get("access_token");
-  } else if (window.location.search.includes("token1")) {
-    const params = new URLSearchParams(window.location.search);
-    token = params.get("token1"); // pick the first token (real or demo)
-  }
-
-  if (token) {
-    localStorage.setItem("deriv_token", token);
-    // clean up URL to avoid re-parsing tokens
-    history.replaceState(null, "", window.location.pathname);
-    return token;
-  }
-  return null;
-}
-}
-
-function connectToDeriv(token) {
-  const ws = new WebSocket(WS_URL);
-  if (statusEl) statusEl.textContent = "Connecting to Deriv…";
-
-  ws.onopen = () => {
-    ws.send(JSON.stringify({ authorize: token }));
-  };
-
-  ws.onmessage = (msg) => {
-    const data = JSON.parse(msg.data);
-
-    if (data.error) {
-      console.error("Deriv Error:", data.error.message);
-      if (statusEl) statusEl.textContent = "Authorization failed: " + data.error.message;
-      if (loadingOverlay) loadingOverlay.style.display = "none";
-      return;
-    }
-
-    if (data.authorize) {
-      const a = data.authorize;
-      const acct = a.loginid;
-      const cur = a.currency || "—";
-      const bal = (a.balance ?? 0).toFixed(2);
-
-      // Update dashboard header
-      const nameField = document.querySelector("#username, .user-name");
-      if (nameField) nameField.textContent = acct;
-
-      const balanceField = document.querySelector("#balance, .user-balance");
-      if (balanceField) balanceField.textContent = ${bal} ${cur};
-
-      if (statusEl) statusEl.textContent = "Connected ✅";
-      if (loadingOverlay) loadingOverlay.style.display = "none";
-
-      // Subscribe for live balance updates
-      ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
-    }
-
-    if (data.msg_type === "balance" && data.balance) {
-      const bal = parseFloat(data.balance.balance).toFixed(2);
-      const cur = data.balance.currency || "USD";
-      const balanceField = document.querySelector("#balance, .user-balance");
-      if (balanceField) balanceField.textContent = ${bal} ${cur};
-    }
-  };
-
-  ws.onerror = () => {
-    if (statusEl) statusEl.textContent = "Connection error.";
-    if (loadingOverlay) loadingOverlay.style.display = "none";
-  };
-
-  ws.onclose = () => {
-    if (statusEl) statusEl.textContent = "Disconnected from Deriv.";
-  };
-}
-
-const urlToken = getTokenFromURL();
-const savedToken = localStorage.getItem("deriv_token");
-
-if (urlToken) {
-  connectToDeriv(urlToken);
-} else if (savedToken) {
-  connectToDeriv(savedToken);
-} else {
-  redirectToDerivOAuth();
-}
-</script>
 </body>
 </html>
-
-
